@@ -1,0 +1,44 @@
+[
+  {
+    "stream_url": "https://cdn5.urduflix.pk/NiaziPlay-1/Kurulus-Osman/Urdu/S5/s5-scenes.mp4/index.m3u8",
+    "video_ids": [
+      "video-2400",
+      "video-2404"
+    ]
+  },
+  {
+    "stream_url": "https://cdn5.urduflix.pk/NiaziPlay-1/Kurulus-Osman/English/S6/Episode-171.mp4/index.m3u8",
+    "video_ids": [
+      "video-3292",
+      "video-3299"
+    ]
+  },
+  {
+    "stream_url": "https://cdn.videas.fr/v-medias/s5/hlsv1/19/8f/198f7156-ce4f-41cd-99f7-451e72c34a3b/playlist.m3u8",
+    "video_ids": [
+      "video-3941",
+      "video-3942"
+    ]
+  },
+  {
+    "stream_url": "https://cdn5.urduflix.pk/NiaziPlay-1/Kurulus-Osman/Urdu/S2/Episode-63.mp4/index.m3u8",
+    "video_ids": [
+      "video-723",
+      "video-724"
+    ]
+  },
+  {
+    "stream_url": "https://cdn4.niazitv.pk/NiaziPlay-1/Mehmed-Fetihler-Sultani/English/S2/Episode-37.mp4/index.m3u8",
+    "video_ids": [
+      "video-3557",
+      "video-3572"
+    ]
+  },
+  {
+    "stream_url": "https://cdn5.urduflix.pk/NiaziPlay-1/Kurulus-Osman/Urdu/S2/Episode-64.mp4/index.m3u8",
+    "video_ids": [
+      "video-728",
+      "video-729"
+    ]
+  }
+]

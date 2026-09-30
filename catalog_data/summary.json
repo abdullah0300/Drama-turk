@@ -1,0 +1,39 @@
+{
+  "source_records": 3269,
+  "organized_video_records": 3269,
+  "dramas": 24,
+  "source_catalog_collections": 63,
+  "episode_groups_within_collections": 2902,
+  "content_type_counts": {
+    "episode": 3263,
+    "behind_the_scenes": 4,
+    "trailer": 1,
+    "unavailable_record": 1
+  },
+  "records_with_stream_urls": 3268,
+  "organization_review_records": 61,
+  "all_review_records": 2051,
+  "organization_review_flags": {
+    "language_unresolved": 61,
+    "version_unresolved": 61,
+    "individual_season_unknown": 60,
+    "stream_missing": 1
+  },
+  "duplicate_stream_groups": 6,
+  "derived_improvements": {
+    "language_from_stream_path": 147,
+    "version_from_stream_path": 91,
+    "drama_alias_records": 93,
+    "bolum_only_labels": 38
+  },
+  "playback_scope": "Only eight prior samples were user-tested; full catalog playback is not verified.",
+  "episode_count_scope": "Groups preserve source collection boundaries and numbering. This is not a verified count of distinct original broadcast episodes.",
+  "review_pass": {
+    "records_inspected": 74,
+    "live_pages_fetched": 74,
+    "resolved_records": 13,
+    "still_uncertain_records": 61,
+    "kosem_metadata_claims_recorded": 60,
+    "failed_page_confirmed": 1
+  }
+}

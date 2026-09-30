@@ -1,0 +1,32 @@
+[
+  {
+    "id": "draft-mehmed-s2-ep17",
+    "drama_id": "mehmed-fetihler-sultani",
+    "collection_id": "collection-68",
+    "episode_group_id": "collection-68-episode-17",
+    "proposed_display_title": "The Strategic Crossroads",
+    "short_description": "Sultan Mehmed accelerates his tactical preparations as envoys arrive with delicate terms, while covert movements on the borders test the empire's resolve.",
+    "sections": [
+      {
+        "heading": "Historical Context & Envoys",
+        "content": "As diplomatic tensions rise, Sultan Mehmed faces conflicting advice from his grand vizier and commanders. The narrative highlights the meticulous planning behind Ottoman logistics.",
+        "is_spoiler": false
+      },
+      {
+        "heading": "Decisive Confrontation (Spoilers)",
+        "content": "A high-stakes clandestine encounter near the Bosphorus reveals covert alliances that threaten the imperial line.",
+        "is_spoiler": true
+      }
+    ],
+    "seo_title": "Mehmed: Fetihler Sultani Season 2 Episode 17 - Analysis & Episode Guide",
+    "seo_description": "Comprehensive episode synopsis, historical context, and tactical analysis for Mehmed Fetihler Sultani Season 2 Episode 17.",
+    "source_record_reference": "video-3222",
+    "review_flags": [],
+    "generation_provenance": {
+      "model": "Gemma 2 9B (Offline Local)",
+      "timestamp": "2026-09-30T14:30:00Z",
+      "offline_batch_id": "batch-mehmed-s2-pilot"
+    },
+    "approval_status": "draft"
+  }
+]
