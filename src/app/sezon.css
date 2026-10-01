@@ -852,3 +852,4 @@ a.sn{display:block}
 .sv-editions .tab{display:inline-flex;align-items:center}
 .series .ep{grid-template-columns:48px 168px 1fr auto;gap:18px;padding:12px 14px}
 .series .ep-n{font-size:22px}
+.series .sn-n{bottom:78px}

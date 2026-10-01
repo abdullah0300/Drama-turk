@@ -59,12 +59,12 @@ export default async function RootLayout({
     poster: d.poster_url,
     isPilot: isDramaPlayable(d),
   }));
-  const notifications = latest.map(({ group, video, drama }) => ({
+  const notifications = latest.map(({ group, video, drama, href }) => ({
     id: group.id,
     title: drama.name,
     label: group.display_label,
     thumb: video.thumbnail_urls?.[0],
-    href: `/drama/${drama.id}/watch/${group.id}`,
+    href,
   }));
 
   return (

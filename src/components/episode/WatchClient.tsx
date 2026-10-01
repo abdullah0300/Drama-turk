@@ -33,6 +33,7 @@ import { siteConfig } from '@/config/site';
 
 export interface EpisodeSidebarItem {
   id: string;
+  href: string;
   display_label: string;
   bolum: number | null;
   thumbnailUrl?: string;
@@ -45,6 +46,11 @@ interface WatchClientProps {
   initialVideo: VideoRecord;
   allRenditions: VideoRecord[];
   sidebarEpisodes: EpisodeSidebarItem[];
+  /** Clean URLs for navigation around this episode */
+  seasonHref: string;
+  seasonName: string;
+  prevHref?: string;
+  nextHref?: string;
   prevGroup?: EpisodeGroup;
   nextGroup?: EpisodeGroup;
   editorialDraft?: EditorialDraft;
@@ -57,6 +63,10 @@ export function WatchClient({
   initialVideo,
   allRenditions,
   sidebarEpisodes,
+  seasonHref,
+  seasonName,
+  prevHref,
+  nextHref,
   prevGroup,
   nextGroup,
   editorialDraft,
@@ -87,13 +97,13 @@ export function WatchClient({
 
   const handleNavigateNext = () => {
     if (nextGroup) {
-      router.push(`/drama/${drama.id}/watch/${nextGroup.id}`);
+      if (nextHref) router.push(nextHref);
     }
   };
 
   const handleNavigatePrev = () => {
     if (prevGroup) {
-      router.push(`/drama/${drama.id}/watch/${prevGroup.id}`);
+      if (prevHref) router.push(prevHref);
     }
   };
 
@@ -144,7 +154,7 @@ export function WatchClient({
           <nav className="w-crumb" aria-label="Breadcrumb">
             <Link href="/">Home</Link><i>/</i>
             <Link href={`/drama/${drama.id}`}>{drama.name}</Link><i>/</i>
-            <Link href={`/drama/${drama.id}/collection/${collection.id}`}>{collection.source_heading}</Link><i>/</i>
+            <Link href={seasonHref}>{seasonName}</Link><i>/</i>
             <span style={{ color: 'var(--text)' }}>{episodeGroup.display_label}</span>
           </nav>
 
@@ -167,7 +177,7 @@ export function WatchClient({
                 {copiedLink ? <Check className="i" /> : <Share2 className="i" />}
                 {copiedLink ? 'Link copied' : 'Share'}
               </button>
-              <Link className="pill" href={`/drama/${drama.id}/collection/${collection.id}`}>
+              <Link className="pill" href={seasonHref}>
                 <List className="i" />All episodes
               </Link>
               <button className="pill" onClick={() => setShowDiagnosticsModal(true)}>
@@ -264,7 +274,7 @@ export function WatchClient({
         <aside className="w-side">
           <div className="w-up">
             {nextGroup ? (
-              <Link href={`/drama/${drama.id}/watch/${nextGroup.id}`} className="w-up-m">
+              <Link href={nextHref ?? seasonHref} className="w-up-m">
                 {nextThumb ? <img src={nextThumb} alt="" /> : <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
                 <span className="shade" />
                 <span className="c-play"><Play className="i f" /></span>
@@ -299,7 +309,7 @@ export function WatchClient({
           <div className="w-list">
             <div className="w-list-h">
               <b>{drama.name}<span>{sidebarEpisodes.length} episodes</span></b>
-              <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 700 }}>{seasonLabel}</span>
+              <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 700 }}>{seasonName}</span>
             </div>
             <div className="w-eps" id="wEps">
               {sidebarEpisodes.map((group, gi) => {
@@ -307,7 +317,7 @@ export function WatchClient({
                 return (
                   <Link
                     key={group.id}
-                    href={`/drama/${drama.id}/watch/${group.id}`}
+                    href={group.href}
                     className={`w-ep${isCurrent ? ' now' : ''}`}
                     aria-current={isCurrent ? 'true' : undefined}
                   >

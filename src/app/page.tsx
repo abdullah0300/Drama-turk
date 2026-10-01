@@ -10,6 +10,7 @@ import { LatestEpisodesRow } from '@/components/home/LatestEpisodesRow';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { siteConfig } from '@/config/site';
 import { isDramaPlayable, groupSeasons, editionName, pluralSeasons, dramaSeasonCount } from '@/types/catalog';
+import { episodePath, episodeSlugs, seasonPath } from '@/lib/routes';
 
 export const revalidate = 3600; // 1 hour ISR
 
@@ -38,6 +39,9 @@ export default async function HomePage() {
     }
   });
   const firstGroup = firstGroups[0];
+  const firstSlugs = episodeSlugs(firstGroups);
+  const firstSeasonUrl = featured && firstSeason && firstEdition ? seasonPath(featured.id, firstSeason, firstEdition) : '';
+  const firstEpisodeUrl = (groupId: string) => episodePath(firstSeasonUrl, firstSlugs.get(groupId)!);
 
   const heroItems: HeroItem[] = [];
   if (featured) {
@@ -54,7 +58,7 @@ export default async function HomePage() {
       thumbnailForList: featured.poster_url,
       episodeCount: firstGroups.length,
       segLabel: firstSeason ? `episodes in ${firstSeason.label}` : 'episodes',
-      playHref: firstGroup ? `/drama/${featured.id}/watch/${firstGroup.id}` : `/drama/${featured.id}`,
+      playHref: firstGroup ? firstEpisodeUrl(firstGroup.id) : `/drama/${featured.id}`,
       playLabel: firstSeason ? `Play ${firstSeason.label}` : 'Start watching',
       infoHref: `/drama/${featured.id}`,
     });
@@ -104,6 +108,7 @@ export default async function HomePage() {
             .reverse()
             .map((s) => ({
               id: s.editions[0].id,
+              href: seasonPath(d.id, s),
               n: s.number,
               label: s.label,
               edition: s.editions.map(editionName).join(' · '),
@@ -123,9 +128,10 @@ export default async function HomePage() {
           dramaId: featured.id,
           dramaTitle: featured.name,
           groupId: g.id,
+          href: firstEpisodeUrl(g.id),
           label: g.display_label,
           thumb: thumbByGroup.get(g.id) || featured.backdrop_url || featured.poster_url,
-          seasonHref: `/drama/${featured.id}/collection/${firstEdition.id}`,
+          seasonHref: firstSeasonUrl,
         }))
       : [];
 

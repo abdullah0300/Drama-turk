@@ -12,6 +12,7 @@ interface PlayableEpisodeItem {
   video: VideoRecord;
   collection: CatalogCollection;
   drama: Drama;
+  href: string;
 }
 
 export function LatestEpisodesRow({ episodes }: { episodes: PlayableEpisodeItem[] }) {
@@ -41,8 +42,8 @@ export function LatestEpisodesRow({ episodes }: { episodes: PlayableEpisodeItem[
         ) : null
       }
     >
-      {shown.map(({ group, video, drama, collection }, i) => {
-        const watchUrl = `/drama/${drama.id}/watch/${group.id}`;
+      {shown.map(({ group, video, drama, collection, href }, i) => {
+        const watchUrl = href;
         const thumb = video.thumbnail_urls?.[0];
         const num = group.episode_number ?? group.bolum ?? '';
         return (

@@ -6,11 +6,13 @@ import { List, Play, Trash2, X } from 'lucide-react';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
 import { Rail } from '@/components/sezon/Rail';
 import { UserPlaybackProgress } from '@/types/catalog';
+import { legacyEpisodePath, seasonPathFromEpisodePath } from '@/lib/routes';
 
 export interface StarterEpisode {
   dramaId: string;
   dramaTitle: string;
   groupId: string;
+  href: string;
   label: string;
   thumb?: string;
   seasonHref: string;
@@ -22,6 +24,8 @@ const formatTime = (secs: number) => {
   const s = Math.floor(secs % 60);
   return `${m}:${s < 10 ? '0' : ''}${s}`;
 };
+
+const hrefOf = (item: UserPlaybackProgress) => item.url ?? legacyEpisodePath(item.dramaId, item.episodeGroupId);
 
 const pctOf = (item: UserPlaybackProgress) =>
   item.duration > 0 ? Math.min(1, item.currentTime / item.duration) : 0;
@@ -73,7 +77,7 @@ export function ContinueWatchingRow({ starters = [] }: { starters?: StarterEpiso
           {(() => {
             const first = items[0];
             const pct = pctOf(first);
-            const url = `/drama/${first.dramaId}/watch/${first.episodeGroupId}`;
+            const url = hrefOf(first);
             return (
               <div className="cw-card cw-big" key={first.videoId}>
                 {first.thumbnailUrl ? <img src={first.thumbnailUrl} alt={first.episodeTitle} /> : null}
@@ -92,7 +96,7 @@ export function ContinueWatchingRow({ starters = [] }: { starters?: StarterEpiso
                   </div>
                   <div className="cw-acts">
                     <Link href={url} className="btn btn-play"><Play className="i f" />Resume</Link>
-                    <Link href={`/drama/${first.dramaId}/collection/${first.collectionId}`} className="btn btn-ghost"><List className="i" />Episodes</Link>
+                    <Link href={first.url ? seasonPathFromEpisodePath(first.url) : `/drama/${first.dramaId}/collection/${first.collectionId}`} className="btn btn-ghost"><List className="i" />Episodes</Link>
                   </div>
                 </div>
               </div>
@@ -108,7 +112,7 @@ export function ContinueWatchingRow({ starters = [] }: { starters?: StarterEpiso
                 <button className="cw-x" onClick={() => removeHistoryItem(item.videoId)} aria-label={`Remove ${item.displayLabel} from Continue Watching`}>
                   <X className="i" />
                 </button>
-                <Link href={`/drama/${item.dramaId}/watch/${item.episodeGroupId}`} className="cw-body" aria-label={`Resume ${item.dramaTitle} ${item.displayLabel}`}>
+                <Link href={hrefOf(item)} className="cw-body" aria-label={`Resume ${item.dramaTitle} ${item.displayLabel}`}>
                   <span className="cw-txt">
                     <b>{item.displayLabel}</b>
                     <span>{formatTime(item.currentTime)} / {formatTime(item.duration)} · <em>{Math.round(pct * 100)}% watched</em></span>
@@ -138,7 +142,7 @@ export function ContinueWatchingRow({ starters = [] }: { starters?: StarterEpiso
                     <span>Not started</span>
                   </div>
                   <div className="cw-acts">
-                    <Link href={`/drama/${first.dramaId}/watch/${first.groupId}`} className="btn btn-play"><Play className="i f" />Play {first.label}</Link>
+                    <Link href={first.href} className="btn btn-play"><Play className="i f" />Play {first.label}</Link>
                     <Link href={first.seasonHref} className="btn btn-ghost"><List className="i" />Episodes</Link>
                   </div>
                 </div>
@@ -150,7 +154,7 @@ export function ContinueWatchingRow({ starters = [] }: { starters?: StarterEpiso
               {s.thumb ? <img src={s.thumb} alt="" /> : null}
               <span className="shade" />
               <span className="cw-when">Up next</span>
-              <Link href={`/drama/${s.dramaId}/watch/${s.groupId}`} className="cw-body" aria-label={`Play ${s.dramaTitle} ${s.label}`}>
+              <Link href={s.href} className="cw-body" aria-label={`Play ${s.dramaTitle} ${s.label}`}>
                 <span className="cw-txt">
                   <b>{s.label}</b>
                   <span>{s.dramaTitle} · <em>Not started</em></span>

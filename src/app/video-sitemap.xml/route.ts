@@ -1,40 +1,31 @@
 import { NextResponse } from 'next/server';
-import { catalogRepository } from '@/lib/repository/catalog-repository';
+import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { siteConfig } from '@/config/site';
+import { loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
 
+/** Video sitemap for the featured drama: every published episode with a stream, on clean URLs. */
 export async function GET() {
-  catalogRepository.ensureLoaded();
-
   const baseUrl = siteConfig.domain;
-  const pilotCol = catalogRepository.getPilotCollection();
-
-  if (!pilotCol) {
-    return new NextResponse('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>', {
-      headers: { 'Content-Type': 'application/xml; charset=utf-8' },
-    });
-  }
-
-  const drama = catalogRepository.getDrama(pilotCol.drama_id);
-  const dramaName = drama?.name || 'Mehmed: Fetihler Sultani';
-  const episodeGroups = catalogRepository.getCollectionEpisodeGroups(pilotCol.id);
+  const featured = await supabaseCatalog.getPilotDrama();
+  const loaded = featured ? await loadDrama(featured.id) : null;
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 `;
 
-  for (const group of episodeGroups) {
-    const pageUrl = `${baseUrl}/drama/${pilotCol.drama_id}/watch/${group.id}`;
-    const videos = catalogRepository.getVideosForGroup(group.id);
-    const video = videos[0];
-
-    if (!video || !video.stream_urls?.[0]) continue;
-
-    const thumbnail = video.thumbnail_urls?.[0] || `${baseUrl}/images/fallback_poster.png`;
-    const title = `${dramaName} - ${group.display_label}`;
-    const description = video.title || `Watch ${group.display_label} of ${dramaName} in HD with Urdu and English subtitles.`;
-
-    xml += `  <url>
+  for (const season of loaded?.seasons ?? []) {
+    for (const edition of season.editions) {
+      if (edition.status !== 'published') continue;
+      const { groups, slugs, videosByGroup } = await loadEditionEpisodes(edition.id);
+      for (const group of groups) {
+        const video = (videosByGroup.get(group.id) || []).find((v) => v.stream_urls?.[0]);
+        if (!video) continue;
+        const pageUrl = `${baseUrl}${episodeHref(loaded!.drama.id, season, edition, slugs.get(group.id)!)}`;
+        const thumbnail = video.thumbnail_urls?.[0] || `${baseUrl}/images/fallback_poster.png`;
+        const title = `${loaded!.drama.name} - ${season.label} - ${group.display_label}`;
+        const description = video.title || `Watch ${title} ad-free.`;
+        xml += `  <url>
     <loc>${pageUrl}</loc>
     <video:video>
       <video:thumbnail_loc>${thumbnail}</video:thumbnail_loc>
@@ -47,6 +38,8 @@ export async function GET() {
     </video:video>
   </url>
 `;
+      }
+    }
   }
 
   xml += `</urlset>`;

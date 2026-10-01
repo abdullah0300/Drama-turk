@@ -3,27 +3,27 @@
 import React from 'react';
 import Link from 'next/link';
 import { Play, Bookmark, Check } from 'lucide-react';
-import { Drama, EpisodeGroup } from '@/types/catalog';
+import { Drama } from '@/types/catalog';
+import { legacyEpisodePath } from '@/lib/routes';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
 
 interface DramaActionsProps {
   drama: Drama;
-  firstPlayableGroup?: EpisodeGroup;
+  /** Clean URL of the first episode of the first season */
+  startHref?: string;
   isPlayable: boolean;
   seasonName?: string;
 }
 
-export function DramaActions({ drama, firstPlayableGroup, isPlayable, seasonName }: DramaActionsProps) {
+export function DramaActions({ drama, startHref, isPlayable, seasonName }: DramaActionsProps) {
   const { isInMyList, addToMyList, removeFromMyList, history } = useUserPreferences();
   const saved = isInMyList(drama.id);
 
   // Check if user has an in-progress episode for this drama
   const dramaHistory = history.find(h => h.dramaId === drama.id && !h.completed);
   const resumeUrl = dramaHistory
-    ? `/drama/${drama.id}/watch/${dramaHistory.episodeGroupId}`
-    : firstPlayableGroup
-      ? `/drama/${drama.id}/watch/${firstPlayableGroup.id}`
-      : null;
+    ? dramaHistory.url ?? legacyEpisodePath(drama.id, dramaHistory.episodeGroupId)
+    : startHref ?? null;
 
   const toggleList = () => {
     if (saved) {

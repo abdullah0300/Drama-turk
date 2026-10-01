@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Check, Info, Play, Plus } from 'lucide-react';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
+import { legacyEpisodePath } from '@/lib/routes';
 
 export interface HeroItem {
   id: string;
@@ -53,7 +54,7 @@ export function FeaturedHero({ items }: { items: HeroItem[] }) {
   const resume = history.find((h) => h.dramaId === item.id && !h.completed);
   const watched = new Set(history.filter((h) => h.dramaId === item.id).map((h) => h.episodeGroupId)).size;
   const saved = isInMyList(item.id);
-  const playHref = resume ? `/drama/${item.id}/watch/${resume.episodeGroupId}` : item.playHref;
+  const playHref = resume ? resume.url ?? legacyEpisodePath(item.id, resume.episodeGroupId) : item.playHref;
   const playLabel = resume ? `Continue ${resume.displayLabel}` : item.playLabel;
 
   const toggleList = () => {

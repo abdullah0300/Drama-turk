@@ -1,5 +1,7 @@
 'use client';
 
+import { legacyEpisodePath } from '@/lib/routes';
+
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Bookmark, Clock, Trash2, X, Play, Settings, HardDrive, Check } from 'lucide-react';
@@ -173,7 +175,7 @@ export function MyListClient() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {history.map(item => {
                 const percent = item.duration > 0 ? Math.min(100, Math.round((item.currentTime / item.duration) * 100)) : 0;
-                const watchUrl = `/drama/${item.dramaId}/watch/${item.episodeGroupId}`;
+                const watchUrl = item.url ?? legacyEpisodePath(item.dramaId, item.episodeGroupId);
 
                 return (
                   <div

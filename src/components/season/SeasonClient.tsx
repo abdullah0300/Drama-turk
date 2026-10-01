@@ -7,6 +7,7 @@ import { useUserPreferences } from '@/context/UserPreferencesContext';
 
 export interface SeasonEpisode {
   id: string;
+  href: string;
   label: string;
   title: string;
   bolum: number | null;
@@ -19,6 +20,7 @@ export interface SeasonEpisode {
 
 export interface OtherSeason {
   id: string;
+  href: string;
   heading: string;
   seasonLabel: string;
   episodeCount: number;
@@ -39,7 +41,7 @@ interface SeasonClientProps {
   collectionHeading: string;
   seasonNumber: number;
   seasonName: string;
-  editions: { id: string; name: string; episodes: number; active: boolean }[];
+  editions: { id: string; href: string; name: string; episodes: number; active: boolean }[];
   seasonNote?: string;
   edition: string;
   videoCount: number;
@@ -136,7 +138,6 @@ export function SeasonClient(props: SeasonClientProps) {
     else addToMyList({ id: dramaId, type: 'drama', dramaId, title: dramaName, thumbnailUrl: dramaPoster, addedAt: Date.now() });
   };
 
-  const watchHref = (id: string) => `/drama/${dramaId}/watch/${id}`;
   const numStr = pad(seasonNumber);
 
   return (
@@ -168,7 +169,7 @@ export function SeasonClient(props: SeasonClientProps) {
           {editions.length > 1 && (
             <div className="tabs sv-editions" role="tablist" aria-label="Version">
               {editions.map((e) => (
-                <Link key={e.id} href={`/drama/${dramaId}/collection/${e.id}`} className={`tab${e.active ? ' on' : ''}`} role="tab" aria-selected={e.active} scroll={false}>
+                <Link key={e.id} href={e.href} className={`tab${e.active ? ' on' : ''}`} role="tab" aria-selected={e.active} scroll={false}>
                   {e.name} · {e.episodes}
                 </Link>
               ))}
@@ -190,7 +191,7 @@ export function SeasonClient(props: SeasonClientProps) {
 
           <div className="actions">
             {published && nextEp ? (
-              <Link href={watchHref(nextEp.id)} className="btn btn-play">
+              <Link href={nextEp.href} className="btn btn-play">
                 <Play className="i f" />
                 {started ? 'Continue' : 'Start watching'} {nextEp.label}
               </Link>
@@ -207,7 +208,7 @@ export function SeasonClient(props: SeasonClientProps) {
         {others.length > 0 && (
           <div className="sv-switch">
             {others.slice(0, 4).map((o) => (
-              <Link key={o.id} href={`/drama/${dramaId}/collection/${o.id}`} className="sv-pill">
+              <Link key={o.id} href={o.href} className="sv-pill">
                 {heroImage ? <img src={heroImage} alt="" /> : null}
                 <span>{o.seasonLabel}<small>{o.episodeCount} episodes</small></span>
               </Link>
@@ -224,34 +225,6 @@ export function SeasonClient(props: SeasonClientProps) {
           <div className="st"><small>Your progress</small><b>{progressPct}%</b><span>{playable.length - watchedCount > 0 ? `${playable.length - watchedCount} left to watch` : playable.length ? 'All caught up' : '—'}</span></div>
           <div className="st"><small>Status</small><b>{published ? 'Live' : 'Preview'}</b><span>{published ? 'Ready to stream' : 'Metadata only'}</span></div>
         </div>
-
-        {episodes.length > 0 && (
-          <section className="sv-sec">
-            <div className="sv-sec-h">
-              <h2>Season arc<small>Every episode in order. Tap one to play.</small></h2>
-              <div className="arc-legend">
-                <span className="w"><i></i>Watched</span><span><i></i>Out now</span><span className="u"><i></i>Preview</span>
-              </div>
-            </div>
-            <div className={`arc${arcIn ? ' in' : ''}`} ref={arcRef}>
-              <div className="arc-bars">
-                {episodes.map((e, i) => {
-                  const st = stateOf(e);
-                  const fin = i === episodes.length - 1;
-                  const cur = nextEp?.id === e.id && st === 'r';
-                  const cls = `ab ${st}${fin ? ' f' : ''}${cur ? ' cur' : ''}`;
-                  const style = { ['--h' as string]: `${(arcHeights[i] * 100).toFixed(1)}%`, ['--d' as string]: `${i * 22}ms` };
-                  return st === 'u' ? (
-                    <span key={e.id} className={cls} style={style} title={`${e.label} — preview record`}><i /></span>
-                  ) : (
-                    <Link key={e.id} href={watchHref(e.id)} className={cls} style={style} aria-label={e.label} title={e.label}><i /></Link>
-                  );
-                })}
-              </div>
-              <div className="arc-axis"><span>Premiere</span><span>Midseason</span><span>Finale</span></div>
-            </div>
-          </section>
-        )}
 
         <section className="sv-sec" id="episodes">
           <div className="sv-sec-h">
@@ -300,12 +273,40 @@ export function SeasonClient(props: SeasonClientProps) {
                 return up ? (
                   <div key={e.id} className="se up" style={style}>{inner}</div>
                 ) : (
-                  <Link key={e.id} href={watchHref(e.id)} className="se" style={style}>{inner}</Link>
+                  <Link key={e.id} href={e.href} className="se" style={style}>{inner}</Link>
                 );
               })}
             </div>
           )}
         </section>
+
+        {episodes.length > 0 && (
+          <section className="sv-sec">
+            <div className="sv-sec-h">
+              <h2>Season arc<small>Every episode in order. Tap one to play.</small></h2>
+              <div className="arc-legend">
+                <span className="w"><i></i>Watched</span><span><i></i>Out now</span><span className="u"><i></i>Preview</span>
+              </div>
+            </div>
+            <div className={`arc${arcIn ? ' in' : ''}`} ref={arcRef}>
+              <div className="arc-bars">
+                {episodes.map((e, i) => {
+                  const st = stateOf(e);
+                  const fin = i === episodes.length - 1;
+                  const cur = nextEp?.id === e.id && st === 'r';
+                  const cls = `ab ${st}${fin ? ' f' : ''}${cur ? ' cur' : ''}`;
+                  const style = { ['--h' as string]: `${(arcHeights[i] * 100).toFixed(1)}%`, ['--d' as string]: `${i * 22}ms` };
+                  return st === 'u' ? (
+                    <span key={e.id} className={cls} style={style} title={`${e.label} — preview record`}><i /></span>
+                  ) : (
+                    <Link key={e.id} href={e.href} className={cls} style={style} aria-label={e.label} title={e.label}><i /></Link>
+                  );
+                })}
+              </div>
+              <div className="arc-axis"><span>Premiere</span><span>Midseason</span><span>Finale</span></div>
+            </div>
+          </section>
+        )}
 
         {extras.length > 0 && (
           <section className="sv-sec" aria-label="Extras">
@@ -323,7 +324,7 @@ export function SeasonClient(props: SeasonClientProps) {
             <div className="sv-sec-h"><h2>Other seasons</h2></div>
             <div className="sv-others">
               {others.map((o) => (
-                <Link key={o.id} href={`/drama/${dramaId}/collection/${o.id}`} className="so">
+                <Link key={o.id} href={o.href} className="so">
                   {heroImage ? <img src={heroImage} alt="" /> : <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
                   <span className="shade" />
                   {o.playable && <span className="badge">Playable</span>}

@@ -8,7 +8,9 @@ import {
   VideoRecord,
   compareCollections,
   isDramaPlayable,
+  groupSeasons,
 } from '@/types/catalog';
+import { episodePath, episodeSlugs, seasonPath } from '@/lib/routes';
 
 /** Published season ids, in natural season order, from an embedded collections(...) select. */
 function publishedCollectionIds(cols: any[] | undefined): string[] {
@@ -527,6 +529,7 @@ export class SupabaseCatalogRepository {
     video: VideoRecord;
     collection: CatalogCollection;
     drama: Drama;
+    href: string;
   }>> {
     const dramas = (await this.getAllDramas()).filter(isDramaPlayable);
 
@@ -540,11 +543,16 @@ export class SupabaseCatalogRepository {
       const collection = top.find((c) => c.version !== 'dubbed') ?? top[0];
 
       const groups = await this.getCollectionEpisodeGroups(collection.id);
+      const season = groupSeasons(cols).find((s) => s.editions.some((e) => e.id === collection.id))!;
+      const slugs = episodeSlugs(groups);
       // Walk back from the last episode until one has a playable stream
       for (let i = groups.length - 1; i >= Math.max(0, groups.length - 3); i--) {
         const videos = await this.getVideosForGroup(groups[i].id);
         const video = videos.find((v) => v.stream_present);
-        if (video) return { group: groups[i], video, collection, drama };
+        if (video) {
+          const href = episodePath(seasonPath(drama.id, season, collection), slugs.get(groups[i].id)!);
+          return { group: groups[i], video, collection, drama, href };
+        }
       }
       return null;
     }));

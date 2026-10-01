@@ -227,6 +227,7 @@ export function CustomVideoPlayer({
           completed: isComplete,
           language: currentVideo.languages?.[0],
           version: currentVideo.version,
+          url: typeof window !== 'undefined' ? window.location.pathname : undefined,
         });
       }
     }, 5000);
@@ -268,6 +269,7 @@ export function CustomVideoPlayer({
       completed: true,
       language: currentVideo.languages?.[0],
       version: currentVideo.version,
+      url: typeof window !== 'undefined' ? window.location.pathname : undefined,
     });
 
     // Opt-in cancelable autoplay

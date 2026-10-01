@@ -166,6 +166,8 @@ export interface UserPlaybackProgress {
   completed: boolean;
   language?: string;
   version?: string;
+  /** Clean URL of the episode page, saved so history links straight back to it. */
+  url?: string;
 }
 
 export interface MyListItem {

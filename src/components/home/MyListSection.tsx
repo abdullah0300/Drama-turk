@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { List, Play, X } from 'lucide-react';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
+import { legacyEpisodePath } from '@/lib/routes';
 
 type Sort = 'recent' | 'az';
 
@@ -33,7 +34,7 @@ export function MyListSection({ totals }: { totals: Record<string, number> }) {
   const shuffle = () => {
     if (!items.length) return;
     const it = items[Math.floor(Math.random() * items.length)];
-    router.push(it.episodeGroupId ? `/drama/${it.dramaId}/watch/${it.episodeGroupId}` : `/drama/${it.dramaId}`);
+    router.push(it.episodeGroupId ? legacyEpisodePath(it.dramaId, it.episodeGroupId) : `/drama/${it.dramaId}`);
   };
 
   return (
@@ -64,7 +65,7 @@ export function MyListSection({ totals }: { totals: Record<string, number> }) {
             const total = totals[it.dramaId] ?? 0;
             const pct = total > 0 ? Math.min(1, done / total) : 0;
             const resume = mine.find((h) => !h.completed);
-            const playHref = resume ? `/drama/${it.dramaId}/watch/${resume.episodeGroupId}` : `/drama/${it.dramaId}`;
+            const playHref = resume ? resume.url ?? legacyEpisodePath(it.dramaId, resume.episodeGroupId) : `/drama/${it.dramaId}`;
             return (
               <div className="ml" key={it.id} style={{ ['--i' as string]: i }} tabIndex={0}>
                 <div className="ml-in">

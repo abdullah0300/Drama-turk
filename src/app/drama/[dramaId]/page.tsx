@@ -5,17 +5,14 @@ import { notFound } from 'next/navigation';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { DramaActions } from './DramaActions';
 import { DramaCard } from '@/components/dramas/DramaCard';
-import { Play, ArrowRight } from 'lucide-react';
 import { siteConfig } from '@/config/site';
-import { isDramaPlayable, groupSeasons, editionName, pluralSeasons, VideoRecord } from '@/types/catalog';
+import { isDramaPlayable, editionName, pluralSeasons } from '@/types/catalog';
+import { loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
+import { seasonPath } from '@/lib/routes';
 
 interface DramaPageProps {
   params: {
     dramaId: string;
-  };
-  searchParams?: {
-    season?: string;
-    edition?: string;
   };
 }
 
@@ -37,46 +34,21 @@ export async function generateMetadata({ params }: DramaPageProps): Promise<Meta
   };
 }
 
-export default async function DramaPage({ params, searchParams }: DramaPageProps) {
-  const drama = await supabaseCatalog.getDrama(params.dramaId);
-  if (!drama) notFound();
-
-  const collections = await supabaseCatalog.getDramaCollections(drama.id);
-  const seasons = groupSeasons(collections);
+export default async function DramaPage({ params }: DramaPageProps) {
+  const loaded = await loadDrama(params.dramaId);
+  if (!loaded) notFound();
+  const { drama, seasons } = loaded;
+  const collections = seasons.flatMap((s) => s.editions);
   const playable = isDramaPlayable(drama) || collections.some((c) => c.status === 'published');
 
-  // Selected season and edition come from the URL (?season=3&edition=dubbed); default is the first season
-  const season = seasons.find((s) => s.key === searchParams?.season) ?? seasons[0];
-  const edition = season?.editions.find((e) => e.version === searchParams?.edition) ?? season?.editions[0];
-
-  const [groups, videos] = edition
-    ? await Promise.all([
-        supabaseCatalog.getCollectionEpisodeGroups(edition.id),
-        supabaseCatalog.getCollectionVideos(edition.id),
-      ])
-    : [[], [] as VideoRecord[]];
-  let editionVideos = videos;
-  if (editionVideos.length === 0 && groups.length > 0) {
-    // Fall back to per-group lookups when the bulk collection query returns nothing
-    editionVideos = (await Promise.all(groups.map((g) => supabaseCatalog.getVideosForGroup(g.id)))).flat();
-  }
-  const videosByGroup = new Map<string, VideoRecord[]>();
-  editionVideos.forEach((v) => {
-    if (!v.episode_group_id) return;
-    if (!videosByGroup.has(v.episode_group_id)) videosByGroup.set(v.episode_group_id, []);
-    videosByGroup.get(v.episode_group_id)!.push(v);
-  });
-
-  // "Play" always starts at the first episode of the first season
+  // "Start watching" opens the first episode of the first season
   const firstSeason = seasons[0];
   const firstEdition = firstSeason?.editions[0];
-  const firstGroups =
-    firstEdition && firstEdition.id === edition?.id
-      ? groups
-      : firstEdition
-        ? await supabaseCatalog.getCollectionEpisodeGroups(firstEdition.id)
-        : [];
-  const firstPlayableGroup = playable ? firstGroups[0] : undefined;
+  let startHref: string | undefined;
+  if (playable && firstSeason && firstEdition) {
+    const { groups, slugs } = await loadEditionEpisodes(firstEdition.id);
+    if (groups[0]) startHref = episodeHref(drama.id, firstSeason, firstEdition, slugs.get(groups[0].id)!);
+  }
 
   // Episode totals per version (subtitled and dubbed releases are numbered differently)
   const totalsByEdition = new Map<string, number>();
@@ -86,7 +58,6 @@ export default async function DramaPage({ params, searchParams }: DramaPageProps
   });
   const editionNames = Array.from(totalsByEdition.keys());
   const totalEpisodes = Math.max(0, ...Array.from(totalsByEdition.values()));
-  const yearsLabel = pluralSeasons(seasons.length);
 
   // Related dramas
   const allDramas = await supabaseCatalog.getAllDramas();
@@ -94,7 +65,6 @@ export default async function DramaPage({ params, searchParams }: DramaPageProps
     .filter((d) => d.id !== drama.id && d.genres?.some((g) => drama.genres?.includes(g)))
     .slice(0, 6);
 
-  // Structured Data (Schema.org)
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'TVSeries',
@@ -107,8 +77,6 @@ export default async function DramaPage({ params, searchParams }: DramaPageProps
   };
 
   const heroImage = drama.backdrop_url || drama.poster_url;
-  const tabHref = (seasonKey: string, version?: string) =>
-    `/drama/${drama.id}?season=${encodeURIComponent(seasonKey)}${version ? `&edition=${version}` : ''}#episodes`;
 
   return (
     <div className="series">
@@ -135,106 +103,31 @@ export default async function DramaPage({ params, searchParams }: DramaPageProps
           </div>
           <h1 className="dw-title">{drama.name}</h1>
           <div className="meta">
-            <span className="gold">{yearsLabel}</span>
+            <span className="gold">{pluralSeasons(seasons.length)}</span>
             <span className="sep" />
             <span>{editionNames.join(' & ')}</span>
           </div>
           {drama.synopsis && <p className="dw-line">{drama.synopsis}</p>}
-          <DramaActions
-            drama={drama}
-            firstPlayableGroup={firstPlayableGroup}
-            isPlayable={playable}
-            seasonName={firstSeason?.label}
-          />
+          <DramaActions drama={drama} startHref={startHref} isPlayable={playable} seasonName={firstSeason?.label} />
         </div>
       </header>
 
       {/* Section navigation */}
       <nav className="dw-nav" aria-label="Series sections">
-        <a href="#episodes">Episodes</a>
         <a href="#seasons">Seasons</a>
         <a href="#details">Details</a>
         {relatedDramas.length > 0 && <a href="#more">More like this</a>}
       </nav>
 
-      {/* Episodes of the selected season & edition */}
-      <section className="dw-sec" id="episodes">
-        <div className="eps-head">
-          <h3>
-            Episodes
-            <small>
-              {season ? `${season.label} · ${edition ? editionName(edition) : ''} · ${groups.length} episodes` : 'No seasons yet'}
-            </small>
-          </h3>
-          {edition && (
-            <Link className="sortbtn" href={`/drama/${drama.id}/collection/${edition.id}`}>
-              Open season page <ArrowRight className="i" />
-            </Link>
-          )}
-        </div>
-
-        {seasons.length > 1 && (
-          <div className="tabs series-tabs" role="tablist" aria-label="Season">
-            {seasons.map((s) => (
-              <Link key={s.key} href={tabHref(s.key)} className={`tab${s.key === season?.key ? ' on' : ''}`} role="tab" aria-selected={s.key === season?.key} scroll={false}>
-                {s.label}
-              </Link>
-            ))}
-          </div>
-        )}
-        {season && season.editions.length > 1 && (
-          <div className="tabs series-tabs ed" role="tablist" aria-label="Edition">
-            {season.editions.map((e) => (
-              <Link key={e.id} href={tabHref(season.key, e.version)} className={`tab${e.id === edition?.id ? ' on' : ''}`} role="tab" aria-selected={e.id === edition?.id} scroll={false}>
-                {editionName(e)} · {e.episode_group_ids?.length ?? 0}
-              </Link>
-            ))}
-          </div>
-        )}
-
-        <div className="eps">
-          {groups.length === 0 && <div className="dw-empty">No episodes indexed for this season yet.</div>}
-          {groups.map((g, i) => {
-            const vs = videosByGroup.get(g.id) || [];
-            const thumb = vs.find((v) => v.thumbnail_urls?.[0])?.thumbnail_urls[0];
-            const canPlay = playable && (vs.length === 0 || vs.some((v) => v.stream_present));
-            const langs = Array.from(new Set(vs.flatMap((v) => v.languages || []))).join(' / ');
-            const inner = (
-              <>
-                <span className="ep-n">{g.episode_number ?? i + 1}</span>
-                <span className="ep-t">
-                  {thumb ? <img src={thumb} alt="" loading="lazy" /> : <span className="thumb-fallback" />}
-                  {canPlay && <span className="c-play"><Play className="i f" /></span>}
-                </span>
-                <span>
-                  <h5>
-                    {g.display_label}
-                    {i === groups.length - 1 && season?.key === seasons[seasons.length - 1]?.key && <span className="badge">Latest</span>}
-                  </h5>
-                  <div className="ep-m">
-                    {[g.bolum ? `Bolum ${g.bolum}` : null, langs || null, edition ? editionName(edition) : null].filter(Boolean).join(' · ')}
-                  </div>
-                </span>
-                <span className="ep-d">{vs.length > 1 ? `${vs.length} versions` : ''}</span>
-              </>
-            );
-            return canPlay ? (
-              <Link key={g.id} href={`/drama/${drama.id}/watch/${g.id}`} className="ep">{inner}</Link>
-            ) : (
-              <div key={g.id} className="ep up">{inner}</div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* All seasons */}
+      {/* All seasons — each opens its season page */}
       <section className="dw-sec" id="seasons">
-        <h3>Seasons <small>{yearsLabel} · {editionNames.join(' & ')}</small></h3>
+        <h3>Seasons <small>{pluralSeasons(seasons.length)} · {editionNames.join(' & ')}</small></h3>
+        {seasons.length === 0 && <div className="dw-empty">No seasons published yet.</div>}
         <div className="dw-seasons">
           {seasons.map((s, i) => {
             const pref = s.editions[0];
             return (
-              <Link key={s.key} href={`/drama/${drama.id}/collection/${pref.id}`} className={`sn${s.key === season?.key ? ' on' : ''}`}>
+              <Link key={s.key} href={seasonPath(drama.id, s)} className="sn">
                 {drama.poster_url ? <img src={drama.poster_url} alt="" /> : <span className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
                 <span className="shade" />
                 <span className={`badge${i === seasons.length - 1 ? '' : ' dark'}`}>{i === seasons.length - 1 ? 'Latest' : 'Complete'}</span>

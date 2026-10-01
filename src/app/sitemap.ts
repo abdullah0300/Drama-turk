@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { siteConfig } from '@/config/site';
+import { loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
+import { dramaPath, seasonPath } from '@/lib/routes';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = siteConfig.domain;
@@ -40,39 +42,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Published drama canonical pages (24 dramas)
+  // Dramas, every season release and every episode, all on clean URLs
   const dramas = await supabaseCatalog.getAllDramas();
-  for (const drama of dramas) {
+  for (const d of dramas) {
+    const loaded = await loadDrama(d.id);
+    if (!loaded) continue;
     routes.push({
-      url: `${baseUrl}/drama/${drama.id}`,
+      url: `${baseUrl}${dramaPath(d.id)}`,
       lastModified: staticLastMod,
-      changeFrequency: drama.isPilot ? 'daily' : 'weekly',
-      priority: drama.isPilot ? 0.9 : 0.7,
+      changeFrequency: d.isPilot ? 'daily' : 'weekly',
+      priority: d.isPilot ? 0.9 : 0.7,
     });
 
-    // Add pilot collections
-    const collections = await supabaseCatalog.getDramaCollections(drama.id);
-    for (const col of collections) {
-      routes.push({
-        url: `${baseUrl}/drama/${drama.id}/collection/${col.id}`,
-        lastModified: staticLastMod,
-        changeFrequency: 'weekly',
-        priority: 0.6,
-      });
-    }
-  }
-
-  // Add playable pilot episodes (collection-68)
-  const pilotCol = await supabaseCatalog.getPilotCollection();
-  if (pilotCol) {
-    const episodeGroups = await supabaseCatalog.getCollectionEpisodeGroups(pilotCol.id);
-    for (const group of episodeGroups) {
-      routes.push({
-        url: `${baseUrl}/drama/${pilotCol.drama_id}/watch/${group.id}`,
-        lastModified: staticLastMod,
-        changeFrequency: 'weekly',
-        priority: 0.8,
-      });
+    for (const season of loaded.seasons) {
+      for (const edition of season.editions) {
+        if (edition.status !== 'published') continue;
+        routes.push({
+          url: `${baseUrl}${seasonPath(d.id, season, edition)}`,
+          lastModified: staticLastMod,
+          changeFrequency: 'weekly',
+          priority: 0.6,
+        });
+        const { groups, slugs } = await loadEditionEpisodes(edition.id);
+        for (const g of groups) {
+          routes.push({
+            url: `${baseUrl}${episodeHref(d.id, season, edition, slugs.get(g.id)!)}`,
+            lastModified: staticLastMod,
+            changeFrequency: 'monthly',
+            priority: 0.5,
+          });
+        }
+      }
     }
   }
 

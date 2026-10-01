@@ -7,6 +7,7 @@ import { useUserPreferences } from '@/context/UserPreferencesContext';
 
 export interface SeasonCardItem {
   id: string;
+  href: string;
   n: number;
   label: string;
   edition: string;
@@ -92,7 +93,7 @@ export function LatestSeasons({ items }: { items: LatestSeasonItem[] }) {
     else addToMyList({ id: show.id, type: 'drama', dramaId: show.id, title: show.title, thumbnailUrl: show.poster, addedAt: Date.now() });
   };
 
-  const seasonHref = `/drama/${show.id}/collection/${cur.id}`;
+  const seasonHref = cur.href;
 
   return (
     <section ref={sectionRef} className="row reveal ls" id="seasons">
