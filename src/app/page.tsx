@@ -5,6 +5,7 @@ import { FeaturedHero, HeroItem } from '@/components/home/FeaturedHero';
 import { Rail } from '@/components/sezon/Rail';
 import { LatestSeasons, LatestSeasonItem } from '@/components/home/LatestSeasons';
 import { MyListSection } from '@/components/home/MyListSection';
+import { TopTenRow } from '@/components/home/TopTenRow';
 import { ContinueWatchingRow } from '@/components/home/ContinueWatchingRow';
 import { LatestEpisodesRow } from '@/components/home/LatestEpisodesRow';
 import { DramaCard } from '@/components/dramas/DramaCard';
@@ -93,6 +94,26 @@ export default async function HomePage() {
       seasons,
     });
   }
+  // Opening episodes of the pilot, shown in Continue Watching before anything has been watched
+  const pilotVideos = pilotCollection ? await supabaseCatalog.getCollectionVideos(pilotCollection.id) : [];
+  const thumbByGroup = new Map<string, string>();
+  pilotVideos.forEach((v) => {
+    if (v.episode_group_id && v.thumbnail_urls?.[0] && !thumbByGroup.has(v.episode_group_id)) {
+      thumbByGroup.set(v.episode_group_id, v.thumbnail_urls[0]);
+    }
+  });
+  const starters =
+    pilotDrama && pilotCollection
+      ? pilotGroups.slice(0, 5).map((g) => ({
+          dramaId: pilotDrama.id,
+          dramaTitle: pilotDrama.name,
+          groupId: g.id,
+          label: g.display_label,
+          thumb: thumbByGroup.get(g.id) || pilotDrama.backdrop_url || pilotDrama.poster_url,
+          seasonHref: `/drama/${pilotDrama.id}/collection/${pilotCollection.id}`,
+        }))
+      : [];
+
   const myListTotals: Record<string, number> = pilotDrama ? { [pilotDrama.id]: pilotGroups.length } : {};
 
   // Structured data JSON-LD
@@ -121,10 +142,13 @@ export default async function HomePage() {
 
       <div className="rows">
         {/* Continue Watching Section (Private local storage) */}
-        <ContinueWatchingRow />
+        <ContinueWatchingRow starters={starters} />
 
         {/* Latest Playable Episodes in Pilot Release */}
         <LatestEpisodesRow episodes={latestEpisodes} />
+
+        {/* Top 10 */}
+        <TopTenRow dramas={allDramas} />
 
         {/* Latest Seasons */}
         {seasonItems.length > 0 && <LatestSeasons items={seasonItems} />}
