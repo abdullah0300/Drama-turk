@@ -292,6 +292,7 @@ export class SupabaseCatalogRepository {
           numbering_basis: 'source_episode_number',
           reported_season: null,
           status: g.status,
+          still_url: g.still_url || undefined,
         };
       });
     } catch (e) {
@@ -332,6 +333,7 @@ export class SupabaseCatalogRepository {
         numbering_basis: 'source_episode_number',
         reported_season: null,
         status: row.status,
+        still_url: row.still_url || undefined,
       };
     } catch (e) {
       return localCatalog.getEpisodeGroup(groupSourceId);
@@ -345,7 +347,7 @@ export class SupabaseCatalogRepository {
     try {
       const { data: group } = await supabase
         .from('episode_groups')
-        .select('id, source_id, collections(source_id, dramas(source_id, display_name))')
+        .select('id, source_id, still_url, collections(source_id, dramas(source_id, display_name))')
         .eq('source_id', groupSourceId)
         .single();
 
@@ -394,7 +396,7 @@ export class SupabaseCatalogRepository {
           version: v.version || 'subtitled',
           stream_urls: streams,
           stream_present: streams.length > 0,
-          thumbnail_urls: v.thumbnail_url ? [v.thumbnail_url] : [],
+          thumbnail_urls: grpRow.still_url ? [grpRow.still_url] : v.thumbnail_url ? [v.thumbnail_url] : [],
           playback_verified: isVerified,
         };
       });
@@ -421,7 +423,7 @@ export class SupabaseCatalogRepository {
 
       const { data: variants, error } = await supabase
         .from('video_variants')
-        .select('*, stream_sources(*), episode_groups(source_id)')
+        .select('*, stream_sources(*), episode_groups(source_id, still_url)')
         .eq('collection_id', (col as any).id)
         .eq('publication_state', 'published');
 
@@ -463,7 +465,7 @@ export class SupabaseCatalogRepository {
           version: v.version || 'subtitled',
           stream_urls: streams,
           stream_present: streams.length > 0,
-          thumbnail_urls: v.thumbnail_url ? [v.thumbnail_url] : [],
+          thumbnail_urls: v.episode_groups?.still_url ? [v.episode_groups.still_url] : v.thumbnail_url ? [v.thumbnail_url] : [],
           playback_verified: isVerified,
         };
       });

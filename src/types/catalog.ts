@@ -47,6 +47,8 @@ export interface EpisodeGroup {
   numbering_basis: string;
   reported_season: number | null;
   status?: 'published' | 'draft' | 'preview' | 'archived';
+  /** Episode picture (official still, unique catalog thumbnail, or a frame from the video). */
+  still_url?: string;
 }
 
 export interface VideoRecord {

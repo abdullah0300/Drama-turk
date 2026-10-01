@@ -63,6 +63,9 @@ class CatalogRepository {
       const duplicatePath = path.join(catalogDir, 'duplicate_streams.json');
       const summaryPath = path.join(catalogDir, 'summary.json');
       const artworkPath = path.join(catalogDir, 'artwork.json');
+      const stillsPath = path.join(catalogDir, 'episode-stills.json');
+      // Episode pictures by episode group id (mirrors episode_groups.still_url in Supabase)
+      const stills: Record<string, string> = fs.existsSync(stillsPath) ? JSON.parse(fs.readFileSync(stillsPath, 'utf8')) : {};
       // Official series/season artwork (mirrors dramas.poster_url / collections.poster_url in Supabase)
       const artwork: { dramas: Record<string, { poster_url?: string; backdrop_url?: string }>; seasons: Record<string, Record<string, string>> } =
         fs.existsSync(artworkPath) ? JSON.parse(fs.readFileSync(artworkPath, 'utf8')) : { dramas: {}, seasons: {} };
@@ -86,6 +89,9 @@ class CatalogRepository {
       const collectionLanguages: Record<string, Set<string>> = {};
 
       for (const video of rawVideos) {
+        if (video.episode_group_id && stills[video.episode_group_id]) {
+          video.thumbnail_urls = [stills[video.episode_group_id]];
+        }
         this.videosMap.set(video.id, video);
 
         // Map video to episode group
@@ -163,6 +169,7 @@ class CatalogRepository {
 
       // 4. Index episode groups
       for (const eg of rawCatalog.episode_groups) {
+        if (stills[eg.id]) eg.still_url = stills[eg.id];
         this.episodeGroupsMap.set(eg.id, eg);
 
         if (!this.episodeGroupsByCollection.has(eg.collection_id)) {
