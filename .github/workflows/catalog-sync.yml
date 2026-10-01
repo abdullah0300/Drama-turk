@@ -1,0 +1,62 @@
+# Keeps the catalog in step with NiaziPlay (see scripts/catalog_sync.py).
+#
+# Needs two repository secrets (Settings -> Secrets and variables -> Actions):
+#   SUPABASE_URL               https://zvwltfqhbpqtnjbsflvk.supabase.co
+#   SUPABASE_SERVICE_ROLE_KEY  the project's service_role key (never commit it)
+#
+# A run that finds something needing attention (broken links with no replacement,
+# a Niazi layout change, failed scrapes) ends red, and GitHub emails the repo owner.
+name: Catalog sync
+
+on:
+  schedule:
+    - cron: '17 */2 * * *'   # new episodes of existing seasons, every 2 hours
+    - cron: '47 */4 * * *'   # stream link health check, every 4 hours (oldest-checked first)
+    - cron: '5 3 * * *'      # look for new Niazi seasons/collections, daily 03:05 UTC
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Job to run'
+        type: choice
+        options: [episodes, links, discover]
+        default: episodes
+      dry_run:
+        description: 'Preview only (no database writes)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: catalog-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Choose job
+        id: mode
+        run: |
+          case "${{ github.event.schedule }}" in
+            '17 */2 * * *') echo "mode=episodes" >> "$GITHUB_OUTPUT" ;;
+            '47 */4 * * *') echo "mode=links" >> "$GITHUB_OUTPUT" ;;
+            '5 3 * * *')    echo "mode=discover" >> "$GITHUB_OUTPUT" ;;
+            *)              echo "mode=${{ inputs.mode || 'episodes' }}" >> "$GITHUB_OUTPUT" ;;
+          esac
+      - name: Run catalog sync (${{ steps.mode.outputs.mode }})
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::Add the SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY repository secrets to enable catalog sync."
+            exit 1
+          fi
+          python3 scripts/catalog_sync.py "${{ steps.mode.outputs.mode }}" ${{ inputs.dry_run && '--dry-run' || '' }}

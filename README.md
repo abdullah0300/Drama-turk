@@ -169,3 +169,26 @@ Located at `/admin`:
 - **Duplicate Streams:** Review 6 preserved duplicate URL clusters.
 - **Stream Reachability Health Check:** SSRF-protected HEAD requests with a 6-second timeout.
 - **Authorization Guard:** Protected by `ADMIN_SECRET_KEY` header check (`Authorization: Bearer ...`).
+
+## Catalog sync (automatic updates from NiaziPlay)
+
+`.github/workflows/catalog-sync.yml` runs `scripts/catalog_sync.py` on a schedule:
+
+| Job | When | What it does |
+|---|---|---|
+| `episodes` | every 2 hours | Adds new episodes of seasons already in the catalog (insert-only; existing rows, edits and URLs are never rewritten). |
+| `links` | every 4 hours | Re-checks the stream links checked longest ago (each link roughly once a day). A failed link is re-read from Niazi: a new link becomes primary and the old one is kept; with a working backup the backup takes over; otherwise it is flagged for review. |
+| `discover` | daily | Finds Niazi collections we don't have and queues them in `review_findings` for approval. |
+
+Anything unusual (no episode number, missing stream, version mismatch, a Niazi layout change, an unfixable link) goes to `review_findings` instead of the site, and the run ends red so GitHub emails the repo owner. Source text goes to `source_records` only.
+
+**Setup:** add repository secrets `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (Settings → Secrets and variables → Actions). Jobs can also be started by hand from the Actions tab, optionally as a dry run.
+
+**Approve a discovered collection:**
+
+```bash
+SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... \
+  python3 scripts/catalog_sync.py approve 80 --drama-id kizil-elma --drama "Kızıl Elma"
+```
+
+Use an existing `--drama-id` to add a new season to a drama we already have. Add `--dry-run` to any command to preview without writing.
