@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { DramaActions } from './DramaActions';
 import { DramaCard } from '@/components/dramas/DramaCard';
-import { Film, CheckCircle2, ChevronRight, Play, Layers } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
 interface DramaPageProps {
@@ -45,9 +45,13 @@ export default async function DramaPage({ params }: DramaPageProps) {
     ? await supabaseCatalog.getCollectionEpisodeGroups(pilotCollection.id)
     : [];
   const firstPlayableGroup = pilotEpisodeGroups.length > 0 ? pilotEpisodeGroups[0] : undefined;
-  const pilotVideos = pilotCollection
+  let pilotVideos = pilotCollection
     ? await supabaseCatalog.getCollectionVideos(pilotCollection.id)
     : [];
+  if (pilotVideos.length === 0 && pilotEpisodeGroups.length > 0) {
+    // Fall back to per-group lookups when the bulk collection query returns nothing
+    pilotVideos = (await Promise.all(pilotEpisodeGroups.map((g) => supabaseCatalog.getVideosForGroup(g.id)))).flat();
+  }
   const pilotVideosByGroup = new Map<string, any[]>();
   pilotVideos.forEach(v => {
     if (v.episode_group_id) {
@@ -75,177 +79,93 @@ export default async function DramaPage({ params }: DramaPageProps) {
     image: drama.poster_url,
   };
 
+  const heroImage = drama.backdrop_url || drama.poster_url;
+  const pilotPlayable = pilotEpisodeGroups.filter((g) => (pilotVideosByGroup.get(g.id) || []).some((v: any) => v.stream_present));
+
   return (
-    <div className="min-h-screen pb-16">
+    <div className="sv">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Breadcrumb Navigation */}
-      <div className="border-b border-surface-border bg-canvas-subtle/40">
-        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-3 text-xs text-text-tertiary flex items-center gap-1.5">
-          <Link href="/" className="hover:text-text-primary transition-colors">Home</Link>
-          <ChevronRight size={12} />
-          <Link href="/browse" className="hover:text-text-primary transition-colors">Dramas</Link>
-          <ChevronRight size={12} />
-          <span className="text-text-secondary truncate">{drama.name}</span>
+      {/* Hero */}
+      <div className="sv-hero">
+        {heroImage ? <img className="sv-bg" src={heroImage} alt="" /> : <div className="art-fallback" style={{ zIndex: -2 }} />}
+        <div className="sv-shade" />
+        <div className="sv-num" aria-hidden="true">
+          {String(collections.length).padStart(2, '0').split('').map((c, i) => <span key={i}>{c}</span>)}
         </div>
-      </div>
 
-      {/* Main Drama Header */}
-      <div className="border-b border-surface-border bg-gradient-to-b from-canvas-elevated via-canvas-subtle to-canvas">
-        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            {/* Artwork Poster */}
-            <div className="w-full sm:w-56 md:w-64 flex-shrink-0 aspect-[2/3] bg-surface-hover rounded-xl overflow-hidden shadow-elevated border border-surface-border relative">
-              {drama.poster_url ? (
-                <img
-                  src={drama.poster_url}
-                  alt={drama.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-text-tertiary p-6 text-center">
-                  <Film size={40} className="mb-2 opacity-50" />
-                  <span className="text-xs">{drama.name}</span>
-                </div>
-              )}
-
-              {/* Pilot / Preview Badge */}
-              <div className="absolute top-3 left-3">
-                {isPilot ? (
-                  <span className="px-2.5 py-1 rounded bg-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wide shadow-md">
-                    Playable Pilot
-                  </span>
-                ) : (
-                  <span className="px-2.5 py-1 rounded bg-stone-900/90 text-text-tertiary border border-surface-border text-xs font-medium backdrop-blur-sm">
-                    Preview Catalog
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Drama Facts & Synopsis */}
-            <div className="flex-1 max-w-3xl">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display text-text-primary tracking-tight mb-3">
-                {drama.name}
-              </h1>
-
-              {/* Known Aliases */}
-              {drama.source_names.length > 1 && (
-                <p className="text-xs text-text-tertiary mb-3">
-                  Also recorded as: {drama.source_names.filter(n => n !== drama.name).join(', ')}
-                </p>
-              )}
-
-              {/* Verified Facts Badges */}
-              <div className="flex flex-wrap items-center gap-2 mb-4 text-xs">
-                <span className="px-2.5 py-1 rounded bg-surface border border-surface-border text-amber-400 font-medium">
-                  {drama.video_records} Video Records
-                </span>
-                <span className="px-2.5 py-1 rounded bg-surface border border-surface-border text-text-secondary">
-                  {collections.length} Catalog Collections
-                </span>
-                {drama.languages?.map(lang => (
-                  <span key={lang} className="px-2.5 py-1 rounded bg-surface border border-surface-border text-text-secondary">
-                    {lang}
-                  </span>
-                ))}
-                {drama.genres?.map(genre => (
-                  <span key={genre} className="px-2.5 py-1 rounded bg-surface border border-surface-border text-text-tertiary">
-                    {genre}
-                  </span>
-                ))}
-              </div>
-
-              {/* Synopsis */}
-              <p className="text-sm sm:text-base text-text-secondary leading-relaxed mb-6">
-                {drama.synopsis}
-              </p>
-
-              {/* Client Action Buttons (Resume / Add to list) */}
-              <DramaActions
-                drama={drama}
-                firstPlayableGroup={firstPlayableGroup}
-                isPilot={isPilot}
-              />
-            </div>
+        <div className="sv-hero-in">
+          <nav className="sv-crumb" aria-label="Breadcrumb">
+            <Link href="/">Home</Link><i>/</i>
+            <Link href="/browse">Dramas</Link><i>/</i>
+            <span style={{ color: 'var(--text)' }}>{drama.name}</span>
+          </nav>
+          <div className="sv-kick">
+            <span className={`badge${isPilot ? ' live' : ' dark'}`}>{isPilot ? 'Playable Pilot' : 'Preview Catalog'}</span>
+            <span>
+              {collections.length} {collections.length === 1 ? 'season' : 'seasons'}
+              {drama.genres?.[0] ? ` · ${drama.genres[0]}` : ''}
+            </span>
           </div>
+          <h1 className="sv-h" style={{ fontSize: 'clamp(44px,6.4vw,104px)' }}>{drama.name}</h1>
+          {drama.source_names.length > 1 && (
+            <p className="sv-line" style={{ fontSize: 13, color: 'var(--muted)', marginTop: 6 }}>
+              Also recorded as: {drama.source_names.filter((n) => n !== drama.name).join(', ')}
+            </p>
+          )}
+          {drama.synopsis && <p className="sv-line">{drama.synopsis}</p>}
+
+          <DramaActions drama={drama} firstPlayableGroup={firstPlayableGroup} isPilot={isPilot} />
         </div>
       </div>
 
-      <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+      <div className="sv-body">
+        <div className="sv-stats">
+          <div className="st"><small>Video records</small><b>{drama.video_records}</b><span>Preserved from source</span></div>
+          <div className="st"><small>Seasons</small><b>{collections.length}</b><span>Dubbed &amp; subtitled kept separate</span></div>
+          <div className="st"><small>Languages</small><b style={{ fontSize: 22 }}>{drama.languages?.slice(0, 2).join(' · ') || '—'}</b><span>{drama.languages && drama.languages.length > 2 ? `+${drama.languages.length - 2} more` : 'Available renditions'}</span></div>
+          <div className="st"><small>Genres</small><b style={{ fontSize: 22 }}>{drama.genres?.slice(0, 2).join(' · ') || '—'}</b><span>Verified metadata</span></div>
+          <div className="st"><small>Status</small><b>{isPilot ? 'Live' : 'Preview'}</b><span>{isPilot ? `${pilotPlayable.length} playable episodes` : 'Metadata only'}</span></div>
+        </div>
+
         {/* Playable Pilot Episode Browser (Only for pilot collection) */}
         {isPilot && pilotCollection && (
-          <section aria-label="Pilot Episodes">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-2">
-              <div>
-                <div className="inline-flex items-center gap-1.5 text-xs text-amber-500 font-semibold uppercase tracking-wider mb-1">
-                  <CheckCircle2 size={13} />
-                  Playable Pilot Collection
-                </div>
-                <h2 className="text-xl sm:text-2xl font-bold font-display text-text-primary">
-                  {pilotCollection.source_heading}
-                </h2>
-                <p className="text-xs text-text-tertiary mt-1">
-                  {pilotEpisodeGroups.length} episodes available with choice of Urdu or English subtitles.
-                </p>
-              </div>
+          <section className="sv-sec" aria-label="Pilot Episodes">
+            <div className="sv-sec-h">
+              <h2>
+                {pilotCollection.source_heading}
+                <small>{pilotEpisodeGroups.length} episodes available with choice of Urdu or English subtitles.</small>
+              </h2>
+              <Link href={`/drama/${drama.id}/collection/${pilotCollection.id}`} className="pill">View season page</Link>
             </div>
 
-            {/* Episode Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {pilotEpisodeGroups.map((group) => {
+            <div className="sv-grid">
+              {pilotEpisodeGroups.map((group, i) => {
                 const videos = pilotVideosByGroup.get(group.id) || [];
                 const firstVideo = videos[0];
                 const thumbnail = firstVideo?.thumbnail_urls?.[0];
-                const watchUrl = `/drama/${drama.id}/watch/${group.id}`;
-
                 return (
                   <Link
                     key={group.id}
-                    href={watchUrl}
-                    className="group bg-surface/50 hover:bg-surface border border-surface-border hover:border-amber-500/40 rounded-lg overflow-hidden flex flex-col justify-between transition-all"
+                    href={`/drama/${drama.id}/watch/${group.id}`}
+                    className="se"
+                    style={{ ['--d' as string]: `${Math.min(i, 12) * 50}ms` }}
                   >
-                    <div className="relative aspect-video w-full bg-surface-hover block overflow-hidden">
-                      {thumbnail ? (
-                        <img
-                          src={thumbnail}
-                          alt={group.display_label}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-surface-hover text-text-tertiary">
-                          <Play size={24} className="opacity-40" />
-                        </div>
-                      )}
-
-                      {/* Play overlay icon */}
-                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 flex items-center justify-center transition-colors">
-                        <div className="w-9 h-9 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <Play size={16} className="fill-stone-950 translate-x-0.5" />
-                        </div>
-                      </div>
+                    <div className="media">
+                      {thumbnail ? <img src={thumbnail} alt={group.display_label} loading="lazy" /> : <div className="thumb-fallback"><Play size={24} style={{ opacity: .4 }} /></div>}
+                      <span className="shade" />
+                      <span className="se-num">{group.episode_number ?? group.bolum ?? i + 1}</span>
+                      <span className="c-play"><Play className="i f" /></span>
                     </div>
-
-                    <div className="p-3">
-                      <div className="flex items-center justify-between text-xs text-amber-400 font-semibold mb-1">
-                        <span>{group.display_label}</span>
-                        {group.bolum && (
-                          <span className="text-[11px] text-text-tertiary font-mono">
-                            Bolum {group.bolum}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-text-secondary line-clamp-1 group-hover:text-text-primary">
-                        {firstVideo?.title || `${drama.name} ${group.display_label}`}
+                    <div className="se-b">
+                      <b>{group.display_label}{group.bolum ? <span>Bolum {group.bolum}</span> : null}</b>
+                      <p>{firstVideo?.title || `${drama.name} ${group.display_label}`}</p>
+                      <p style={{ marginTop: 2, fontSize: 12 }}>
+                        {videos.map((v: any) => v.languages?.join(', ')).filter(Boolean).join(' / ')} · <span style={{ textTransform: 'capitalize' }}>{firstVideo?.version || 'subtitled'}</span>
                       </p>
-                      <div className="flex items-center gap-2 text-[10px] text-text-tertiary mt-2">
-                        <span>{videos.map(v => v.languages?.join(', ')).filter(Boolean).join(' / ')}</span>
-                        <span>•</span>
-                        <span className="capitalize">{firstVideo?.version || 'subtitled'}</span>
-                      </div>
                     </div>
                   </Link>
                 );
@@ -254,63 +174,32 @@ export default async function DramaPage({ params }: DramaPageProps) {
           </section>
         )}
 
-        {/* Catalog Collections List (Honest separation of Dubbed vs Subtitled cuts) */}
-        <section aria-label="Catalog Collections">
-          <div className="flex items-center gap-2 mb-4">
-            <Layers size={18} className="text-amber-500" />
-            <h2 className="text-xl font-bold font-display text-text-primary">
-              Source Catalog Collections ({collections.length})
+        {/* Catalog Collections (honest separation of Dubbed vs Subtitled cuts) */}
+        <section className="sv-sec" aria-label="Catalog Collections">
+          <div className="sv-sec-h">
+            <h2>
+              Seasons &amp; collections ({collections.length})
+              <small>Dubbed and subtitled editions are distinct source broadcast collections and numbering cuts; they are kept individually to preserve authenticity.</small>
             </h2>
           </div>
-          <p className="text-xs text-text-tertiary mb-6 max-w-2xl">
-            Dubbed and subtitled editions represent distinct source broadcast collections and numbering cuts; they are retained individually to preserve authenticity.
-          </p>
-
-          <div className="space-y-3">
-            {collections.map(col => {
+          <div className="sv-others">
+            {collections.map((col, i) => {
               const isColPilot = col.id === siteConfig.pilotCollectionId;
               return (
-                <div
-                  key={col.id}
-                  className={`p-4 rounded-lg border flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
-                    isColPilot
-                      ? 'bg-amber-500/10 border-amber-500/30'
-                      : 'bg-surface/30 border-surface-border'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-text-primary">
-                        {col.source_heading}
-                      </h3>
-                      {isColPilot && (
-                        <span className="px-2 py-0.5 rounded bg-amber-500 text-stone-950 font-bold text-[10px] uppercase">
-                          Active Pilot Release
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-text-tertiary mt-1">
-                      <span>Collection ID: {col.id}</span>
-                      <span>•</span>
-                      <span>{col.video_records} video entries</span>
-                      <span>•</span>
-                      <span>{col.episode_group_ids.length} episode groups</span>
-                      <span>•</span>
-                      <span className="capitalize">{col.version} cut</span>
-                    </div>
-                  </div>
-
-                  <Link
-                    href={`/drama/${drama.id}/collection/${col.id}`}
-                    className={`px-3 py-1.5 rounded text-xs font-medium self-start sm:self-auto border transition-colors ${
-                      isColPilot
-                        ? 'bg-amber-500 hover:bg-amber-600 text-stone-950 border-amber-500'
-                        : 'bg-surface hover:bg-surface-hover text-text-secondary hover:text-text-primary border-surface-border'
-                    }`}
-                  >
-                    View Collection Details &rarr;
-                  </Link>
-                </div>
+                <Link key={col.id} href={`/drama/${drama.id}/collection/${col.id}`} className="so">
+                  {heroImage ? <img src={heroImage} alt="" /> : <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
+                  <span className="shade" />
+                  {isColPilot && <span className="badge">Active pilot release</span>}
+                  <span className="so-in">
+                    <strong><small>S</small>{col.reported_seasons?.[0] ?? i + 1}</strong>
+                    <span>
+                      {col.source_heading}
+                    </span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)' }}>
+                      {col.video_records} video entries · {col.episode_group_ids.length} episode groups · <span style={{ textTransform: 'capitalize' }}>{col.version} cut</span>
+                    </span>
+                  </span>
+                </Link>
               );
             })}
           </div>
@@ -318,12 +207,10 @@ export default async function DramaPage({ params }: DramaPageProps) {
 
         {/* Related Dramas */}
         {relatedDramas.length > 0 && (
-          <section aria-label="Related Dramas">
-            <h2 className="text-xl font-bold font-display text-text-primary mb-6">
-              Related Historical Dramas
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {relatedDramas.map(rd => (
+          <section className="sv-sec" aria-label="Related Dramas">
+            <div className="sv-sec-h"><h2>More like this</h2></div>
+            <div className="sv-more">
+              {relatedDramas.map((rd) => (
                 <DramaCard key={rd.id} drama={rd} />
               ))}
             </div>

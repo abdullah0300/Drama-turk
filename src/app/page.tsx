@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { FeaturedHero, HeroItem } from '@/components/home/FeaturedHero';
 import { Rail } from '@/components/sezon/Rail';
+import { LatestSeasons, LatestSeasonItem } from '@/components/home/LatestSeasons';
+import { MyListSection } from '@/components/home/MyListSection';
 import { ContinueWatchingRow } from '@/components/home/ContinueWatchingRow';
 import { LatestEpisodesRow } from '@/components/home/LatestEpisodesRow';
 import { DramaCard } from '@/components/dramas/DramaCard';
@@ -62,6 +64,37 @@ export default async function HomePage() {
       })
     );
 
+  // Latest seasons stage: dramas with their season collections
+  const seasonCandidates = [
+    ...(pilotDrama ? [pilotDrama] : []),
+    ...allDramas.filter((d) => d.id !== pilotDrama?.id && d.collection_ids.length > 0 && (d.poster_url || d.backdrop_url)),
+  ].slice(0, 5);
+  const seasonItems: LatestSeasonItem[] = [];
+  for (const d of seasonCandidates) {
+    const cols = (await supabaseCatalog.getDramaCollections(d.id)).slice(0, 5);
+    if (cols.length === 0) continue;
+    const seasons = cols
+      .map((c, i) => ({
+        id: c.id,
+        n: c.reported_seasons?.[0] ?? i + 1,
+        label: c.reported_seasons?.length ? `Season ${c.reported_seasons.join(' & ')}` : c.source_heading,
+        edition: c.version || 'preserved',
+        episodes: c.episode_group_ids?.length ?? 0,
+        playable: c.status === 'published' || c.id === siteConfig.pilotCollectionId,
+        watchHref: c.id === pilotCollection?.id && firstGroup ? `/drama/${d.id}/watch/${firstGroup.id}` : undefined,
+      }))
+      .sort((a, b) => b.n - a.n);
+    seasonItems.push({
+      id: d.id,
+      title: d.name,
+      genre: d.genres?.[0] || 'Drama',
+      image: d.backdrop_url || d.poster_url,
+      poster: d.poster_url,
+      seasons,
+    });
+  }
+  const myListTotals: Record<string, number> = pilotDrama ? { [pilotDrama.id]: pilotGroups.length } : {};
+
   // Structured data JSON-LD
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -92,6 +125,12 @@ export default async function HomePage() {
 
         {/* Latest Playable Episodes in Pilot Release */}
         <LatestEpisodesRow episodes={latestEpisodes} />
+
+        {/* Latest Seasons */}
+        {seasonItems.length > 0 && <LatestSeasons items={seasonItems} />}
+
+        {/* My List */}
+        <MyListSection totals={myListTotals} />
 
         {/* Browse Dramas Section */}
         <Rail

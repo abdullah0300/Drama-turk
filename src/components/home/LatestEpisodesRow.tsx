@@ -1,6 +1,9 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Play } from 'lucide-react';
+import { Check, Play, Plus } from 'lucide-react';
+import { useUserPreferences } from '@/context/UserPreferencesContext';
 import { EpisodeGroup, VideoRecord, CatalogCollection, Drama } from '@/types/catalog';
 import { Rail } from '@/components/sezon/Rail';
 
@@ -12,7 +15,13 @@ interface PlayableEpisodeItem {
 }
 
 export function LatestEpisodesRow({ episodes }: { episodes: PlayableEpisodeItem[] }) {
+  const { isInMyList, addToMyList, removeFromMyList } = useUserPreferences();
+  const [lang, setLang] = useState('All');
   if (!episodes || episodes.length === 0) return null;
+
+  const langOf = (e: PlayableEpisodeItem) => e.video.languages?.[0] || 'Subtitled';
+  const langs = ['All', ...Array.from(new Set(episodes.map(langOf)))];
+  const shown = episodes.filter((e) => lang === 'All' || langOf(e) === lang);
 
   return (
     <Rail
@@ -20,8 +29,19 @@ export function LatestEpisodesRow({ episodes }: { episodes: PlayableEpisodeItem[
       title="Latest Episodes"
       sub="Verified playable · subtitled renditions"
       headClassName="ne-head"
+      aside={
+        langs.length > 2 ? (
+          <div className="chips">
+            {langs.map((k) => (
+              <button key={k} className={`chip${k === lang ? ' on' : ''}`} onClick={() => setLang(k)}>
+                {k}{k === 'All' ? '' : <i>{episodes.filter((e) => langOf(e) === k).length}</i>}
+              </button>
+            ))}
+          </div>
+        ) : null
+      }
     >
-      {episodes.map(({ group, video, drama, collection }, i) => {
+      {shown.map(({ group, video, drama, collection }, i) => {
         const watchUrl = `/drama/${drama.id}/watch/${group.id}`;
         const thumb = video.thumbnail_urls?.[0];
         const num = group.episode_number ?? group.bolum ?? '';
@@ -44,6 +64,18 @@ export function LatestEpisodesRow({ episodes }: { episodes: PlayableEpisodeItem[
                 <Link href={watchUrl} className="btn btn-play" style={{ position: 'relative', zIndex: 2 }}>
                   <Play className="i f" />Watch
                 </Link>
+                <button
+                  className="btn btn-round btn-ghost"
+                  style={{ position: 'relative', zIndex: 2 }}
+                  aria-label={isInMyList(drama.id) ? 'Remove from My List' : 'Add to My List'}
+                  onClick={() =>
+                    isInMyList(drama.id)
+                      ? removeFromMyList(drama.id)
+                      : addToMyList({ id: drama.id, type: 'drama', dramaId: drama.id, title: drama.name, thumbnailUrl: drama.poster_url, addedAt: Date.now() })
+                  }
+                >
+                  {isInMyList(drama.id) ? <Check className="i" /> : <Plus className="i" />}
+                </button>
               </div>
             </div>
           </div>

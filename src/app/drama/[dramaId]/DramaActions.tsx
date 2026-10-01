@@ -40,39 +40,25 @@ export function DramaActions({ drama, firstPlayableGroup, isPilot }: DramaAction
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3 mt-6">
+    <div className="actions">
       {isPilot && resumeUrl ? (
-        <Link
-          href={resumeUrl}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold text-sm transition-transform active:scale-95 shadow-md"
-        >
-          <Play size={18} className="fill-stone-950" />
-          {dramaHistory ? `Resume (${dramaHistory.displayLabel})` : 'Start Watching Season 2'}
+        <Link href={resumeUrl} className="btn btn-play">
+          <Play className="i f" />
+          {dramaHistory ? `Resume (${dramaHistory.displayLabel})` : 'Start watching Season 2'}
         </Link>
       ) : isPilot ? (
-        <button
-          disabled
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-surface text-text-muted text-sm font-medium cursor-not-allowed border border-surface-border"
-        >
-          Episodes Loading
-        </button>
+        <span className="btn btn-ghost" aria-disabled="true">Episodes loading</span>
       ) : (
-        <div className="px-4 py-2 rounded-lg bg-surface border border-surface-border text-xs text-text-tertiary">
-          Preview Catalog: Episodes not published for stream in pilot release.
-        </div>
+        <span className="btn btn-ghost" aria-disabled="true">Preview catalog · not published for streaming</span>
       )}
 
-      {/* Bookmark */}
       <button
         onClick={toggleList}
-        className={`inline-flex items-center gap-2 px-4 py-3 rounded-lg border text-sm font-medium transition-colors ${
-          saved
-            ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
-            : 'bg-surface/80 hover:bg-surface border-surface-border text-text-primary'
-        }`}
+        className="btn btn-round"
+        aria-label={saved ? 'Remove from My List' : 'Add to My List'}
+        title={saved ? 'In My List' : 'Add to My List'}
       >
-        {saved ? <Check size={16} /> : <Bookmark size={16} />}
-        <span>{saved ? 'In My List' : 'Add to My List'}</span>
+        {saved ? <Check className="i" /> : <Bookmark className="i" />}
       </button>
     </div>
   );

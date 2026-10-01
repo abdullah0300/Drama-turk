@@ -3,11 +3,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Bookmark } from 'lucide-react';
+import { Search, Bookmark, Bell } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
 
-export function Navbar() {
+export interface NavDrama { id: string; name: string; genre: string; poster?: string; isPilot: boolean }
+export interface NavNotification { id: string; title: string; label: string; thumb?: string; href: string }
+
+export function Navbar({ dramas = [], notifications = [] }: { dramas?: NavDrama[]; notifications?: NavNotification[] }) {
+  const [bellOpen, setBellOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { myList } = useUserPreferences();
@@ -25,8 +29,21 @@ export function Navbar() {
 
   useEffect(() => {
     setSearchOpen(false);
+    setBellOpen(false);
     setQuery('');
   }, [pathname]);
+
+  useEffect(() => {
+    document.body.classList.toggle('lock', searchOpen);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setSearchOpen(false); setBellOpen(false); setQuery(''); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => { window.removeEventListener('keydown', onKey); document.body.classList.remove('lock'); };
+  }, [searchOpen]);
+
+  const q = query.trim().toLocaleLowerCase();
+  const results = dramas.filter((d) => !q || `${d.name} ${d.genre}`.toLocaleLowerCase().includes(q));
 
   const isActive = (path: string) =>
     path === '/' ? pathname === '/' : pathname.startsWith(path);
@@ -88,6 +105,25 @@ export function Navbar() {
               tabIndex={searchOpen ? 0 : -1}
             />
           </form>
+          <button
+            className="icon-btn"
+            aria-label="Notifications"
+            aria-expanded={bellOpen}
+            style={{ position: 'relative' }}
+            onClick={() => setBellOpen(!bellOpen)}
+          >
+            <Bell className="i" />
+            {notifications.length > 0 && <span className="dot-n" />}
+          </button>
+          <div className={`notif${bellOpen ? ' open' : ''}`}>
+            <h4>New for you</h4>
+            {notifications.map((n) => (
+              <Link key={n.id} href={n.href} className="n-item">
+                {n.thumb ? <img src={n.thumb} alt="" /> : <div style={{ width: 96, aspectRatio: '16/9', background: 'var(--bg3)', borderRadius: 6 }} />}
+                <span><b>{n.title}</b><span>{n.label} is available</span></span>
+              </Link>
+            ))}
+          </div>
           <Link
             href="/my-list"
             className="icon-btn"
@@ -99,6 +135,23 @@ export function Navbar() {
           </Link>
         </div>
       </header>
+
+      <div className={`sresults${searchOpen ? ' open' : ''}`} aria-hidden={!searchOpen}>
+        <h3>{q ? `Results for “${query.trim()}”` : 'Browse all dramas'}</h3>
+        <div className="sgrid">
+          {results.map((d) => (
+            <Link key={d.id} href={`/drama/${d.id}`} className="card card-p" style={{ width: 'auto' }}>
+              <div className="media">
+                {d.poster ? <img src={d.poster} alt={d.name} loading="lazy" /> : <div className="thumb-fallback" />}
+                <span className="shade" />
+                <span className="c-title">{d.name}</span>
+              </div>
+              <div className="c-info"><b>{d.genre || 'Drama'}</b><span>{d.isPilot ? 'Playable' : 'Preview'}</span></div>
+            </Link>
+          ))}
+          {results.length === 0 && <div className="dw-empty" style={{ gridColumn: '1/-1' }}>No dramas match “{query.trim()}”. Press Enter to search all records.</div>}
+        </div>
+      </div>
     </>
   );
 }

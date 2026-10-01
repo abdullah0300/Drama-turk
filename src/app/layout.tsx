@@ -7,6 +7,7 @@ import { MobileNav } from '@/components/layout/MobileNav';
 import { PageShell } from '@/components/layout/PageShell';
 import { Footer } from '@/components/layout/Footer';
 import { siteConfig } from '@/config/site';
+import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.domain),
@@ -41,11 +42,30 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [dramas, latest] = await Promise.all([
+    supabaseCatalog.getAllDramas().catch(() => []),
+    supabaseCatalog.getLatestPlayableEpisodes(4).catch(() => []),
+  ]);
+  const searchDramas = dramas.map((d) => ({
+    id: d.id,
+    name: d.name,
+    genre: d.genres?.[0] || '',
+    poster: d.poster_url,
+    isPilot: !!d.isPilot,
+  }));
+  const notifications = latest.map(({ group, video, drama }) => ({
+    id: group.id,
+    title: drama.name,
+    label: group.display_label,
+    thumb: video.thumbnail_urls?.[0],
+    href: `/drama/${drama.id}/watch/${group.id}`,
+  }));
+
   return (
     <html lang="en" className="dark">
       <head>
@@ -58,7 +78,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-canvas text-text-primary antialiased selection:bg-amber-500/30 selection:text-amber-200">
         <UserPreferencesProvider>
-          <Navbar />
+          <Navbar dramas={searchDramas} notifications={notifications} />
           <PageShell>{children}</PageShell>
           <Footer />
           <MobileNav />
