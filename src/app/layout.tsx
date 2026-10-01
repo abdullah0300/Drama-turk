@@ -27,8 +27,8 @@ export const metadata: Metadata = {
     description: 'An ad-free, uninterrupted streaming platform for historical and cultural drama series.',
   },
   robots: {
-    index: true,
-    follow: true,
+    index: false,
+    follow: false,
   },
 };
 

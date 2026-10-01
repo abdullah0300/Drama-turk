@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { catalogRepository } from '@/lib/repository/catalog-repository';
 import { Play, ChevronRight, Film, Video, Info } from 'lucide-react';
 import { siteConfig } from '@/config/site';
@@ -14,9 +15,8 @@ interface CollectionPageProps {
 }
 
 export async function generateMetadata({ params }: CollectionPageProps): Promise<Metadata> {
-  catalogRepository.ensureLoaded();
-  const drama = catalogRepository.getDrama(params.dramaId);
-  const collection = catalogRepository.getCollection(params.collectionId);
+  const drama = await supabaseCatalog.getDrama(params.dramaId);
+  const collection = await supabaseCatalog.getCollection(params.collectionId);
   if (!drama || !collection) return { title: 'Collection Not Found' };
 
   return {
@@ -29,27 +29,49 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
 }
 
 export default async function CollectionPage({ params }: CollectionPageProps) {
-  catalogRepository.ensureLoaded();
-  const drama = catalogRepository.getDrama(params.dramaId);
-  const collection = catalogRepository.getCollection(params.collectionId);
+  const drama = await supabaseCatalog.getDrama(params.dramaId);
+  const collection = await supabaseCatalog.getCollection(params.collectionId);
 
   if (!drama || !collection) notFound();
 
   const isPilot = collection.id === siteConfig.pilotCollectionId;
-  const episodeGroups = catalogRepository.getCollectionEpisodeGroups(collection.id);
-  const firstPlayable = episodeGroups.length > 0 ? episodeGroups[0] : null;
+  const isCollectionPublished = collection.status === 'published' || isPilot;
+  const episodeGroups = await supabaseCatalog.getCollectionEpisodeGroups(collection.id);
+  const collectionVideos = await supabaseCatalog.getCollectionVideos(collection.id);
+
+  // Group videos by episode_group_id and isolate unassigned extras
+  const videosByGroup = new Map<string, any[]>();
+  const extras: any[] = [];
+
+  collectionVideos.forEach(v => {
+    if (v.episode_group_id) {
+      if (!videosByGroup.has(v.episode_group_id)) {
+        videosByGroup.set(v.episode_group_id, []);
+      }
+      videosByGroup.get(v.episode_group_id)!.push(v);
+    } else {
+      // Quarantine failed episode video-1974 (kept draft) from extras
+      if (v.id !== 'video-1974') {
+        extras.push(v);
+      }
+    }
+  });
+
+  // Fallback extras if needed
+  if (extras.length === 0 && collection.extra_video_ids && collection.extra_video_ids.length > 0) {
+    collection.extra_video_ids.forEach(vid => {
+      const v = catalogRepository.getVideo(vid);
+      if (v && v.id !== 'video-1974') extras.push(v);
+    });
+  }
+
+  const firstPlayable = episodeGroups.find(g => {
+    const vList = videosByGroup.get(g.id);
+    return vList && vList.some((v: any) => v.stream_present);
+  }) || (episodeGroups.length > 0 ? episodeGroups[0] : null);
 
   // Check for combined seasons label (e.g. Kosem Sultan Seasons 1 & 2)
   const isCombinedSeason = collection.reported_seasons && collection.reported_seasons.length > 1;
-
-  // Separate Extras / Behind the scenes if any
-  const extras: any[] = [];
-  if (collection.extra_video_ids && collection.extra_video_ids.length > 0) {
-    collection.extra_video_ids.forEach(vid => {
-      const v = catalogRepository.getVideo(vid);
-      if (v) extras.push(v);
-    });
-  }
 
   return (
     <div className="min-h-screen pb-16">
@@ -85,7 +107,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
 
             <div className="flex flex-wrap items-center gap-3 text-xs text-text-tertiary mb-6">
               <span className="px-2 py-0.5 rounded bg-surface border border-surface-border text-text-secondary">
-                {collection.video_records} Video Records
+                {collectionVideos.length || collection.video_records} Video Records
               </span>
               <span className="px-2 py-0.5 rounded bg-surface border border-surface-border text-text-secondary">
                 {episodeGroups.length} Episode Groups
@@ -93,15 +115,15 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
               <span className="px-2 py-0.5 rounded bg-surface border border-surface-border text-amber-400 capitalize">
                 {collection.version || 'Preserved'} Edition
               </span>
-              {isPilot && (
+              {isCollectionPublished && (
                 <span className="px-2 py-0.5 rounded bg-amber-500 text-stone-950 font-bold uppercase text-[10px]">
-                  Playable Pilot
+                  {isPilot ? 'Playable Pilot' : 'Playable Catalog'}
                 </span>
               )}
             </div>
 
-            {/* Pilot CTA */}
-            {isPilot && firstPlayable && (
+            {/* Watch CTA */}
+            {isCollectionPublished && firstPlayable && (
               <Link
                 href={`/drama/${drama.id}/watch/${firstPlayable.id}`}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold text-sm transition-transform active:scale-95 shadow"
@@ -123,10 +145,11 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
         {episodeGroups.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {episodeGroups.map((group) => {
-              const videos = catalogRepository.getVideosForGroup(group.id);
+              const videos = videosByGroup.get(group.id) || [];
               const firstVideo = videos[0];
               const thumbnail = firstVideo?.thumbnail_urls?.[0];
-              const isPlayable = isPilot;
+              const hasPlayableStream = videos.some((v: any) => v.stream_present);
+              const isPlayable = isCollectionPublished && hasPlayableStream;
               const cardUrl = isPlayable ? `/drama/${drama.id}/watch/${group.id}` : undefined;
 
               const CardContent = (

@@ -152,13 +152,29 @@ export function WatchClient({
           {/* Episode Title & Language Switcher Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2">
             <div>
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
                 <h1 className="text-xl sm:text-2xl font-bold font-display text-text-primary">
                   {episodeGroup.display_label}
                 </h1>
                 {episodeGroup.bolum && (
                   <span className="px-2 py-0.5 rounded bg-surface border border-surface-border text-xs text-text-secondary font-mono">
                     Bolum {episodeGroup.bolum}
+                  </span>
+                )}
+                {/* Version & Verification Badges */}
+                <span className="px-2 py-0.5 rounded bg-surface border border-surface-border text-xs text-amber-400 capitalize">
+                  {currentVideo.version === 'dubbed' 
+                    ? `${currentVideo.languages?.join(', ') || 'Urdu'} Dubbed` 
+                    : `${currentVideo.languages?.join(' & ') || 'Urdu'} Subtitled`}
+                </span>
+                {currentVideo.playback_verified ? (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/30 text-xs text-emerald-400 font-medium">
+                    <Check size={12} className="text-emerald-400" />
+                    Verified Stream
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface border border-surface-border text-xs text-text-tertiary">
+                    Untested Stream
                   </span>
                 )}
               </div>
@@ -170,11 +186,15 @@ export function WatchClient({
             {/* Language / Rendition Selection */}
             {allRenditions.length > 1 && (
               <div className="flex items-center gap-2 bg-surface/80 border border-surface-border px-3 py-1.5 rounded-lg text-xs self-start sm:self-auto">
-                <span className="text-text-tertiary">Subtitles:</span>
+                <span className="text-text-tertiary">Rendition:</span>
                 <div className="flex gap-1">
                   {allRenditions.map((rend) => {
                     const isActive = rend.id === currentVideo.id;
-                    const langLabel = rend.languages?.[0] || 'Default';
+                    const langStr = rend.languages && rend.languages.length > 0 ? rend.languages.join(' & ') : '';
+                    const isDubbed = rend.version === 'dubbed';
+                    const langLabel = langStr 
+                      ? `${langStr} ${isDubbed ? 'Dubbed' : 'Subtitles'}`
+                      : (isDubbed ? 'Dubbed' : 'Subtitled');
                     return (
                       <button
                         key={rend.id}
@@ -252,8 +272,12 @@ export function WatchClient({
                 Episode Overview
               </h2>
               <p className="text-sm text-text-secondary leading-relaxed">
-                {editorialDraft?.short_description || 
-                  `This installment of ${drama.name} follows Sultan Mehmed's strategic advances during Season 2. Direct broadcast rendition with verified ${currentVideo.languages?.join(' and ')} subtitle timing.`}
+                {editorialDraft?.short_description || drama.synopsis ||
+                  `Watch ${drama.name} ${episodeGroup.display_label} in high definition. Complete ad-free broadcast rendition featuring authentic ${
+                    currentVideo.version === 'dubbed' 
+                      ? `${currentVideo.languages?.join(', ') || 'Urdu'} audio dubbing` 
+                      : `${currentVideo.languages?.join(' and ') || 'Urdu'} subtitles`
+                  }.`}
               </p>
             </div>
 

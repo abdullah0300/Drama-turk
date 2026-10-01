@@ -5,7 +5,7 @@ import { importGemmaBatchFile } from '@/lib/editorial/editorial-importer';
 import { catalogRepository } from '@/lib/repository/catalog-repository';
 
 export async function POST(req: NextRequest) {
-  const auth = verifyAdminAccess(req);
+  const auth = await verifyAdminAccess(req);
   if (!auth.isAuthorized) {
     return NextResponse.json({ error: auth.message || 'Unauthorized' }, { status: 401 });
   }
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const auth = verifyAdminAccess(req);
+  const auth = await verifyAdminAccess(req);
   if (!auth.isAuthorized) {
     return NextResponse.json({ error: auth.message || 'Unauthorized' }, { status: 401 });
   }

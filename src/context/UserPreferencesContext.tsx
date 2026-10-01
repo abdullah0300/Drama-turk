@@ -109,7 +109,18 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
   };
 
   const getProgress = (videoId: string) => {
-    return history.find(h => h.videoId === videoId);
+    const inState = history.find(h => h.videoId === videoId);
+    if (inState) return inState;
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(HISTORY_KEY);
+        if (stored) {
+          const parsed: UserPlaybackProgress[] = JSON.parse(stored);
+          return parsed.find(h => h.videoId === videoId);
+        }
+      } catch {}
+    }
+    return undefined;
   };
 
   const removeHistoryItem = (videoId: string) => {

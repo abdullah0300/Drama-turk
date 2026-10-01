@@ -362,3 +362,18 @@ CREATE POLICY "User manage own preferences" ON public.viewer_preferences
     FOR ALL TO authenticated
     USING (auth.uid() = user_id)
     WITH CHECK (auth.uid() = user_id);
+
+-- -----------------------------------------------------------------------------
+-- 6. SECURITY REMEDIATION: REVOKE EXECUTE ON UNPROTECTED DEFINER FUNCTIONS
+-- -----------------------------------------------------------------------------
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM pg_proc p
+        JOIN pg_namespace n ON p.pronamespace = n.oid
+        WHERE n.nspname = 'public' AND p.proname = 'rls_auto_enable'
+    ) THEN
+        REVOKE EXECUTE ON FUNCTION public.rls_auto_enable() FROM PUBLIC, anon, authenticated;
+    END IF;
+END $$;
+

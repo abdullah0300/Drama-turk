@@ -1,10 +1,8 @@
 import { MetadataRoute } from 'next';
-import { catalogRepository } from '@/lib/repository/catalog-repository';
+import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { siteConfig } from '@/config/site';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  catalogRepository.ensureLoaded();
-
   const baseUrl = siteConfig.domain;
   const staticLastMod = new Date('2026-09-30T12:00:00Z');
 
@@ -43,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Published drama canonical pages (24 dramas)
-  const dramas = catalogRepository.getAllDramas();
+  const dramas = await supabaseCatalog.getAllDramas();
   for (const drama of dramas) {
     routes.push({
       url: `${baseUrl}/drama/${drama.id}`,
@@ -53,7 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
     // Add pilot collections
-    const collections = catalogRepository.getDramaCollections(drama.id);
+    const collections = await supabaseCatalog.getDramaCollections(drama.id);
     for (const col of collections) {
       routes.push({
         url: `${baseUrl}/drama/${drama.id}/collection/${col.id}`,
@@ -65,9 +63,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Add playable pilot episodes (collection-68)
-  const pilotCol = catalogRepository.getPilotCollection();
+  const pilotCol = await supabaseCatalog.getPilotCollection();
   if (pilotCol) {
-    const episodeGroups = catalogRepository.getCollectionEpisodeGroups(pilotCol.id);
+    const episodeGroups = await supabaseCatalog.getCollectionEpisodeGroups(pilotCol.id);
     for (const group of episodeGroups) {
       routes.push({
         url: `${baseUrl}/drama/${pilotCol.drama_id}/watch/${group.id}`,

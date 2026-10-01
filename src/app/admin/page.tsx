@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { catalogRepository } from '@/lib/repository/catalog-repository';
 import { AdminDashboardClient } from './AdminDashboardClient';
 import { verifyAdminAccess } from '@/lib/auth/admin-auth';
@@ -13,8 +14,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AdminPage() {
-  const auth = verifyAdminAccess();
+export default async function AdminPage() {
+  const reqHeaders = headers();
+  const auth = await verifyAdminAccess(new Request('http://localhost', { headers: reqHeaders }));
 
   if (!auth.isAuthorized) {
     return (

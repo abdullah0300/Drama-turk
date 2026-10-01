@@ -26,6 +26,7 @@ export interface CatalogCollection {
   video_records: number;
   languages?: string[];
   version?: 'subtitled' | 'dubbed' | 'original' | 'unresolved';
+  status?: 'published' | 'draft' | 'preview' | 'archived';
 }
 
 export interface EpisodeGroup {
@@ -39,6 +40,7 @@ export interface EpisodeGroup {
   video_ids: string[];
   numbering_basis: string;
   reported_season: number | null;
+  status?: 'published' | 'draft' | 'preview' | 'archived';
 }
 
 export interface VideoRecord {

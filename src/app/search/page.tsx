@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { catalogRepository } from '@/lib/repository/catalog-repository';
+import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { SearchClient } from './SearchClient';
 import { siteConfig } from '@/config/site';
 
@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${siteConfig.domain}/search`,
   },
-  // Keep internal search results out of search engines
+  // Staging environment strictly noindex
   robots: {
     index: false,
-    follow: true,
+    follow: false,
   },
 };
 
@@ -24,8 +24,7 @@ interface SearchPageProps {
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  catalogRepository.ensureLoaded();
-  const allDramas = catalogRepository.getAllDramas();
+  const allDramas = await supabaseCatalog.getAllDramas();
   const initialQuery = searchParams.q || '';
 
   return (

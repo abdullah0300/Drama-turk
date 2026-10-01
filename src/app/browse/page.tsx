@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { catalogRepository } from '@/lib/repository/catalog-repository';
+import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { BrowseClient } from './BrowseClient';
 import { siteConfig } from '@/config/site';
 
@@ -22,20 +22,18 @@ export async function generateMetadata({ searchParams }: BrowsePageProps): Promi
     alternates: {
       canonical: `${siteConfig.domain}/browse`,
     },
-    // Exclude internal filter combinations from search indexing
-    robots: hasFilters ? { index: false, follow: true } : { index: true, follow: true },
+    // Staging environment strictly noindex
+    robots: { index: false, follow: false },
   };
 }
 
 export default async function BrowsePage({ searchParams }: BrowsePageProps) {
-  catalogRepository.ensureLoaded();
-
   const query = searchParams.q || '';
   const language = searchParams.lang || 'all';
   const genre = searchParams.genre || 'all';
   const sort = searchParams.sort || 'default';
 
-  const dramas = catalogRepository.search({
+  const dramas = await supabaseCatalog.search({
     query,
     language,
     genre,

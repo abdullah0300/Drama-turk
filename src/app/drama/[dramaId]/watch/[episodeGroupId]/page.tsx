@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
+import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { catalogRepository } from '@/lib/repository/catalog-repository';
 import { WatchClient } from './WatchClient';
 import { siteConfig } from '@/config/site';
@@ -13,13 +14,12 @@ interface WatchPageProps {
 }
 
 export async function generateMetadata({ params }: WatchPageProps): Promise<Metadata> {
-  catalogRepository.ensureLoaded();
-  const drama = catalogRepository.getDrama(params.dramaId);
-  const group = catalogRepository.getEpisodeGroup(params.episodeGroupId);
+  const drama = await supabaseCatalog.getDrama(params.dramaId);
+  const group = await supabaseCatalog.getEpisodeGroup(params.episodeGroupId);
 
   if (!drama || !group) return { title: 'Episode Not Found' };
 
-  const videos = catalogRepository.getVideosForGroup(group.id);
+  const videos = await supabaseCatalog.getVideosForGroup(group.id);
   const firstVideo = videos[0];
   const title = `${group.display_label} - ${drama.name}`;
   const description = firstVideo?.title || `Watch ${group.display_label} of ${drama.name} ad-free on Drama Platform.`;
@@ -39,41 +39,50 @@ export async function generateMetadata({ params }: WatchPageProps): Promise<Meta
 }
 
 export default async function WatchPage({ params }: WatchPageProps) {
-  catalogRepository.ensureLoaded();
-  const drama = catalogRepository.getDrama(params.dramaId);
-  const episodeGroup = catalogRepository.getEpisodeGroup(params.episodeGroupId);
+  const drama = await supabaseCatalog.getDrama(params.dramaId);
+  const episodeGroup = await supabaseCatalog.getEpisodeGroup(params.episodeGroupId);
 
   if (!drama || !episodeGroup) notFound();
 
-  const collection = catalogRepository.getCollection(episodeGroup.collection_id);
+  const collection = await supabaseCatalog.getCollection(episodeGroup.collection_id);
   if (!collection) notFound();
 
-  // Pilot enforcement: Only pilot collection episodes are playable in initial release
-  const isPlayable = catalogRepository.isPilotCollection(collection.id);
+  // Publication and playability enforcement: Both collection and episode group must be published
+  const isPlayable = (collection.status === 'published' || supabaseCatalog.isPilotCollection(collection.id)) &&
+                     (episodeGroup.status === 'published' || episodeGroup.status === undefined);
   if (!isPlayable) {
     redirect(`/drama/${drama.id}/collection/${collection.id}`);
   }
 
-  const allRenditions = catalogRepository.getVideosForGroup(episodeGroup.id);
-  if (allRenditions.length === 0) notFound();
+  const allRenditions = await supabaseCatalog.getVideosForGroup(episodeGroup.id);
+  // Quarantine records with missing or zero streams (e.g. video-1974)
+  if (allRenditions.length === 0 || !allRenditions.some(v => v.stream_present)) {
+    notFound();
+  }
 
   const initialVideo = allRenditions[0];
-  const allCollectionGroups = catalogRepository.getCollectionEpisodeGroups(collection.id);
-  const { prevGroup, nextGroup } = catalogRepository.getAdjacentEpisodeGroups(collection.id, episodeGroup.id);
+  const allCollectionGroups = await supabaseCatalog.getCollectionEpisodeGroups(collection.id);
+  const { prevGroup, nextGroup } = await supabaseCatalog.getAdjacentEpisodeGroups(collection.id, episodeGroup.id);
 
-  const sidebarEpisodes = allCollectionGroups.map(g => {
-    const vids = catalogRepository.getVideosForGroup(g.id);
-    return {
-      id: g.id,
-      display_label: g.display_label,
-      bolum: g.bolum,
-      thumbnailUrl: vids[0]?.thumbnail_urls?.[0],
-    };
+  const collectionVideos = await supabaseCatalog.getCollectionVideos(collection.id);
+  const thumbByGroup = new Map<string, string>();
+  collectionVideos.forEach(v => {
+    if (v.episode_group_id && v.thumbnail_urls?.[0] && !thumbByGroup.has(v.episode_group_id)) {
+      thumbByGroup.set(v.episode_group_id, v.thumbnail_urls[0]);
+    }
   });
 
-  // Check if offline Gemma editorial draft exists
-  const editorialDraft = catalogRepository.getEditorialDraft(`draft-${drama.id}-${episodeGroup.id}`) ||
+  const sidebarEpisodes = allCollectionGroups.map(g => ({
+    id: g.id,
+    display_label: g.display_label,
+    bolum: g.bolum,
+    thumbnailUrl: thumbByGroup.get(g.id),
+  }));
+
+  // Check if offline Gemma editorial draft exists - unapproved drafts remain private
+  const rawDraft = catalogRepository.getEditorialDraft(`draft-${drama.id}-${episodeGroup.id}`) ||
     catalogRepository.getAllEditorialDrafts().find(d => d.episode_group_id === episodeGroup.id);
+  const editorialDraft = rawDraft?.approval_status === 'approved' ? rawDraft : undefined;
 
   // Schema.org VideoObject Structured Data
   const jsonLd: Record<string, any> = {

@@ -2,7 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { catalogRepository } from '@/lib/repository/catalog-repository';
+import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { DramaActions } from './DramaActions';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { Film, CheckCircle2, ChevronRight, Play, Layers } from 'lucide-react';
@@ -15,8 +15,7 @@ interface DramaPageProps {
 }
 
 export async function generateMetadata({ params }: DramaPageProps): Promise<Metadata> {
-  catalogRepository.ensureLoaded();
-  const drama = catalogRepository.getDrama(params.dramaId);
+  const drama = await supabaseCatalog.getDrama(params.dramaId);
   if (!drama) return { title: 'Drama Not Found' };
 
   return {
@@ -34,22 +33,33 @@ export async function generateMetadata({ params }: DramaPageProps): Promise<Meta
 }
 
 export default async function DramaPage({ params }: DramaPageProps) {
-  catalogRepository.ensureLoaded();
-  const drama = catalogRepository.getDrama(params.dramaId);
+  const drama = await supabaseCatalog.getDrama(params.dramaId);
   if (!drama) notFound();
 
-  const collections = catalogRepository.getDramaCollections(drama.id);
+  const collections = await supabaseCatalog.getDramaCollections(drama.id);
   const isPilot = drama.isPilot ?? false;
 
   // If pilot, load collection-68 episode groups
-  const pilotCollection = isPilot ? catalogRepository.getPilotCollection() : undefined;
+  const pilotCollection = isPilot ? await supabaseCatalog.getPilotCollection() : undefined;
   const pilotEpisodeGroups = pilotCollection
-    ? catalogRepository.getCollectionEpisodeGroups(pilotCollection.id)
+    ? await supabaseCatalog.getCollectionEpisodeGroups(pilotCollection.id)
     : [];
   const firstPlayableGroup = pilotEpisodeGroups.length > 0 ? pilotEpisodeGroups[0] : undefined;
+  const pilotVideos = pilotCollection
+    ? await supabaseCatalog.getCollectionVideos(pilotCollection.id)
+    : [];
+  const pilotVideosByGroup = new Map<string, any[]>();
+  pilotVideos.forEach(v => {
+    if (v.episode_group_id) {
+      if (!pilotVideosByGroup.has(v.episode_group_id)) {
+        pilotVideosByGroup.set(v.episode_group_id, []);
+      }
+      pilotVideosByGroup.get(v.episode_group_id)!.push(v);
+    }
+  });
 
   // Related dramas
-  const allDramas = catalogRepository.getAllDramas();
+  const allDramas = await supabaseCatalog.getAllDramas();
   const relatedDramas = allDramas
     .filter(d => d.id !== drama.id && d.genres?.some(g => drama.genres?.includes(g)))
     .slice(0, 4);
@@ -187,7 +197,7 @@ export default async function DramaPage({ params }: DramaPageProps) {
             {/* Episode Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {pilotEpisodeGroups.map((group) => {
-                const videos = catalogRepository.getVideosForGroup(group.id);
+                const videos = pilotVideosByGroup.get(group.id) || [];
                 const firstVideo = videos[0];
                 const thumbnail = firstVideo?.thumbnail_urls?.[0];
                 const watchUrl = `/drama/${drama.id}/watch/${group.id}`;

@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { catalogRepository } from '@/lib/repository/catalog-repository';
+import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { FeaturedHero } from '@/components/home/FeaturedHero';
 import { ContinueWatchingRow } from '@/components/home/ContinueWatchingRow';
 import { LatestEpisodesRow } from '@/components/home/LatestEpisodesRow';
@@ -11,15 +11,13 @@ import { siteConfig } from '@/config/site';
 export const revalidate = 3600; // 1 hour ISR
 
 export default async function HomePage() {
-  catalogRepository.ensureLoaded();
-
-  const pilotDrama = catalogRepository.getPilotDrama();
-  const pilotCollection = catalogRepository.getPilotCollection();
-  const pilotGroups = pilotCollection ? catalogRepository.getCollectionEpisodeGroups(pilotCollection.id) : [];
+  const pilotDrama = await supabaseCatalog.getPilotDrama();
+  const pilotCollection = await supabaseCatalog.getPilotCollection();
+  const pilotGroups = pilotCollection ? await supabaseCatalog.getCollectionEpisodeGroups(pilotCollection.id) : [];
   const firstGroup = pilotGroups.length > 0 ? pilotGroups[0] : undefined;
 
-  const latestEpisodes = catalogRepository.getLatestPlayableEpisodes(6);
-  const allDramas = catalogRepository.getAllDramas();
+  const latestEpisodes = await supabaseCatalog.getLatestPlayableEpisodes(6);
+  const allDramas = await supabaseCatalog.getAllDramas();
 
   // Structured data JSON-LD
   const jsonLd = {
@@ -69,7 +67,7 @@ export default async function HomePage() {
               Browse Dramas
             </h2>
             <p className="text-sm text-text-secondary mt-1">
-              Explore 24 series. The pilot collection is verified playable; all other series feature authentic catalog data and detail pages.
+              Explore 24 series, 63 collections, and over 2,900 preserved episodes across subtitled and dubbed broadcast collections.
             </p>
           </div>
 

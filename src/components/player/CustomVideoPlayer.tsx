@@ -54,7 +54,7 @@ export function CustomVideoPlayer({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const hlsRef = useRef<Hls | null>(null);
 
-  const { saveProgress, getProgress, preferences, setVolumePreference } = useUserPreferences();
+  const { saveProgress, getProgress, preferences, setVolumePreference, history } = useUserPreferences();
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -103,7 +103,7 @@ export function CustomVideoPlayer({
     } else {
       setShowResumePrompt(false);
     }
-  }, [currentVideo.id]);
+  }, [currentVideo.id, history]);
 
   // Clean up HLS on unmount or stream change
   const cleanupHls = useCallback(() => {
@@ -438,6 +438,8 @@ export function CustomVideoPlayer({
     <div 
       ref={containerRef}
       tabIndex={0}
+      data-video-id={currentVideo.id}
+      data-stream-url={streamUrl}
       onKeyDown={handleKeyDown}
       className="relative w-full aspect-video bg-black rounded-lg overflow-hidden shadow-player group select-none focus:outline-none focus:ring-2 focus:ring-amber-500"
       aria-label={`Video player for ${currentVideo.title || episodeGroup.display_label}`}
@@ -624,10 +626,11 @@ export function CustomVideoPlayer({
             {/* Rendition / Language Switcher */}
             {allRenditions.length > 1 && onRenditionChange && (
               <div className="flex items-center gap-1 bg-surface/70 px-2 py-1 rounded border border-surface-border text-[11px]">
-                <span className="text-text-tertiary">Audio/Sub:</span>
+                <span className="text-text-tertiary">Rendition:</span>
                 {allRenditions.map(rend => {
-                  const label = `${rend.languages?.join(', ') || 'Default'} (${rend.version})`;
                   const isActive = rend.id === currentVideo.id;
+                  const lang = rend.languages && rend.languages.length > 0 ? rend.languages.join(' & ') : 'Original';
+                  const label = rend.version === 'dubbed' ? `${lang} Dub` : `${lang} Subtitles`;
                   return (
                     <button
                       key={rend.id}
@@ -638,7 +641,7 @@ export function CustomVideoPlayer({
                           : 'text-text-secondary hover:text-white hover:bg-white/10'
                       }`}
                     >
-                      {rend.languages?.[0] || 'Default'}
+                      {label}
                     </button>
                   );
                 })}
