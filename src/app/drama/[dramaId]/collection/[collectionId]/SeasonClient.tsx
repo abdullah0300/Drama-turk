@@ -158,7 +158,7 @@ export function SeasonClient(props: SeasonClientProps) {
           </nav>
           <div className="sv-kick">
             <span className={`badge${published ? ' live' : ' dark'}`}>
-              {published ? (isPilot ? 'Playable Pilot' : 'Playable Catalog') : 'Preview Catalog'}
+              {published ? (isPilot ? 'Featured' : 'Now streaming') : 'Preview Catalog'}
             </span>
             <span>{episodes.length} episodes · {edition} edition</span>
           </div>

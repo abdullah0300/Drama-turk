@@ -9,10 +9,11 @@ import { useUserPreferences } from '@/context/UserPreferencesContext';
 interface DramaActionsProps {
   drama: Drama;
   firstPlayableGroup?: EpisodeGroup;
-  isPilot: boolean;
+  isPlayable: boolean;
+  seasonName?: string;
 }
 
-export function DramaActions({ drama, firstPlayableGroup, isPilot }: DramaActionsProps) {
+export function DramaActions({ drama, firstPlayableGroup, isPlayable, seasonName }: DramaActionsProps) {
   const { isInMyList, addToMyList, removeFromMyList, history } = useUserPreferences();
   const saved = isInMyList(drama.id);
 
@@ -41,12 +42,12 @@ export function DramaActions({ drama, firstPlayableGroup, isPilot }: DramaAction
 
   return (
     <div className="actions">
-      {isPilot && resumeUrl ? (
+      {isPlayable && resumeUrl ? (
         <Link href={resumeUrl} className="btn btn-play">
           <Play className="i f" />
-          {dramaHistory ? `Resume (${dramaHistory.displayLabel})` : 'Start watching Season 2'}
+          {dramaHistory ? `Resume (${dramaHistory.displayLabel})` : `Start watching${seasonName ? ` ${seasonName}` : ''}`}
         </Link>
-      ) : isPilot ? (
+      ) : isPlayable ? (
         <span className="btn btn-ghost" aria-disabled="true">Episodes loading</span>
       ) : (
         <span className="btn btn-ghost" aria-disabled="true">Preview catalog · not published for streaming</span>

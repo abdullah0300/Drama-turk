@@ -19,6 +19,7 @@ export interface LatestSeasonItem {
   id: string;
   title: string;
   genre: string;
+  totalSeasons?: number;
   image?: string;
   poster?: string;
   seasons: SeasonCardItem[];
@@ -185,7 +186,7 @@ export function LatestSeasons({ items }: { items: LatestSeasonItem[] }) {
           {items.map((s, k) => (
             <button key={s.id} className={`ls-tab${k === idx ? ' on' : ''}`} style={{ ['--dur' as string]: `${LS_MS}ms` }} onClick={() => go(k)}>
               {s.poster || s.image ? <img src={s.poster || s.image} alt="" /> : <div style={{ width: 40, height: 54, borderRadius: 6, background: 'var(--bg3)' }} />}
-              <div><b>{s.title}</b><span>{s.seasons.length} {s.seasons.length === 1 ? 'season' : 'seasons'}</span></div>
+              <div><b>{s.title}</b><span>{s.totalSeasons ?? s.seasons.length} {(s.totalSeasons ?? s.seasons.length) === 1 ? 'season' : 'seasons'}</span></div>
               <i className="bar" key={k === idx ? `${idx}-${sel}` : 'x'} />
             </button>
           ))}

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Check, Play, Plus } from 'lucide-react';
-import { Drama } from '@/types/catalog';
+import { Drama, isDramaPlayable } from '@/types/catalog';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
 
 interface DramaCardProps {
@@ -35,6 +35,7 @@ export function DramaCard({ drama, priority = false, fluid = true }: DramaCardPr
   };
 
   const collections = drama.collection_ids.length;
+  const playable = isDramaPlayable(drama);
 
   return (
     <Link
@@ -49,8 +50,8 @@ export function DramaCard({ drama, priority = false, fluid = true }: DramaCardPr
           <div className="thumb-fallback" />
         )}
         <span className="shade" />
-        <span className={`badge${drama.isPilot ? '' : ' dark'}`}>
-          {drama.isPilot ? 'Playable Pilot' : 'Preview Catalog'}
+        <span className={`badge${playable ? '' : ' dark'}`}>
+          {drama.isPilot ? 'Featured' : playable ? 'Watch now' : 'Preview Catalog'}
         </span>
         <button
           type="button"
@@ -70,7 +71,7 @@ export function DramaCard({ drama, priority = false, fluid = true }: DramaCardPr
         <span className="c-title">{drama.name}</span>
       </div>
       <div className="c-info">
-        <b>{drama.genres?.[0] || (drama.isPilot ? 'Watch Season' : 'Catalog')}</b>
+        <b>{drama.genres?.[0] || (playable ? 'Watch now' : 'Catalog')}</b>
         <span>{collections} {collections === 1 ? 'season' : 'seasons'} · {drama.video_records} records</span>
       </div>
     </Link>

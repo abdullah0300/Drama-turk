@@ -10,6 +10,7 @@ import { ContinueWatchingRow } from '@/components/home/ContinueWatchingRow';
 import { LatestEpisodesRow } from '@/components/home/LatestEpisodesRow';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { siteConfig } from '@/config/site';
+import { isDramaPlayable, seasonLabel } from '@/types/catalog';
 
 export const revalidate = 3600; // 1 hour ISR
 
@@ -51,7 +52,7 @@ export default async function HomePage() {
       heroItems.push({
         id: d.id,
         title: d.name,
-        kicker: 'Preview catalog',
+        kicker: isDramaPlayable(d) ? 'Now streaming · ad-free' : 'Preview catalog',
         genres: d.genres?.slice(0, 2) ?? [],
         meta: `${d.collection_ids.length} ${d.collection_ids.length === 1 ? 'season' : 'seasons'} · ${d.video_records} records`,
         line: d.synopsis || 'Browse authentic catalog metadata and source collection groupings.',
@@ -60,7 +61,7 @@ export default async function HomePage() {
         thumbnailForList: d.poster_url,
         episodeCount: 0,
         playHref: `/drama/${d.id}`,
-        playLabel: 'View catalog',
+        playLabel: isDramaPlayable(d) ? 'Watch now' : 'View catalog',
         infoHref: `/drama/${d.id}`,
       })
     );
@@ -68,27 +69,31 @@ export default async function HomePage() {
   // Latest seasons stage: dramas with their season collections
   const seasonCandidates = [
     ...(pilotDrama ? [pilotDrama] : []),
-    ...allDramas.filter((d) => d.id !== pilotDrama?.id && d.collection_ids.length > 0 && (d.poster_url || d.backdrop_url)),
+    ...allDramas
+      .filter((d) => d.id !== pilotDrama?.id && d.collection_ids.length > 0 && (d.poster_url || d.backdrop_url))
+      .sort((a, b) => b.collection_ids.length - a.collection_ids.length),
   ].slice(0, 5);
   const seasonItems: LatestSeasonItem[] = [];
   for (const d of seasonCandidates) {
-    const cols = (await supabaseCatalog.getDramaCollections(d.id)).slice(0, 5);
+    const allCols = await supabaseCatalog.getDramaCollections(d.id);
+    const cols = allCols.slice(-5); // the five newest seasons go in the deck
     if (cols.length === 0) continue;
     const seasons = cols
       .map((c, i) => ({
         id: c.id,
         n: c.reported_seasons?.[0] ?? i + 1,
-        label: c.reported_seasons?.length ? `Season ${c.reported_seasons.join(' & ')}` : c.source_heading,
+        label: seasonLabel(c),
         edition: c.version || 'preserved',
         episodes: c.episode_group_ids?.length ?? 0,
         playable: c.status === 'published' || c.id === siteConfig.pilotCollectionId,
         watchHref: c.id === pilotCollection?.id && firstGroup ? `/drama/${d.id}/watch/${firstGroup.id}` : undefined,
       }))
-      .sort((a, b) => b.n - a.n);
+      .reverse(); // newest season at the front of the deck
     seasonItems.push({
       id: d.id,
       title: d.name,
       genre: d.genres?.[0] || 'Drama',
+      totalSeasons: allCols.length,
       image: d.backdrop_url || d.poster_url,
       poster: d.poster_url,
       seasons,

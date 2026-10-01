@@ -12,6 +12,8 @@ export interface Drama {
   genres?: string[];
   languages?: string[];
   isPilot?: boolean;
+  /** True when at least one season of this drama is published for streaming. */
+  playable?: boolean;
 }
 
 export interface CatalogCollection {
@@ -174,4 +176,28 @@ export interface MyListItem {
   subtitle?: string;
   thumbnailUrl?: string;
   addedAt: number;
+}
+
+/** A drama is watchable when any of its seasons is published (local fallback data only marks the pilot). */
+export function isDramaPlayable(drama: Pick<Drama, 'playable' | 'isPilot'>): boolean {
+  return drama.playable ?? !!drama.isPilot;
+}
+
+const editionRank: Record<string, number> = { subtitled: 0, original: 1, dubbed: 2, unresolved: 3 };
+
+/** Natural season order: season number, then subtitled before dubbed, then label. */
+export function compareCollections(a: CatalogCollection, b: CatalogCollection): number {
+  const sa = a.reported_seasons?.[0] ?? 999;
+  const sb = b.reported_seasons?.[0] ?? 999;
+  if (sa !== sb) return sa - sb;
+  const ea = editionRank[a.version ?? 'unresolved'] ?? 3;
+  const eb = editionRank[b.version ?? 'unresolved'] ?? 3;
+  if (ea !== eb) return ea - eb;
+  return a.source_heading.localeCompare(b.source_heading);
+}
+
+/** "Season 4 · Dubbed" — distinguishes same-numbered seasons released as separate editions. */
+export function seasonLabel(c: Pick<CatalogCollection, 'reported_seasons' | 'version' | 'source_heading'>): string {
+  const base = c.reported_seasons?.length ? `Season ${c.reported_seasons.join(' & ')}` : c.source_heading;
+  return c.version === 'dubbed' ? `${base} · Dubbed` : base;
 }

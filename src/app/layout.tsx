@@ -8,6 +8,7 @@ import { PageShell } from '@/components/layout/PageShell';
 import { Footer } from '@/components/layout/Footer';
 import { siteConfig } from '@/config/site';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
+import { isDramaPlayable } from '@/types/catalog';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.domain),
@@ -56,7 +57,7 @@ export default async function RootLayout({
     name: d.name,
     genre: d.genres?.[0] || '',
     poster: d.poster_url,
-    isPilot: !!d.isPilot,
+    isPilot: isDramaPlayable(d),
   }));
   const notifications = latest.map(({ group, video, drama }) => ({
     id: group.id,

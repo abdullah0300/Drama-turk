@@ -6,6 +6,7 @@ import { catalogRepository } from '@/lib/repository/catalog-repository';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { SeasonClient, SeasonEpisode, OtherSeason } from './SeasonClient';
 import { siteConfig } from '@/config/site';
+import { seasonLabel } from '@/types/catalog';
 
 interface CollectionPageProps {
   params: {
@@ -99,7 +100,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
     others.push({
       id: c.id,
       heading: c.source_heading,
-      seasonLabel: c.reported_seasons?.length ? `Season ${c.reported_seasons.join(' & ')}` : 'Collection',
+      seasonLabel: seasonLabel(c),
       episodeCount: c.episode_group_ids?.length ?? 0,
       playable: c.status === 'published' || c.id === siteConfig.pilotCollectionId,
     });

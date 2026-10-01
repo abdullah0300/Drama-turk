@@ -9,8 +9,7 @@ import {
   DuplicateStreamGroup,
   CatalogSummary,
   PlaybackCheckLog,
-  EditorialDraft
-} from '@/types/catalog';
+  EditorialDraft, compareCollections } from '@/types/catalog';
 import { siteConfig } from '@/config/site';
 
 interface RawCatalogFile {
@@ -245,7 +244,7 @@ class CatalogRepository {
 
   public getDramaCollections(dramaId: string): CatalogCollection[] {
     this.ensureLoaded();
-    return this.collectionsByDrama.get(dramaId) || [];
+    return [...(this.collectionsByDrama.get(dramaId) || [])].sort(compareCollections);
   }
 
   public getPilotCollection(): CatalogCollection | undefined {

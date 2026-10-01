@@ -5,8 +5,23 @@ import {
   Drama,
   CatalogCollection,
   EpisodeGroup,
-  VideoRecord
+  VideoRecord,
+  compareCollections,
 } from '@/types/catalog';
+
+/** Published season ids, in natural season order, from an embedded collections(...) select. */
+function publishedCollectionIds(cols: any[] | undefined): string[] {
+  return (cols || [])
+    .filter((c) => c.status === 'published')
+    .map((c) => ({
+      id: c.source_id as string,
+      reported_seasons: c.reported_seasons || [],
+      version: c.collection_type,
+      source_heading: c.label || '',
+    }))
+    .sort((a, b) => compareCollections(a as any, b as any))
+    .map((c) => c.id);
+}
 import { siteConfig } from '@/config/site';
 
 export class SupabaseCatalogRepository {
@@ -52,7 +67,7 @@ export class SupabaseCatalogRepository {
     try {
       const { data, error } = await supabase
         .from('dramas')
-        .select('*')
+        .select('*, collections(source_id, status, reported_seasons, collection_type, label)')
         .in('status', ['published', 'preview'])
         .order('is_pilot', { ascending: false })
         .order('display_name', { ascending: true });
@@ -65,7 +80,8 @@ export class SupabaseCatalogRepository {
         id: d.source_id,
         name: d.display_name,
         source_names: [d.display_name],
-        collection_ids: [],
+        collection_ids: publishedCollectionIds(d.collections),
+        playable: publishedCollectionIds(d.collections).length > 0,
         video_records: d.video_records_count,
         synopsis: d.short_overview || undefined,
         poster_url: d.poster_url || undefined,
@@ -87,7 +103,7 @@ export class SupabaseCatalogRepository {
     try {
       const { data, error } = await supabase
         .from('dramas')
-        .select('*, published_editorial(*)')
+        .select('*, published_editorial(*), collections(source_id, status, reported_seasons, collection_type, label)')
         .or(`source_id.eq.${idOrSlug},slug.eq.${idOrSlug}`)
         .single();
 
@@ -104,7 +120,8 @@ export class SupabaseCatalogRepository {
         id: row.source_id,
         name: displayName,
         source_names: [row.display_name],
-        collection_ids: [],
+        collection_ids: publishedCollectionIds(row.collections),
+        playable: publishedCollectionIds(row.collections).length > 0,
         video_records: row.video_records_count,
         synopsis,
         poster_url: row.poster_url || undefined,
@@ -161,7 +178,7 @@ export class SupabaseCatalogRepository {
         languages: c.languages || [],
         version: c.collection_type as any,
         status: c.status,
-      }));
+      } as CatalogCollection)).sort(compareCollections);
     } catch (e) {
       return localCatalog.getDramaCollections(dramaSourceId);
     }
@@ -235,7 +252,9 @@ export class SupabaseCatalogRepository {
         .select('*, published_editorial(*)')
         .eq('collection_id', (col as any).id)
         .in('status', ['published', 'preview'])
-        .order('order_key', { ascending: true });
+        .order('order_key', { ascending: true })
+        .order('part', { ascending: true, nullsFirst: true })
+        .order('source_id', { ascending: true });
 
       if (error || !groups || (groups as any[]).length === 0) {
         return localCatalog.getCollectionEpisodeGroups(collectionSourceId);

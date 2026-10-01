@@ -7,6 +7,7 @@ import { DramaActions } from './DramaActions';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { Play } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import { isDramaPlayable, seasonLabel } from '@/types/catalog';
 
 interface DramaPageProps {
   params: {
@@ -38,9 +39,14 @@ export default async function DramaPage({ params }: DramaPageProps) {
 
   const collections = await supabaseCatalog.getDramaCollections(drama.id);
   const isPilot = drama.isPilot ?? false;
+  const playable = isDramaPlayable(drama) || collections.some((c) => c.status === 'published');
 
-  // If pilot, load collection-68 episode groups
-  const pilotCollection = isPilot ? await supabaseCatalog.getPilotCollection() : undefined;
+  // Primary season shown on this page: the pilot season for the pilot drama, otherwise the first published season
+  const pilotCollection = isPilot
+    ? await supabaseCatalog.getPilotCollection()
+    : playable
+      ? collections.find((c) => c.status === 'published')
+      : undefined;
   const pilotEpisodeGroups = pilotCollection
     ? await supabaseCatalog.getCollectionEpisodeGroups(pilotCollection.id)
     : [];
@@ -104,7 +110,7 @@ export default async function DramaPage({ params }: DramaPageProps) {
             <span style={{ color: 'var(--text)' }}>{drama.name}</span>
           </nav>
           <div className="sv-kick">
-            <span className={`badge${isPilot ? ' live' : ' dark'}`}>{isPilot ? 'Playable Pilot' : 'Preview Catalog'}</span>
+            <span className={`badge${playable ? ' live' : ' dark'}`}>{isPilot ? 'Featured' : playable ? 'Now streaming' : 'Preview Catalog'}</span>
             <span>
               {collections.length} {collections.length === 1 ? 'season' : 'seasons'}
               {drama.genres?.[0] ? ` · ${drama.genres[0]}` : ''}
@@ -118,7 +124,12 @@ export default async function DramaPage({ params }: DramaPageProps) {
           )}
           {drama.synopsis && <p className="sv-line">{drama.synopsis}</p>}
 
-          <DramaActions drama={drama} firstPlayableGroup={firstPlayableGroup} isPilot={isPilot} />
+          <DramaActions
+            drama={drama}
+            firstPlayableGroup={firstPlayableGroup}
+            isPlayable={playable}
+            seasonName={pilotCollection ? seasonLabel(pilotCollection) : undefined}
+          />
         </div>
       </div>
 
@@ -128,16 +139,16 @@ export default async function DramaPage({ params }: DramaPageProps) {
           <div className="st"><small>Seasons</small><b>{collections.length}</b><span>Dubbed &amp; subtitled kept separate</span></div>
           <div className="st"><small>Languages</small><b style={{ fontSize: 22 }}>{drama.languages?.slice(0, 2).join(' · ') || '—'}</b><span>{drama.languages && drama.languages.length > 2 ? `+${drama.languages.length - 2} more` : 'Available renditions'}</span></div>
           <div className="st"><small>Genres</small><b style={{ fontSize: 22 }}>{drama.genres?.slice(0, 2).join(' · ') || '—'}</b><span>Verified metadata</span></div>
-          <div className="st"><small>Status</small><b>{isPilot ? 'Live' : 'Preview'}</b><span>{isPilot ? `${pilotPlayable.length} playable episodes` : 'Metadata only'}</span></div>
+          <div className="st"><small>Status</small><b>{playable ? 'Live' : 'Preview'}</b><span>{playable ? `${pilotPlayable.length} episodes in ${pilotCollection ? seasonLabel(pilotCollection) : 'this season'}` : 'Metadata only'}</span></div>
         </div>
 
         {/* Playable Pilot Episode Browser (Only for pilot collection) */}
-        {isPilot && pilotCollection && (
+        {playable && pilotCollection && (
           <section className="sv-sec" aria-label="Pilot Episodes">
             <div className="sv-sec-h">
               <h2>
                 {pilotCollection.source_heading}
-                <small>{pilotEpisodeGroups.length} episodes available with choice of Urdu or English subtitles.</small>
+                <small>{pilotEpisodeGroups.length} episodes · {pilotCollection.languages?.join(' & ') || 'Urdu'} · <span style={{ textTransform: 'capitalize' }}>{pilotCollection.version || 'subtitled'}</span>{collections.length > 1 ? ' · more seasons below' : ''}</small>
               </h2>
               <Link href={`/drama/${drama.id}/collection/${pilotCollection.id}`} className="pill">View season page</Link>
             </div>
@@ -189,11 +200,11 @@ export default async function DramaPage({ params }: DramaPageProps) {
                 <Link key={col.id} href={`/drama/${drama.id}/collection/${col.id}`} className="so">
                   {heroImage ? <img src={heroImage} alt="" /> : <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
                   <span className="shade" />
-                  {isColPilot && <span className="badge">Active pilot release</span>}
+                  {isColPilot ? <span className="badge">Featured</span> : col.status === 'published' ? <span className="badge">Watch now</span> : <span className="badge dark">Preview</span>}
                   <span className="so-in">
                     <strong><small>S</small>{col.reported_seasons?.[0] ?? i + 1}</strong>
                     <span>
-                      {col.source_heading}
+                      {seasonLabel(col)} · {col.source_heading}
                     </span>
                     <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)' }}>
                       {col.video_records} video entries · {col.episode_group_ids.length} episode groups · <span style={{ textTransform: 'capitalize' }}>{col.version} cut</span>
