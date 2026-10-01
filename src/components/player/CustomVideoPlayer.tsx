@@ -54,7 +54,7 @@ export function CustomVideoPlayer({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const hlsRef = useRef<Hls | null>(null);
 
-  const { saveProgress, getProgress, preferences, setVolumePreference, history } = useUserPreferences();
+  const { saveProgress, getProgress, preferences, setVolumePreference, isLoaded } = useUserPreferences();
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -94,8 +94,13 @@ export function CustomVideoPlayer({
     return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  // Check existing progress for resume prompt
+  // Offer to resume once per video, after saved history has loaded. Progress saves
+  // during playback update history, so re-checking on every change would keep
+  // reopening the prompt.
+  const resumeCheckedFor = useRef<string | null>(null);
   useEffect(() => {
+    if (!isLoaded || resumeCheckedFor.current === currentVideo.id) return;
+    resumeCheckedFor.current = currentVideo.id;
     const saved = getProgress(currentVideo.id);
     if (saved && saved.currentTime > 15 && !saved.completed) {
       setResumeTimeTarget(saved.currentTime);
@@ -103,7 +108,7 @@ export function CustomVideoPlayer({
     } else {
       setShowResumePrompt(false);
     }
-  }, [currentVideo.id, history]);
+  }, [currentVideo.id, isLoaded, getProgress]);
 
   // Clean up HLS on unmount or stream change
   const cleanupHls = useCallback(() => {

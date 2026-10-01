@@ -12,6 +12,7 @@ interface PreferencesState {
 interface UserPreferencesContextType {
   myList: MyListItem[];
   history: UserPlaybackProgress[];
+  isLoaded: boolean;
   preferences: PreferencesState;
   addToMyList: (item: MyListItem) => void;
   removeFromMyList: (id: string) => void;
@@ -157,6 +158,7 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
       value={{
         myList,
         history,
+        isLoaded,
         preferences,
         addToMyList,
         removeFromMyList,
