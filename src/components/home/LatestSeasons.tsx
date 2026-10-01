@@ -7,6 +7,7 @@ import { useUserPreferences } from '@/context/UserPreferencesContext';
 
 export interface SeasonCardItem {
   id: string;
+  poster?: string;
   href: string;
   n: number;
   label: string;
@@ -169,7 +170,7 @@ export function LatestSeasons({ items }: { items: LatestSeasonItem[] }) {
                     onClick={() => pick(s.id)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(s.id); } }}
                   >
-                    {show.poster || show.image ? <img src={show.poster || show.image} alt="" /> : <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
+                    {s.poster || show.poster || show.image ? <img src={s.poster || show.poster || show.image} alt="" /> : <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
                     <span className="shade" />
                     {s.playable && <span className="badge">Playable</span>}
                     <div className="ls-cnum"><small>S</small>{s.n}</div>

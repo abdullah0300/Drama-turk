@@ -28,6 +28,9 @@ export function Footer() {
       </div>
       <div className="copy">
         © {new Date().getFullYear()} {siteConfig.name}. Watch history, resume points, and personal preferences remain private on your device.
+        {' '}Series and season artwork from{' '}
+        <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>TMDB</a>
+        ; this site is not endorsed or certified by TMDB.
       </div>
     </footer>
   );

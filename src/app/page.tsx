@@ -9,7 +9,7 @@ import { ContinueWatchingRow } from '@/components/home/ContinueWatchingRow';
 import { LatestEpisodesRow } from '@/components/home/LatestEpisodesRow';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { siteConfig } from '@/config/site';
-import { isDramaPlayable, isReleasePublished, groupSeasons, editionName, pluralSeasons, dramaSeasonCount } from '@/types/catalog';
+import { isDramaPlayable, isReleasePublished, seasonPosterOf, groupSeasons, editionName, pluralSeasons, dramaSeasonCount } from '@/types/catalog';
 import { episodePath, episodeSlugs, seasonPath } from '@/lib/routes';
 
 export const revalidate = 3600; // 1 hour ISR
@@ -108,6 +108,7 @@ export default async function HomePage() {
             .reverse()
             .map((s) => ({
               id: s.editions[0].id,
+              poster: seasonPosterOf(s, d.poster_url),
               href: seasonPath(d.id, s),
               n: s.number,
               label: s.label,

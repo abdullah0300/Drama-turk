@@ -62,6 +62,10 @@ class CatalogRepository {
       const reviewPath = path.join(catalogDir, 'organization_review_results.json');
       const duplicatePath = path.join(catalogDir, 'duplicate_streams.json');
       const summaryPath = path.join(catalogDir, 'summary.json');
+      const artworkPath = path.join(catalogDir, 'artwork.json');
+      // Official series/season artwork (mirrors dramas.poster_url / collections.poster_url in Supabase)
+      const artwork: { dramas: Record<string, { poster_url?: string; backdrop_url?: string }>; seasons: Record<string, Record<string, string>> } =
+        fs.existsSync(artworkPath) ? JSON.parse(fs.readFileSync(artworkPath, 'utf8')) : { dramas: {}, seasons: {} };
 
       if (!fs.existsSync(catalogPath) || !fs.existsSync(videosPath)) {
         console.warn(`[CatalogRepository] Catalog files not found in ${catalogDir}. Will use empty or fallback dataset.`);
@@ -140,6 +144,7 @@ class CatalogRepository {
         const colLangs = Array.from(collectionLanguages[col.id] || []);
         const enrichedCol: CatalogCollection = {
           ...col,
+          poster_url: artwork.seasons[col.drama_id]?.[String(col.reported_seasons?.[0])] || undefined,
           languages: colLangs.length > 0 ? colLangs : (col.source_heading.toLowerCase().includes('urdu') ? ['Urdu'] : []),
           version: col.source_heading.toLowerCase().includes('dubbed') 
             ? 'dubbed' 
@@ -182,8 +187,8 @@ class CatalogRepository {
 
         const enrichedDrama: Drama = {
           ...d,
-          poster_url: dramaArtwork[d.id] || undefined,
-          backdrop_url: dramaArtwork[d.id] || undefined,
+          poster_url: artwork.dramas[d.id]?.poster_url || dramaArtwork[d.id] || undefined,
+          backdrop_url: artwork.dramas[d.id]?.backdrop_url || dramaArtwork[d.id] || undefined,
           genres,
           languages: langs,
           isPilot,

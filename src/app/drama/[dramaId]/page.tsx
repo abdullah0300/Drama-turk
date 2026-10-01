@@ -6,7 +6,7 @@ import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { DramaActions } from './DramaActions';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { siteConfig } from '@/config/site';
-import { isDramaPlayable, isReleasePublished, editionName, pluralSeasons } from '@/types/catalog';
+import { isDramaPlayable, isReleasePublished, editionName, pluralSeasons, seasonPosterOf } from '@/types/catalog';
 import { loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
 import { seasonPath } from '@/lib/routes';
 
@@ -126,9 +126,10 @@ export default async function DramaPage({ params }: DramaPageProps) {
         <div className="dw-seasons">
           {seasons.map((s, i) => {
             const pref = s.editions[0];
+            const poster = seasonPosterOf(s, drama.poster_url);
             return (
               <Link key={s.key} href={seasonPath(drama.id, s)} className="sn">
-                {drama.poster_url ? <img src={drama.poster_url} alt="" /> : <span className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
+                {poster ? <img src={poster} alt={`${drama.name} ${s.label}`} loading="lazy" /> : <span className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
                 <span className="shade" />
                 <span className={`badge${i === seasons.length - 1 ? '' : ' dark'}`}>{i === seasons.length - 1 ? 'Latest' : 'Complete'}</span>
                 <span className="sn-n"><small>S</small>{s.key.includes('-') ? s.key.replace('-', '–') : s.number}</span>

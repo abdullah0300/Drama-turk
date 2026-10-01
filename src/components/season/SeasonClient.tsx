@@ -20,6 +20,7 @@ export interface SeasonEpisode {
 
 export interface OtherSeason {
   id: string;
+  poster?: string;
   href: string;
   heading: string;
   seasonLabel: string;
@@ -37,6 +38,8 @@ interface SeasonClientProps {
   dramaName: string;
   dramaPoster?: string;
   heroImage?: string;
+  /** This season's poster (or the drama poster when the season has none) */
+  seasonPoster?: string;
   collectionId: string;
   collectionHeading: string;
   seasonNumber: number;
@@ -58,7 +61,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 export function SeasonClient(props: SeasonClientProps) {
   const {
-    dramaId, dramaName, dramaPoster, heroImage, collectionHeading, seasonNumber, seasonName, editions, seasonNote, edition,
+    dramaId, dramaName, dramaPoster, heroImage, seasonPoster, collectionHeading, seasonNumber, seasonName, editions, seasonNote, edition,
     videoCount, published, isPilot, episodes, extras, others, more,
   } = props;
   const { history, isInMyList, addToMyList, removeFromMyList } = useUserPreferences();
@@ -149,6 +152,11 @@ export function SeasonClient(props: SeasonClientProps) {
           <div className="art-fallback" style={{ zIndex: -2 }} />
         )}
         <div className="sv-shade" />
+        {seasonPoster && (
+          <div className="series-poster sv-poster" aria-hidden="true">
+            <img src={seasonPoster} alt="" />
+          </div>
+        )}
         <div className="sv-num" aria-hidden="true" style={{ transform: `translateY(calc(-50% + ${parallax * 0.35}px))` }}>
           {numStr.split("").map((c, i) => <span key={i}>{c}</span>)}
         </div>
@@ -209,7 +217,7 @@ export function SeasonClient(props: SeasonClientProps) {
           <div className="sv-switch">
             {others.slice(0, 4).map((o) => (
               <Link key={o.id} href={o.href} className="sv-pill">
-                {heroImage ? <img src={heroImage} alt="" /> : null}
+                {o.poster || heroImage ? <img src={o.poster || heroImage} alt="" /> : null}
                 <span>{o.seasonLabel}<small>{o.episodeCount} episodes</small></span>
               </Link>
             ))}
@@ -325,7 +333,7 @@ export function SeasonClient(props: SeasonClientProps) {
             <div className="sv-others">
               {others.map((o) => (
                 <Link key={o.id} href={o.href} className="so">
-                  {heroImage ? <img src={heroImage} alt="" /> : <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
+                  {o.poster || heroImage ? <img src={o.poster || heroImage} alt="" /> : <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
                   <span className="shade" />
                   {o.playable && <span className="badge">Playable</span>}
                   <span className="so-in">

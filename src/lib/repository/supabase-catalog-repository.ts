@@ -194,6 +194,7 @@ export class SupabaseCatalogRepository {
         languages: c.languages || [],
         version: c.collection_type as any,
         status: c.status,
+        poster_url: c.poster_url || undefined,
       } as CatalogCollection)).sort(compareCollections);
     } catch (e) {
       return localCatalog.getDramaCollections(dramaSourceId);
@@ -232,6 +233,7 @@ export class SupabaseCatalogRepository {
         languages: row.languages || [],
         version: row.collection_type as any,
         status: row.status,
+        poster_url: row.poster_url || undefined,
       };
     } catch (e) {
       return localCatalog.getCollection(collectionSourceId);

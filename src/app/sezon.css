@@ -853,3 +853,6 @@ a.sn{display:block}
 .series .ep{grid-template-columns:48px 168px 1fr auto;gap:18px;padding:12px 14px}
 .series .ep-n{font-size:22px}
 .series .sn-n{bottom:78px}
+/* season poster on the season page hero (sits in front of the outlined season number) */
+.sv-hero .sv-poster{bottom:120px;z-index:0;width:clamp(170px,15vw,230px)}
+@media (max-width:900px){.sv-hero .sv-poster{display:none}}

@@ -31,6 +31,8 @@ export interface CatalogCollection {
   languages?: string[];
   version?: 'subtitled' | 'dubbed' | 'original' | 'unresolved';
   status?: 'published' | 'draft' | 'preview' | 'archived';
+  /** Season poster; subtitled and dubbed releases of a season share one. */
+  poster_url?: string;
 }
 
 export interface EpisodeGroup {
@@ -261,4 +263,9 @@ export function dramaSeasonCount(d: Pick<Drama, 'season_count' | 'collection_ids
 
 export function pluralSeasons(n: number): string {
   return `${n} ${n === 1 ? 'season' : 'seasons'}`;
+}
+
+/** Poster for a season: its own artwork if any release has one, else the drama poster. */
+export function seasonPosterOf(season: Pick<SeasonGroup, 'editions'>, dramaPoster?: string): string | undefined {
+  return season.editions.find((e) => e.poster_url)?.poster_url ?? dramaPoster;
 }

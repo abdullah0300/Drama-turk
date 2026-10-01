@@ -5,7 +5,7 @@ import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { SeasonClient, SeasonEpisode, OtherSeason } from './SeasonClient';
 import { siteConfig } from '@/config/site';
-import { editionName, isReleasePublished, seasonTitle } from '@/types/catalog';
+import { editionName, isReleasePublished, seasonPosterOf, seasonTitle } from '@/types/catalog';
 import { findEdition, findSeason, loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
 import { isDefaultEdition, seasonPath } from '@/lib/routes';
 
@@ -74,6 +74,7 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
     .filter((s) => s.key !== season.key)
     .map((s) => ({
       id: s.editions[0].id,
+      poster: seasonPosterOf(s, drama.poster_url),
       href: seasonPath(drama.id, s),
       heading: s.editions.map(editionName).join(' · '),
       seasonLabel: s.label,
@@ -92,6 +93,7 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
       dramaName={drama.name}
       dramaPoster={drama.poster_url}
       heroImage={heroImage}
+      seasonPoster={seasonPosterOf(season, drama.poster_url)}
       collectionId={edition.id}
       collectionHeading={edition.source_heading}
       seasonNumber={edition.reported_seasons?.[0] ?? 1}

@@ -1,0 +1,197 @@
+{
+ "dramas": {
+  "al-hashashin": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/qhnkrV58m9lLUL0BWX4MtKRqpKH.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/lxiVSSy62EgJaCqoL4zw13MokXX.jpg"
+  },
+  "al-sancak": {
+   "poster_url": "https://artworks.thetvdb.com/banners/v4/series/429415/posters/63bf06bf373e8.jpg",
+   "backdrop_url": "https://artworks.thetvdb.com/banners/v4/series/429415/backgrounds/63bb51fa9e878.jpg"
+  },
+  "alparslan-buyuk-selcuklu": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/4wKqK8T1wTdhXfhnZzz2TuJE2Zh.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/hOxTHKWxKM69OOg4C3WIfMqaOt6.jpg"
+  },
+  "ates-kuslari": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/zqfI3o3wRSAOVUtfRXnUTjtLVOZ.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/WyomW8bBeRRR4ilqMXZoItMqFy.jpg"
+  },
+  "barbaroslar": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/f4Ih65EVp6SQc8E89bQ7NbyGeei.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/leOTbaxPLkybrnj7kfEDlitYsDo.jpg"
+  },
+  "destan": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/ptrQFvg6sB0ouJXllVUczvm0RXw.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/6g2zQCbFqh3QQL0I6OJFoaVJN6e.jpg"
+  },
+  "dokuz-oguz": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/8ahz0v2iHXx5KRT8QKKPoOZ7M9Z.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/nvh4k8p6htMxlXVhpDaCcITv2tk.jpg"
+  },
+  "ertugrul-ghazi": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/rOar34cNLn2sgDH5FmAa1bvMpBv.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/xTwCPMFshsjtA0firQMe3GapQz9.jpg"
+  },
+  "halka": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/yx8G3WmKnw5pHcrHsH96d0ZDvGv.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/xolfbOBgS9IckkXOjCXHof7mGtS.jpg"
+  },
+  "kosem-sultan": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/4cSbpfXX9YPMPi1Ggauh7Xm7qmW.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/vbxUtuW59PUut2yfV4KIdq09Ss1.jpg"
+  },
+  "kurulus-orhan": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/1kEgzEvhJmw5eSxuGwn0o1cgHlK.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/65K3llBL0wlW0C3pNaQyjWOdwbp.jpg"
+  },
+  "kurulus-osman": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/tu4BWsGFHcYDWulZwHxylA91vo0.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/puLaqdcTRwFxwv9S3PO6jA3ep7J.jpg"
+  },
+  "mehmed-fetihler-sultani": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/A8fHgHmcEQU1UcOcXhW3NXtwwcZ.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/bJxf4Y8UKOBsWoE3gB6N0hfB04G.jpg"
+  },
+  "mendirman-jaloliddin": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/1luRYqIi5C5WydghAwceRlbOXUA.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/3tjoK15v8SuY6ms6nKDtTnWjSuB.jpg"
+  },
+  "mevlana-celaleddin-rumi": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/lcWpRGUOL0d79Lk6WRW1zqOfKCG.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/yawM5fgK4Fm2C0dfHiG6d2VEOpT.jpg"
+  },
+  "salahuddin-ayyubi": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/5bljg22nvfS0eP320L5GFYJz3Zb.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/jo78r1koYnbEDdD4boh0EFcMpQo.jpg"
+  },
+  "sevdan-bir-ates": {
+   "poster_url": "https://mo.ciner.com.tr/showtv/iu/1258x630/sevdan-bir-ates.jpg",
+   "backdrop_url": "https://mo.ciner.com.tr/showtv/iu/1258x630/sevdan-bir-ates.jpg"
+  },
+  "soz": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/orUokYSO7obeN8T1AhgbMNHb4FB.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/rOkRGZdt1sx84eIRkGkzncOr29l.jpg"
+  },
+  "sultan-abdulhamid": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/fmaWiokhUVDsVkCfoWaQEDFZFFP.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/hU0nzL6eKsdzeMaEt3mqWMCwYgM.jpg"
+  },
+  "sumud": {
+   "poster_url": "https://cdn.sinemalar.com/images/movie/290822/poster/sumud-1781461115.jpg",
+   "backdrop_url": "https://cdn.sinemalar.com/images/movie/290822/poster/sumud-1781461115.jpg"
+  },
+  "tasacak-bu-deniz": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/uHIOTJXN9nNTc51WyunL43Fvge3.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/otEKvJA72Pue5RDgVrBqdOqgAd.jpg"
+  },
+  "teskilat": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/d9deRu03wbPIokp4qveLzrlUTLW.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/hb1X6gQ33yu3JHTngUStqPQqO0l.jpg"
+  },
+  "the-pit-cukur": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/fBXDSBDw5Zug6E2xTB265LzYVKz.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/xtCzLQOocIajjQ5Mhwp834BQhVX.jpg"
+  },
+  "yunus-emre": {
+   "poster_url": "https://image.tmdb.org/t/p/w780/l2kTvitWN7tnpZGf4vb5MxK4TGf.jpg",
+   "backdrop_url": "https://image.tmdb.org/t/p/w1280/tNUc4apfzASP3cUmqtIngyecMUu.jpg"
+  }
+ },
+ "seasons": {
+  "al-hashashin": {
+   "1": "https://image.tmdb.org/t/p/w780/9tO0GtA4szY1nP8HVIlZNLezfRb.jpg"
+  },
+  "alparslan-buyuk-selcuklu": {
+   "1": "https://image.tmdb.org/t/p/w780/mbZMAl1zEPCKOG41K7vZWn1zUer.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/riRJMzU0WWpelitHH4RWjRIj4fM.jpg"
+  },
+  "ates-kuslari": {
+   "1": "https://image.tmdb.org/t/p/w780/e6gK5i4KYNeCyA4AYf3ofrFvGEn.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/jBK9DPhPWIEp7Mz4PTymuxr1n54.jpg"
+  },
+  "barbaroslar": {
+   "1": "https://image.tmdb.org/t/p/w780/t4FC3XOQTGF66JnotzXpNsBnZSH.jpg"
+  },
+  "destan": {
+   "1": "https://image.tmdb.org/t/p/w780/cSDEb3XvsML6VwYZ5HEJy7vQUS.jpg"
+  },
+  "dokuz-oguz": {
+   "1": "https://image.tmdb.org/t/p/w780/3bG0E254iYhXOmriJOyVYZTR9I5.jpg"
+  },
+  "ertugrul-ghazi": {
+   "1": "https://image.tmdb.org/t/p/w780/mo17qMfpML0LlNPoMChDy6KZaeE.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/syIcNmRoTKzk0IcUtg56bKRCHuq.jpg",
+   "3": "https://image.tmdb.org/t/p/w780/hLNDkms99xQqUuMxz4XrAEX2pyx.jpg",
+   "4": "https://image.tmdb.org/t/p/w780/1Lih2yeJH4GmevVlaYVdh1jJoG2.jpg",
+   "5": "https://image.tmdb.org/t/p/w780/3jMR4W9953N4Hw9FL7Itm6ULSSJ.jpg"
+  },
+  "kosem-sultan": {
+   "1": "https://image.tmdb.org/t/p/w780/tcfKLP3Oljfc7TCGTeAFDBJlky9.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/m8W7yRQgJBABZm0TkH7b8OxbvkD.jpg"
+  },
+  "kurulus-orhan": {
+   "1": "https://image.tmdb.org/t/p/w780/1kEgzEvhJmw5eSxuGwn0o1cgHlK.jpg"
+  },
+  "kurulus-osman": {
+   "1": "https://image.tmdb.org/t/p/w780/tZuarGU7wrYkKhn8m5JEBmYIYJd.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/pQ6FyOdo3zZAs2tpHqVBoea8i7K.jpg",
+   "3": "https://image.tmdb.org/t/p/w780/mmwOR1vhzh9sk6o66GZFV5cG4X7.jpg",
+   "4": "https://image.tmdb.org/t/p/w780/7rct4Of5MDtfpOrCklqY7lqRIwk.jpg",
+   "5": "https://image.tmdb.org/t/p/w780/8T3jyuug5ZJeij0kcaQdMYkkszt.jpg",
+   "6": "https://image.tmdb.org/t/p/w780/cU1KzcZl88bHv4cW43umPui1y0l.jpg"
+  },
+  "mehmed-fetihler-sultani": {
+   "1": "https://image.tmdb.org/t/p/w780/7NVE1GLgOh5VxRiu0EcwEAzRgYW.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/lCiVWEXvhjLklWsa88yYjsjyF1u.jpg",
+   "3": "https://image.tmdb.org/t/p/w780/6pwPvDCXO71UKA2tVtG8rYPwyOy.jpg",
+   "4": "https://image.tmdb.org/t/p/w780/bV2llX6JqcPQtTpvTYWU1IdSUNd.jpg"
+  },
+  "mendirman-jaloliddin": {
+   "1": "https://image.tmdb.org/t/p/w780/gbfutL0SAYM4C3eNDJZmYCziYiY.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/5t2NX6r7b6ZbhKyewiqSmzoqV6M.jpg"
+  },
+  "mevlana-celaleddin-rumi": {
+   "1": "https://image.tmdb.org/t/p/w780/hTYw1pKochne9ed0QtAWnzVqdRn.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/xZbWFWIyC1zV4CdIqe0wl3ysupe.jpg",
+   "3": "https://image.tmdb.org/t/p/w780/lcWpRGUOL0d79Lk6WRW1zqOfKCG.jpg"
+  },
+  "salahuddin-ayyubi": {
+   "1": "https://image.tmdb.org/t/p/w780/pVqXOJXrfNlb0kqtV0mkLklmwkF.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/cWvuppijcTEYLuERGL6Fg51QEfC.jpg"
+  },
+  "soz": {
+   "1": "https://image.tmdb.org/t/p/w780/6bzQOsYmipR5RdMxR78scdwBwiK.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/3kdHuGEVYd89ZDbwjboHvWkxFLC.jpg",
+   "3": "https://image.tmdb.org/t/p/w780/xKCGIcvJy5YzQPUqQ06Kmf8dymg.jpg"
+  },
+  "sultan-abdulhamid": {
+   "1": "https://image.tmdb.org/t/p/w780/dBElZT1h964nQrNrTF9PYkWJjBR.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/xwGfVbwH13TWFClHAvWYDBlUe04.jpg",
+   "3": "https://image.tmdb.org/t/p/w780/uz6eTm58DW1pZQ1dUWi3cdyk2d5.jpg",
+   "4": "https://image.tmdb.org/t/p/w780/m6MV8kuCs5g9bVfKYFHNWEIDucC.jpg",
+   "5": "https://image.tmdb.org/t/p/w780/hoDeLOcrHuos9U1pS48ctJzAsxo.jpg"
+  },
+  "tasacak-bu-deniz": {
+   "1": "https://image.tmdb.org/t/p/w780/xlMPUCyFRamL8CjQf85wmsUm6Mj.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/cHYsj0aiUXOanslE2l599iUpOSX.jpg"
+  },
+  "teskilat": {
+   "1": "https://image.tmdb.org/t/p/w780/jsznVHE9PfLU0pCUCg1oZP7ceeo.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/gvElKSv17BCibQ2H8EOvyCRJgKz.jpg",
+   "3": "https://image.tmdb.org/t/p/w780/AtMPmQSLY7nbebbw3EYEgGHuDVl.jpg",
+   "4": "https://image.tmdb.org/t/p/w780/txZ7PtMKySTS62N79llqkakw7a8.jpg",
+   "5": "https://image.tmdb.org/t/p/w780/AneAFFPT3mjq0wx9XPV4uVMUb4y.jpg",
+   "6": "https://image.tmdb.org/t/p/w780/1JaYjCetgRfjPXqPo5JM28yCjwP.jpg",
+   "7": "https://image.tmdb.org/t/p/w780/20BRKsWseoEH9okuN5aEfwPwSJO.jpg"
+  },
+  "the-pit-cukur": {
+   "1": "https://image.tmdb.org/t/p/w780/ajVCnyj7aBfsOOzSSzFaf75FHvu.jpg",
+   "2": "https://image.tmdb.org/t/p/w780/7aL9P5NLSgBjdChcwp4cH1OLdKf.jpg",
+   "3": "https://image.tmdb.org/t/p/w780/ih4MxcqGRdni1pVvMtMbY8ZYwaJ.jpg",
+   "4": "https://image.tmdb.org/t/p/w780/zFuPsMqDozY8I34prVFhNEzqJgW.jpg"
+  },
+  "yunus-emre": {
+   "1": "https://image.tmdb.org/t/p/w780/ohJxn6dYbBG7PyxppLizjB42ErC.jpg"
+  }
+ }
+}
