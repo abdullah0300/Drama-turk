@@ -5,7 +5,7 @@ import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { catalogRepository } from '@/lib/repository/catalog-repository';
 import { WatchClient } from './WatchClient';
 import { siteConfig } from '@/config/site';
-import { seasonLabel } from '@/types/catalog';
+import { isReleasePublished, seasonLabel } from '@/types/catalog';
 import { findEdition, findSeason, loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
 import { isDefaultEdition, seasonPath } from '@/lib/routes';
 
@@ -57,7 +57,7 @@ export async function EpisodeView({ params, segment }: { params: EpisodeRoutePar
 
   // Publication and playability enforcement: both the release and the episode must be published
   const isPlayable =
-    (edition.status === 'published' || supabaseCatalog.isPilotCollection(edition.id)) &&
+    isReleasePublished(edition) &&
     (group.status === 'published' || group.status === undefined);
   if (!isPlayable) redirect(seasonUrl);
 

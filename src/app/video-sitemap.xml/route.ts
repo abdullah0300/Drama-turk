@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { siteConfig } from '@/config/site';
 import { loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
+import { isReleasePublished } from '@/types/catalog';
 
 /** Video sitemap for the featured drama: every published episode with a stream, on clean URLs. */
 export async function GET() {
@@ -16,7 +17,7 @@ export async function GET() {
 
   for (const season of loaded?.seasons ?? []) {
     for (const edition of season.editions) {
-      if (edition.status !== 'published') continue;
+      if (!isReleasePublished(edition)) continue;
       const { groups, slugs, videosByGroup } = await loadEditionEpisodes(edition.id);
       for (const group of groups) {
         const video = (videosByGroup.get(group.id) || []).find((v) => v.stream_urls?.[0]);

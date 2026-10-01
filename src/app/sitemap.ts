@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { siteConfig } from '@/config/site';
 import { loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
+import { isReleasePublished } from '@/types/catalog';
 import { dramaPath, seasonPath } from '@/lib/routes';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -56,7 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     for (const season of loaded.seasons) {
       for (const edition of season.editions) {
-        if (edition.status !== 'published') continue;
+        if (!isReleasePublished(edition)) continue;
         routes.push({
           url: `${baseUrl}${seasonPath(d.id, season, edition)}`,
           lastModified: staticLastMod,

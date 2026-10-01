@@ -5,7 +5,7 @@ import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { SeasonClient, SeasonEpisode, OtherSeason } from './SeasonClient';
 import { siteConfig } from '@/config/site';
-import { editionName, seasonTitle } from '@/types/catalog';
+import { editionName, isReleasePublished, seasonTitle } from '@/types/catalog';
 import { findEdition, findSeason, loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
 import { isDefaultEdition, seasonPath } from '@/lib/routes';
 
@@ -42,7 +42,7 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
   // A dubbed-only season lives at the plain season URL
   if (segment && isDefaultEdition(season, edition)) permanentRedirect(seasonPath(drama.id, season, edition));
 
-  const published = edition.status === 'published' || edition.id === siteConfig.pilotCollectionId;
+  const published = isReleasePublished(edition);
   const { groups, slugs, videosByGroup, extras } = await loadEditionEpisodes(edition.id);
 
   const episodes: SeasonEpisode[] = groups.map((group, i) => {
@@ -78,7 +78,7 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
       heading: s.editions.map(editionName).join(' · '),
       seasonLabel: s.label,
       episodeCount: s.editions[0].episode_group_ids?.length ?? 0,
-      playable: s.editions.some((c) => c.status === 'published' || c.id === siteConfig.pilotCollectionId),
+      playable: s.editions.some(isReleasePublished),
     }));
 
   const allDramas = await supabaseCatalog.getAllDramas();

@@ -6,7 +6,7 @@ import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { DramaActions } from './DramaActions';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { siteConfig } from '@/config/site';
-import { isDramaPlayable, editionName, pluralSeasons } from '@/types/catalog';
+import { isDramaPlayable, isReleasePublished, editionName, pluralSeasons } from '@/types/catalog';
 import { loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
 import { seasonPath } from '@/lib/routes';
 
@@ -39,7 +39,7 @@ export default async function DramaPage({ params }: DramaPageProps) {
   if (!loaded) notFound();
   const { drama, seasons } = loaded;
   const collections = seasons.flatMap((s) => s.editions);
-  const playable = isDramaPlayable(drama) || collections.some((c) => c.status === 'published');
+  const playable = isDramaPlayable(drama) || collections.some(isReleasePublished);
 
   // "Start watching" opens the first episode of the first season
   const firstSeason = seasons[0];

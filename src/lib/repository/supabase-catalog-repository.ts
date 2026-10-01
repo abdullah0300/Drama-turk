@@ -8,6 +8,7 @@ import {
   VideoRecord,
   compareCollections,
   isDramaPlayable,
+  isReleasePublished,
   groupSeasons,
 } from '@/types/catalog';
 import { episodePath, episodeSlugs, seasonPath } from '@/lib/routes';
@@ -535,7 +536,7 @@ export class SupabaseCatalogRepository {
 
     const picks = await Promise.all(dramas.map(async (drama) => {
       const cols = (await this.getDramaCollections(drama.id))
-        .filter((c) => c.status === 'published' || c.id === siteConfig.pilotCollectionId);
+        .filter(isReleasePublished);
       if (cols.length === 0) return null;
 
       const newest = Math.max(...cols.map((c) => c.reported_seasons?.[0] ?? 0));

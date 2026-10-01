@@ -182,9 +182,17 @@ export interface MyListItem {
   addedAt: number;
 }
 
-/** A drama is watchable when any of its seasons is published (local fallback data only marks the pilot). */
-export function isDramaPlayable(drama: Pick<Drama, 'playable' | 'isPilot'>): boolean {
-  return drama.playable ?? !!drama.isPilot;
+/**
+ * A release is watchable unless it is explicitly held back (draft / preview / archived).
+ * The local fallback catalog carries no status at all; it mirrors published data, so "unknown" counts as published.
+ */
+export function isReleasePublished(c: Pick<CatalogCollection, 'status'>): boolean {
+  return c.status === undefined || c.status === 'published';
+}
+
+/** A drama is watchable when any of its seasons is published. */
+export function isDramaPlayable(drama: Pick<Drama, 'playable' | 'collection_ids'>): boolean {
+  return drama.playable ?? drama.collection_ids.length > 0;
 }
 
 const editionRank: Record<string, number> = { subtitled: 0, original: 1, dubbed: 2, unresolved: 3 };

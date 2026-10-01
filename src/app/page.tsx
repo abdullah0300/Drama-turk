@@ -9,7 +9,7 @@ import { ContinueWatchingRow } from '@/components/home/ContinueWatchingRow';
 import { LatestEpisodesRow } from '@/components/home/LatestEpisodesRow';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { siteConfig } from '@/config/site';
-import { isDramaPlayable, groupSeasons, editionName, pluralSeasons, dramaSeasonCount } from '@/types/catalog';
+import { isDramaPlayable, isReleasePublished, groupSeasons, editionName, pluralSeasons, dramaSeasonCount } from '@/types/catalog';
 import { episodePath, episodeSlugs, seasonPath } from '@/lib/routes';
 
 export const revalidate = 3600; // 1 hour ISR
@@ -113,7 +113,7 @@ export default async function HomePage() {
               label: s.label,
               edition: s.editions.map(editionName).join(' · '),
               episodes: s.editions[0].episode_group_ids?.length ?? 0,
-              playable: s.editions.some((c) => c.status === 'published'),
+              playable: s.editions.some(isReleasePublished),
             })),
         };
         return item;
