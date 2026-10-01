@@ -59,6 +59,7 @@ export default async function RootLayout({
     poster: d.poster_url,
     isPilot: isDramaPlayable(d),
   }));
+  const footerDramas = dramas.filter(isDramaPlayable).slice(0, 5).map((d) => ({ id: d.id, name: d.name }));
   const notifications = latest.map(({ group, video, drama, href }) => ({
     id: group.id,
     title: drama.name,
@@ -81,7 +82,7 @@ export default async function RootLayout({
         <UserPreferencesProvider>
           <Navbar dramas={searchDramas} notifications={notifications} />
           <PageShell>{children}</PageShell>
-          <Footer />
+          <Footer dramas={footerDramas} />
           <MobileNav />
         </UserPreferencesProvider>
       </body>
