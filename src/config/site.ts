@@ -20,11 +20,11 @@ export interface SiteConfig {
 
 export const siteConfig: SiteConfig = {
   name: 'Drama Platform',
-  wordmark: 'DRAMA PLATFORM',
+  wordmark: 'sezon',
   tagline: 'Your drama. Without interruptions.',
   brandPromise: 'Your drama. Without interruptions.',
   supportingCopy: 'No ads. No pop-ups. Just watch.',
-  accentColor: '#f59e0b', // Warm amber
+  accentColor: '#f2b33d', // Warm gold
   domain: process.env.NEXT_PUBLIC_SITE_DOMAIN || 'http://localhost:3000',
   pilotDramaId: process.env.NEXT_PUBLIC_PILOT_DRAMA_ID || 'mehmed-fetihler-sultani',
   // Collection 68 is confirmed in catalog data: Mehmed: Fetihler Sultani Season 2 - Urdu & English Subtitles

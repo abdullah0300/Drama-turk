@@ -1,95 +1,173 @@
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Play, Info, ShieldCheck, CheckCircle2 } from 'lucide-react';
-import { Drama, CatalogCollection, EpisodeGroup } from '@/types/catalog';
-import { siteConfig } from '@/config/site';
+'use client';
 
-interface FeaturedHeroProps {
-  drama: Drama;
-  collection?: CatalogCollection;
-  firstEpisodeGroup?: EpisodeGroup;
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { Check, Info, Play, Plus } from 'lucide-react';
+import { useUserPreferences } from '@/context/UserPreferencesContext';
+
+export interface HeroItem {
+  id: string;
+  title: string;
+  kicker: string;
+  genres: string[];
+  meta: string;
+  line: string;
+  image?: string;
+  thumb?: string;
+  episodeCount: number;
+  playHref: string;
+  playLabel: string;
+  infoHref: string;
+  thumbnailForList?: string;
 }
 
-export function FeaturedHero({ drama, collection, firstEpisodeGroup }: FeaturedHeroProps) {
-  const watchUrl = firstEpisodeGroup 
-    ? `/drama/${drama.id}/watch/${firstEpisodeGroup.id}`
-    : `/drama/${drama.id}`;
+const HERO_MS = 8000;
+
+export function FeaturedHero({ items }: { items: HeroItem[] }) {
+  const { history, isInMyList, addToMyList, removeFromMyList } = useUserPreferences();
+  const [idx, setIdx] = useState(0);
+  const [shown, setShown] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const item = items[idx] ?? items[0];
+
+  // retrigger enter animation whenever the featured item changes
+  useEffect(() => {
+    setShown(false);
+    const r = requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
+    return () => cancelAnimationFrame(r);
+  }, [idx]);
+
+  const next = useCallback(() => setIdx((i) => (i + 1) % items.length), [items.length]);
+
+  useEffect(() => {
+    if (items.length < 2 || paused) return;
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    timer.current = setTimeout(next, HERO_MS);
+    return () => clearTimeout(timer.current);
+  }, [idx, paused, items.length, next]);
+
+  if (!item) return null;
+
+  const resume = history.find((h) => h.dramaId === item.id && !h.completed);
+  const watched = new Set(history.filter((h) => h.dramaId === item.id).map((h) => h.episodeGroupId)).size;
+  const saved = isInMyList(item.id);
+  const playHref = resume ? `/drama/${item.id}/watch/${resume.episodeGroupId}` : item.playHref;
+  const playLabel = resume ? `Continue ${resume.displayLabel}` : item.playLabel;
+
+  const toggleList = () => {
+    if (saved) removeFromMyList(item.id);
+    else
+      addToMyList({
+        id: item.id,
+        type: 'drama',
+        dramaId: item.id,
+        title: item.title,
+        thumbnailUrl: item.thumbnailForList,
+        addedAt: Date.now(),
+      });
+  };
 
   return (
-    <section className="relative w-full border-b border-surface-border bg-gradient-to-b from-canvas-elevated via-canvas-subtle to-canvas overflow-hidden">
-      {/* Background Graphic / Artwork with purposeful cinematic gradient */}
-      <div className="absolute inset-0 z-0 opacity-25 md:opacity-30">
-        {drama.backdrop_url ? (
-          <img
-            src={drama.backdrop_url}
-            alt={drama.name}
-            className="w-full h-full object-cover object-center filter blur-[2px] scale-105"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-r from-amber-950/20 to-stone-900" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/80 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-canvas via-canvas/70 to-transparent" />
+    <section
+      className="hero kb"
+      id="top"
+      key={item.id}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="hero-art">
+        {item.image ? <img src={item.image} alt="" /> : <div className="art-fallback" />}
       </div>
+      <div className="hero-shade" />
 
-      <div className="relative z-10 max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
-        <div className="max-w-2xl">
-          {/* Subtle ad-free promise badge & Pilot tag */}
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-semibold tracking-wide uppercase">
-              <CheckCircle2 size={13} className="text-amber-400" />
-              Pilot Feature · Playable Release
-            </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface/80 border border-surface-border text-text-tertiary text-xs">
-              <ShieldCheck size={13} className="text-amber-500/80" />
-              {siteConfig.supportingCopy}
-            </span>
+      <div className={`hero-content${shown ? ' in' : ''}`}>
+        <div className="kicker rise" style={{ ['--d' as string]: '0s' }}>
+          <span className="pulse" />
+          {item.kicker}
+        </div>
+        <h1
+          className="hero-title"
+          style={{
+            opacity: shown ? 1 : 0,
+            transition: 'opacity .8s var(--ease)',
+            ...(item.title.length > 14 ? { fontSize: 'clamp(40px,5.6vw,88px)' } : {}),
+          }}
+        >
+          {item.title.split(' ').map((w, wi) => (
+            <React.Fragment key={wi}>
+              <span className="w">
+                {Array.from(w).map((ch, k) => (
+                  <span className="ch" key={k} style={{ ['--d' as string]: `${(wi * 6 + k) * 38}ms` }}>{ch}</span>
+                ))}
+              </span>{' '}
+            </React.Fragment>
+          ))}
+        </h1>
+        <div className="meta rise" style={{ ['--d' as string]: '.35s' }}>
+          {item.genres.length > 0 && <span className="gold">{item.genres[0]}</span>}
+          {item.genres.length > 0 && <span className="sep" />}
+          <span>{item.meta}</span>
+        </div>
+        <p className="hero-line rise" style={{ ['--d' as string]: '.45s' }}>{item.line}</p>
+
+        {item.episodeCount > 0 && (
+          <div className="seg rise" style={{ ['--d' as string]: '.55s' }}>
+            <div className="seg-label">
+              <span><b>{item.episodeCount}</b> episodes playable</span>
+              <span>{watched > 0 ? `${watched} started` : 'Ad-free'}</span>
+            </div>
+            <div className="seg-bar">
+              {Array.from({ length: item.episodeCount }, (_, i) => (
+                <i key={i} className={i < watched ? 'w8' : ''} style={{ ['--d' as string]: `${600 + i * 18}ms` }} />
+              ))}
+            </div>
           </div>
+        )}
 
-          {/* Drama Title */}
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-text-primary mb-3 text-balance">
-            {drama.name}
-          </h1>
-
-          {/* Verified Collection & Language Metadata */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-text-secondary mb-4 font-medium">
-            {collection && (
-              <span className="text-amber-400">
-                Season {collection.reported_seasons.join(', ')} Subtitled
-              </span>
-            )}
-            <span className="text-surface-border-strong">•</span>
-            <span>Urdu &amp; English Subtitles</span>
-            <span className="text-surface-border-strong">•</span>
-            <span>36 Episodes (Full Pilot Season)</span>
-          </div>
-
-          {/* Synopsis */}
-          <p className="text-sm sm:text-base text-text-secondary mb-6 leading-relaxed line-clamp-3 md:line-clamp-4 max-w-xl">
-            {drama.synopsis || 'An epic historical narrative chronicling the vision, statecraft, and tactical campaigns of Sultan Mehmed II as he reshapes the destiny of empires.'}
-          </p>
-
-          {/* Action CTAs */}
-          <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href={watchUrl}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold text-sm transition-transform active:scale-95 shadow-md"
-            >
-              <Play size={18} className="fill-stone-950" />
-              Start Watching
-            </Link>
-
-            <Link
-              href={`/drama/${drama.id}`}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-surface/80 hover:bg-surface-hover border border-surface-border text-text-primary text-sm font-medium transition-colors"
-            >
-              <Info size={18} className="text-text-secondary" />
-              View Drama Details
-            </Link>
-          </div>
+        <div className="actions rise" style={{ ['--d' as string]: '.65s' }}>
+          <Link href={playHref} className="btn btn-play">
+            <Play className="i f" />
+            {playLabel}
+          </Link>
+          <Link href={item.infoHref} className="btn btn-ghost">
+            <Info className="i" />
+            More info
+          </Link>
+          <button
+            className="btn btn-round"
+            onClick={toggleList}
+            aria-label={saved ? 'Remove from My List' : 'Add to My List'}
+          >
+            {saved ? <Check className="i" /> : <Plus className="i" />}
+          </button>
         </div>
       </div>
+
+      {items.length > 1 && (
+        <>
+          <div className="switch">
+            {items.map((s, k) => (
+              <button
+                key={s.id}
+                className={`sw${k === idx ? ' on' : ''}`}
+                style={{ ['--dur' as string]: `${HERO_MS}ms` }}
+                onClick={() => setIdx(k)}
+                aria-label={s.title}
+              >
+                {s.thumb ? <img src={s.thumb} alt="" /> : <div style={{ aspectRatio: '16/9', background: 'var(--bg3)', borderRadius: 6 }} />}
+                <span>{s.title}</span>
+                <span className="bar"><i /></span>
+              </button>
+            ))}
+          </div>
+          <div className="dots">
+            {items.map((s, k) => (
+              <button key={s.id} className={k === idx ? 'on' : ''} onClick={() => setIdx(k)} aria-label={s.title} />
+            ))}
+          </div>
+        </>
+      )}
     </section>
   );
 }

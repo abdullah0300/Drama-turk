@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import './sezon.css';
 import { UserPreferencesProvider } from '@/context/UserPreferencesContext';
 import { Navbar } from '@/components/layout/Navbar';
 import { MobileNav } from '@/components/layout/MobileNav';
+import { PageShell } from '@/components/layout/PageShell';
 import { Footer } from '@/components/layout/Footer';
 import { siteConfig } from '@/config/site';
 
@@ -33,7 +35,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0c0e12',
+  themeColor: '#09090b',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -50,16 +52,14 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Manrope:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>
       <body className="min-h-screen flex flex-col bg-canvas text-text-primary antialiased selection:bg-amber-500/30 selection:text-amber-200">
         <UserPreferencesProvider>
           <Navbar />
-          <main id="main-content" className="flex-1 pb-16 md:pb-0 focus:outline-none">
-            {children}
-          </main>
+          <PageShell>{children}</PageShell>
           <Footer />
           <MobileNav />
         </UserPreferencesProvider>

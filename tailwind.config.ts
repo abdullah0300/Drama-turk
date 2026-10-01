@@ -34,6 +34,11 @@ const config: Config = {
           tertiary: 'var(--text-tertiary)',
           muted: 'var(--text-muted)',
         },
+        amber: {
+          50: '#fef9ec', 100: '#fdf0c9', 200: '#fbe092', 300: '#f8cd62',
+          400: '#f6c04e', 500: '#f2b33d', 600: '#d99a22', 700: '#b27a18',
+          800: '#8a5e17', 900: '#6e4b17', 950: '#3d2708',
+        },
         status: {
           success: '#10b981',
           warning: '#f59e0b',

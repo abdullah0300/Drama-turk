@@ -441,7 +441,7 @@ export function CustomVideoPlayer({
       data-video-id={currentVideo.id}
       data-stream-url={streamUrl}
       onKeyDown={handleKeyDown}
-      className="relative w-full aspect-video bg-black rounded-lg overflow-hidden shadow-player group select-none focus:outline-none focus:ring-2 focus:ring-amber-500"
+      className="relative w-full aspect-video bg-black rounded-[16px] overflow-hidden shadow-player group select-none focus:outline-none focus:ring-2 focus:ring-amber-500"
       aria-label={`Video player for ${currentVideo.title || episodeGroup.display_label}`}
     >
       <video

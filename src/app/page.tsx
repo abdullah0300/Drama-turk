@@ -1,11 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
-import { FeaturedHero } from '@/components/home/FeaturedHero';
+import { FeaturedHero, HeroItem } from '@/components/home/FeaturedHero';
+import { Rail } from '@/components/sezon/Rail';
 import { ContinueWatchingRow } from '@/components/home/ContinueWatchingRow';
 import { LatestEpisodesRow } from '@/components/home/LatestEpisodesRow';
 import { DramaCard } from '@/components/dramas/DramaCard';
-import { Compass, ShieldCheck } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 
 export const revalidate = 3600; // 1 hour ISR
@@ -18,6 +18,49 @@ export default async function HomePage() {
 
   const latestEpisodes = await supabaseCatalog.getLatestPlayableEpisodes(6);
   const allDramas = await supabaseCatalog.getAllDramas();
+
+  const heroItems: HeroItem[] = [];
+  if (pilotDrama) {
+    heroItems.push({
+      id: pilotDrama.id,
+      title: pilotDrama.name,
+      kicker: 'Pilot feature · Playable release',
+      genres: pilotDrama.genres?.slice(0, 2) ?? [],
+      meta: pilotCollection
+        ? `Season ${pilotCollection.reported_seasons.join(', ')} · Urdu & English subtitles`
+        : 'Urdu & English subtitles',
+      line:
+        pilotDrama.synopsis ||
+        'An epic historical narrative chronicling the vision, statecraft, and tactical campaigns of Sultan Mehmed II.',
+      image: pilotDrama.backdrop_url || pilotDrama.poster_url,
+      thumb: pilotDrama.backdrop_url || pilotDrama.poster_url,
+      thumbnailForList: pilotDrama.poster_url,
+      episodeCount: pilotGroups.length,
+      playHref: firstGroup ? `/drama/${pilotDrama.id}/watch/${firstGroup.id}` : `/drama/${pilotDrama.id}`,
+      playLabel: 'Start watching',
+      infoHref: `/drama/${pilotDrama.id}`,
+    });
+  }
+  allDramas
+    .filter((d) => d.id !== pilotDrama?.id && (d.backdrop_url || d.poster_url))
+    .slice(0, 3)
+    .forEach((d) =>
+      heroItems.push({
+        id: d.id,
+        title: d.name,
+        kicker: 'Preview catalog',
+        genres: d.genres?.slice(0, 2) ?? [],
+        meta: `${d.collection_ids.length} ${d.collection_ids.length === 1 ? 'season' : 'seasons'} · ${d.video_records} records`,
+        line: d.synopsis || 'Browse authentic catalog metadata and source collection groupings.',
+        image: d.backdrop_url || d.poster_url,
+        thumb: d.backdrop_url || d.poster_url,
+        thumbnailForList: d.poster_url,
+        episodeCount: 0,
+        playHref: `/drama/${d.id}`,
+        playLabel: 'View catalog',
+        infoHref: `/drama/${d.id}`,
+      })
+    );
 
   // Structured data JSON-LD
   const jsonLd = {
@@ -40,66 +83,40 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Featured Still Hero */}
-      {pilotDrama && (
-        <FeaturedHero
-          drama={pilotDrama}
-          collection={pilotCollection}
-          firstEpisodeGroup={firstGroup}
-        />
-      )}
+      {/* Featured Hero */}
+      {heroItems.length > 0 && <FeaturedHero items={heroItems} />}
 
-      {/* Continue Watching Section (Private local storage) */}
-      <ContinueWatchingRow />
+      <div className="rows">
+        {/* Continue Watching Section (Private local storage) */}
+        <ContinueWatchingRow />
 
-      {/* Latest Playable Episodes in Pilot Release */}
-      <LatestEpisodesRow episodes={latestEpisodes} />
+        {/* Latest Playable Episodes in Pilot Release */}
+        <LatestEpisodesRow episodes={latestEpisodes} />
 
-      {/* Browse Dramas Section */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-page mx-auto w-full" aria-label="Browse Dramas">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-500 mb-1">
-              <Compass size={14} />
-              Full Catalog Directory
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold font-display text-text-primary">
-              Browse Dramas
-            </h2>
-            <p className="text-sm text-text-secondary mt-1">
-              Explore 24 series, 63 collections, and over 2,900 preserved episodes across subtitled and dubbed broadcast collections.
-            </p>
-          </div>
-
-          <Link
-            href="/browse"
-            className="text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1 self-start sm:self-auto"
-          >
-            Filter by language &amp; genre &rarr;
-          </Link>
-        </div>
-
-        {/* Drama Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+        {/* Browse Dramas Section */}
+        <Rail
+          id="browse"
+          title="Browse Dramas"
+          sub={`${allDramas.length} series · 63 collections · 2,900+ preserved episodes`}
+          aside={
+            <Link href="/browse" className="cw-head-r" style={{ color: 'var(--gold)' }}>
+              Filter by language &amp; genre &rarr;
+            </Link>
+          }
+        >
           {allDramas.map((drama, idx) => (
-            <DramaCard key={drama.id} drama={drama} priority={idx < 6} />
+            <DramaCard key={drama.id} drama={drama} priority={idx < 6} fluid={false} />
           ))}
-        </div>
-      </section>
+        </Rail>
+      </div>
 
-      {/* Transparent Brand Reassurance Banner (Appears once, subtle, honest) */}
-      <section className="py-12 border-t border-surface-border bg-canvas-subtle">
-        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 text-amber-400 mb-4 border border-amber-500/20">
-            <ShieldCheck size={24} />
-          </div>
-          <h3 className="text-xl font-bold font-display text-text-primary mb-2">
-            {siteConfig.brandPromise}
-          </h3>
-          <p className="text-sm text-text-secondary max-w-lg mx-auto leading-relaxed">
-            Zero pre-roll ads, zero mid-roll interruptions, and zero pop-ups. We prioritize direct, distraction-free playback with authentic audio and subtitle renditions.
-          </p>
-        </div>
+      {/* Transparent brand reassurance (appears once, subtle, honest) */}
+      <section className="assure" aria-label="Our promise">
+        <h3>{siteConfig.brandPromise}</h3>
+        <p>
+          Zero pre-roll ads, zero mid-roll interruptions, and zero pop-ups. We prioritize direct, distraction-free
+          playback with authentic audio and subtitle renditions.
+        </p>
       </section>
     </div>
   );

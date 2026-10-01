@@ -1,20 +1,40 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Search, Bookmark, Compass, Tv } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Search, Bookmark } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { myList } = useUserPreferences();
+  const [solid, setSolid] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const isLinkActive = (path: string) => {
-    if (path === '/' && pathname === '/') return true;
-    if (path !== '/' && pathname.startsWith(path)) return true;
-    return false;
+  useEffect(() => {
+    const onScroll = () => setSolid(window.scrollY > 40);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    setSearchOpen(false);
+    setQuery('');
+  }, [pathname]);
+
+  const isActive = (path: string) =>
+    path === '/' ? pathname === '/' : pathname.startsWith(path);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = query.trim();
+    router.push(q ? `/search?q=${encodeURIComponent(q)}` : '/search');
   };
 
   return (
@@ -23,83 +43,60 @@ export function Navbar() {
         Skip to main content
       </a>
 
-      <header className="sticky top-0 z-40 w-full border-b border-surface-border bg-canvas/90 backdrop-blur-md">
-        <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Brand Wordmark */}
-          <div className="flex items-center gap-8">
-            <Link 
-              href="/" 
-              className="flex items-center gap-2 text-text-primary hover:text-amber-400 transition-colors focus:outline-none"
-              aria-label={`${siteConfig.name} Home`}
-            >
-              <span className="font-display font-bold tracking-widest text-lg sm:text-xl text-amber-500">
-                {siteConfig.wordmark}
-              </span>
-            </Link>
+      <header className={`nav${solid || pathname.includes('/watch') ? ' solid' : ''}`} id="nav">
+        <Link className="logo" href="/" aria-label={`${siteConfig.name} Home`}>
+          {siteConfig.wordmark}<b></b>
+        </Link>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-6 text-sm" aria-label="Main Navigation">
-              <Link
-                href="/browse"
-                className={`transition-colors flex items-center gap-1.5 ${
-                  isLinkActive('/browse')
-                    ? 'text-amber-400 font-semibold'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                <Compass size={16} />
-                Browse Dramas
-              </Link>
+        <nav className="links" aria-label="Main Navigation">
+          <Link href="/" className={isActive('/') ? 'on' : ''}>Home</Link>
+          <Link href="/browse" className={isActive('/browse') ? 'on' : ''}>Browse Dramas</Link>
+          <Link
+            href="/drama/mehmed-fetihler-sultani"
+            className={pathname.includes('mehmed') ? 'on' : ''}
+          >
+            Featured
+          </Link>
+          <Link href="/my-list" className={isActive('/my-list') ? 'on' : ''}>
+            My List{myList.length > 0 ? ` (${myList.length})` : ''}
+          </Link>
+        </nav>
 
-              <Link
-                href="/drama/mehmed-fetihler-sultani"
-                className={`transition-colors flex items-center gap-1.5 ${
-                  pathname.includes('mehmed')
-                    ? 'text-amber-400 font-semibold'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                <Tv size={16} />
-                Featured: Mehmed
-              </Link>
-            </nav>
-          </div>
-
-          {/* Right Action Icons */}
-          <div className="flex items-center gap-3">
-            {/* Search */}
-            <Link
-              href="/search"
+        <div className="nav-end">
+          <form className={`search${searchOpen ? ' open' : ''}`} onSubmit={submit} role="search">
+            <button
+              type="button"
+              className="icon-btn"
               aria-label="Search Dramas"
-              className={`p-2 rounded-lg border transition-colors flex items-center gap-2 text-sm ${
-                isLinkActive('/search')
-                  ? 'bg-amber-500/10 border-amber-500/40 text-amber-400'
-                  : 'bg-surface/50 border-surface-border text-text-secondary hover:text-text-primary hover:bg-surface'
-              }`}
+              onClick={() => {
+                if (searchOpen && query.trim()) {
+                  router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+                  return;
+                }
+                setSearchOpen(!searchOpen);
+                if (!searchOpen) setTimeout(() => inputRef.current?.focus(), 50);
+              }}
             >
-              <Search size={18} />
-              <span className="hidden sm:inline text-xs text-text-tertiary">Search catalog...</span>
-            </Link>
-
-            {/* My List */}
-            <Link
-              href="/my-list"
-              aria-label={`My List (${myList.length} items)`}
-              className={`p-2 rounded-lg border transition-colors flex items-center gap-2 text-sm relative ${
-                isLinkActive('/my-list')
-                  ? 'bg-amber-500/10 border-amber-500/40 text-amber-400'
-                  : 'bg-surface/50 border-surface-border text-text-secondary hover:text-text-primary hover:bg-surface'
-              }`}
-            >
-              <Bookmark size={18} />
-              <span className="hidden sm:inline text-xs">My List</span>
-              {myList.length > 0 && (
-                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-500 text-stone-950 leading-none">
-                  {myList.length}
-                </span>
-              )}
-            </Link>
-          </div>
+              <Search className="i" />
+            </button>
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Titles, genres…"
+              aria-label="Search dramas"
+              tabIndex={searchOpen ? 0 : -1}
+            />
+          </form>
+          <Link
+            href="/my-list"
+            className="icon-btn"
+            aria-label={`My List (${myList.length} items)`}
+            style={{ position: 'relative' }}
+          >
+            <Bookmark className="i" />
+            {myList.length > 0 && <span className="dot-n" />}
+          </Link>
         </div>
       </header>
     </>

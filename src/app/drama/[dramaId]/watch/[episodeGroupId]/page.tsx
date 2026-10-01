@@ -104,7 +104,7 @@ export default async function WatchPage({ params }: WatchPageProps) {
   Object.keys(jsonLd).forEach(key => jsonLd[key] === undefined && delete jsonLd[key]);
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
