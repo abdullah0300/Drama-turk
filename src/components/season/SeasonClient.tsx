@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowDown, Check, Film, Info, Play, Plus } from 'lucide-react';
+import { ArrowDown, Captions, Check, Film, Info, Mic, Play, Plus } from 'lucide-react';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
 
 export interface SeasonEpisode {
@@ -249,6 +249,33 @@ export function SeasonClient(props: SeasonClientProps) {
               </button>
             </div>
           </div>
+
+          {editions.length > 1 && (
+            <div className="ep-lang" role="tablist" aria-label="Choose version">
+              {editions.map((e) => {
+                const dubbed = /dub/i.test(e.name);
+                const Icon = dubbed ? Mic : Captions;
+                return (
+                  <Link
+                    key={e.id}
+                    href={`${e.href}#episodes`}
+                    scroll={false}
+                    role="tab"
+                    aria-selected={e.active}
+                    aria-current={e.active ? 'page' : undefined}
+                    className={`ep-lang-opt${e.active ? ' on' : ''}`}
+                  >
+                    <Icon className="i" aria-hidden="true" />
+                    <span className="ep-lang-t">
+                      <b>{e.name}</b>
+                      <small>{e.episodes} episode{e.episodes === 1 ? '' : 's'}{dubbed ? ' · Urdu audio' : ' · Original audio'}</small>
+                    </span>
+                    {e.active && <Check className="i ep-lang-ok" aria-hidden="true" />}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
 
           {episodes.length === 0 ? (
             <div className="dw-empty">No episode groups indexed in this collection.</div>

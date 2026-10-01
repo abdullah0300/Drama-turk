@@ -856,3 +856,24 @@ a.sn{display:block}
 /* season poster on the season page hero (sits in front of the outlined season number) */
 .sv-hero .sv-poster{bottom:120px;z-index:0;width:clamp(170px,15vw,230px)}
 @media (max-width:900px){.sv-hero .sv-poster{display:none}}
+
+/* Subtitled / Urdu Dubbed switch in the season episodes section */
+.ep-lang{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:6px;padding:6px;margin:0 0 22px;border-radius:18px;background:var(--bg3);border:1px solid var(--line)}
+.ep-lang-opt{position:relative;display:flex;align-items:center;gap:12px;min-width:0;min-height:60px;padding:10px 16px;border-radius:13px;color:var(--muted);transition:background .25s,color .25s,box-shadow .25s}
+.ep-lang-opt:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.ep-lang-opt:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.ep-lang-opt>.i{flex:none;width:22px;height:22px}
+.ep-lang-t{display:flex;flex-direction:column;min-width:0}
+.ep-lang-t b{font-size:15px;font-weight:800;color:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-lang-t small{font-size:12px;font-weight:600;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-lang-opt.on{background:var(--text);color:#0b0b0c;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.ep-lang-opt.on>.i:first-child{color:#0b0b0c}
+.ep-lang-ok{flex:none;width:18px;height:18px;margin-left:auto}
+@media (max-width:520px){
+  .ep-lang{gap:4px;padding:4px;border-radius:14px}
+  .ep-lang-opt{flex-direction:column;justify-content:center;gap:4px;min-height:68px;padding:10px 8px;text-align:center}
+  .ep-lang-t{align-items:center}
+  .ep-lang-t b{font-size:14px}
+  .ep-lang-t small{font-size:11px;white-space:normal}
+  .ep-lang-ok{position:absolute;top:6px;right:6px;width:14px;height:14px}
+}
