@@ -19,8 +19,8 @@ export interface SiteConfig {
 }
 
 export const siteConfig: SiteConfig = {
-  name: 'Drama Platform',
-  wordmark: 'sezon',
+  name: 'Great Nation',
+  wordmark: 'Great Nation',
   tagline: 'Your drama. Without interruptions.',
   brandPromise: 'Your drama. Without interruptions.',
   supportingCopy: 'No ads. No pop-ups. Just watch.',

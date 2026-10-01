@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: WatchPageProps): Promise<Meta
   const videos = await supabaseCatalog.getVideosForGroup(group.id);
   const firstVideo = videos[0];
   const title = `${group.display_label} - ${drama.name}`;
-  const description = firstVideo?.title || `Watch ${group.display_label} of ${drama.name} ad-free on Drama Platform.`;
+  const description = firstVideo?.title || `Watch ${group.display_label} of ${drama.name} ad-free on Great Nation.`;
 
   return {
     title,

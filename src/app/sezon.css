@@ -774,7 +774,7 @@ footer a:hover{color:var(--text)}
   .ch,.rise,.reveal,.seg-bar i{opacity:1!important;transform:none!important;filter:none!important}
 }
 
-/* ---- Drama Platform integration (Next.js adaptations) ---- */
+/* ---- Great Nation integration (Next.js adaptations) ---- */
 a.card,a.ne,a.cw-card,a.se,a.so,a.w-ep,a.w-up-m,a.sv-pill{display:block}
 a.sv-pill{display:flex}
 a.w-ep{display:grid}

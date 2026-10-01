@@ -34,7 +34,7 @@ export default function AboutPage() {
             Our Brand Promise
           </h2>
           <p>
-            &ldquo;{siteConfig.brandPromise}&rdquo; Traditional drama streaming platforms are plagued by deceptive pre-roll advertisements, intrusive mid-rolls that destroy dramatic pacing, and unauthorized redirects. We reject this paradigm. On Drama Platform, viewers select an episode and immediately begin watching without commercial distractions.
+            &ldquo;{siteConfig.brandPromise}&rdquo; Traditional drama streaming platforms are plagued by deceptive pre-roll advertisements, intrusive mid-rolls that destroy dramatic pacing, and unauthorized redirects. We reject this paradigm. On Great Nation, viewers select an episode and immediately begin watching without commercial distractions.
           </p>
         </section>
 

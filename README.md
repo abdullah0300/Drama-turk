@@ -1,4 +1,4 @@
-# Drama Platform — Premium Ad-Free Drama Streaming
+# Great Nation — Premium Ad-Free Drama Streaming
 
 A modern, ad-free streaming platform built with Next.js App Router, TypeScript, and Tailwind CSS with design tokens. Designed for authentic, uninterrupted drama viewing with adaptive HLS playback, client-side privacy preservation, and strict catalog data integrity.
 

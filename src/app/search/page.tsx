@@ -6,7 +6,7 @@ import { siteConfig } from '@/config/site';
 
 export const metadata: Metadata = {
   title: 'Search Dramas & Episodes',
-  description: 'Search across titles, aliases, and episode records on Drama Platform.',
+  description: 'Search across titles, aliases, and episode records on Great Nation.',
   alternates: {
     canonical: `${siteConfig.domain}/search`,
   },
