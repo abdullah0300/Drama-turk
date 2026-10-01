@@ -38,6 +38,18 @@
       "video_records": 207
     },
     {
+      "id": "ask-ve-taht",
+      "name": "Aşk ve Taht",
+      "source_names": [
+        "Aşk ve Taht",
+        "Ishq Aur Takht"
+      ],
+      "collection_ids": [
+        "collection-81"
+      ],
+      "video_records": 8
+    },
+    {
       "id": "ates-kuslari",
       "name": "Ates Kuslari",
       "source_names": [
@@ -4104,6 +4116,24 @@
       ],
       "extra_video_ids": [],
       "video_records": 27
+    },
+    {
+      "id": "collection-81",
+      "source_catalog_id": "81",
+      "drama_id": "ask-ve-taht",
+      "source_heading": "Ishq Aur Takht | Aşk ve Taht - Urdu & English Subtitles",
+      "source_url": "https://play.niazitv.pk/drama/81/ishq-aur-takht-aşk-ve-taht-urdu-english-subtitles",
+      "reported_seasons": [
+        1
+      ],
+      "episode_group_ids": [
+        "collection-81-episode-1",
+        "collection-81-episode-2",
+        "collection-81-episode-3",
+        "collection-81-episode-4"
+      ],
+      "extra_video_ids": [],
+      "video_records": 8
     }
   ],
   "episode_groups": [
@@ -45095,6 +45125,66 @@
       ],
       "numbering_basis": "source_episode_number",
       "reported_season": 6
+    },
+    {
+      "id": "collection-81-episode-1",
+      "collection_id": "collection-81",
+      "drama_id": "ask-ve-taht",
+      "display_label": "Episode 1",
+      "episode_number": 1,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-4079",
+        "video-4080"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-81-episode-2",
+      "collection_id": "collection-81",
+      "drama_id": "ask-ve-taht",
+      "display_label": "Episode 2",
+      "episode_number": 2,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-4085",
+        "video-4086"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-81-episode-3",
+      "collection_id": "collection-81",
+      "drama_id": "ask-ve-taht",
+      "display_label": "Episode 3",
+      "episode_number": 3,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-4094",
+        "video-4095"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-81-episode-4",
+      "collection_id": "collection-81",
+      "drama_id": "ask-ve-taht",
+      "display_label": "Episode 4",
+      "episode_number": 4,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-40924",
+        "video-40925"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
     }
   ]
 }

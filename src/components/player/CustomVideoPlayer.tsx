@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import Hls from 'hls.js';
+import Hls, { FetchLoader } from 'hls.js';
 import { 
   Play, 
   Pause, 
@@ -146,6 +146,15 @@ export function CustomVideoPlayer({
           enableWorker: true,
           lowLatencyMode: false,
           backBufferLength: 90,
+          // Some hosts (video.twimg.com) answer 403 to any request carrying a third-party
+          // Referer, so media requests go out without one.
+          ...(typeof fetch === 'function' && typeof ReadableStream === 'function'
+            ? {
+                loader: FetchLoader,
+                fetchSetup: (context: { url: string }, initParams: RequestInit) =>
+                  new Request(context.url, { ...initParams, referrerPolicy: 'no-referrer' }),
+              }
+            : {}),
         });
 
         hls.loadSource(streamUrl);
@@ -174,6 +183,13 @@ export function CustomVideoPlayer({
         hls.on(Hls.Events.ERROR, (event, data) => {
           if (data.fatal) {
             console.warn('[Player] Fatal HLS error:', data.type, data.details);
+            if (data.details === Hls.ErrorDetails.MANIFEST_INCOMPATIBLE_CODECS_ERROR) {
+              // Recovery cannot help when the browser has no decoder for the stream (H.264/AAC).
+              cleanupHls();
+              setIsLoading(false);
+              setErrorState('This browser cannot decode this video format (H.264/AAC). Try Chrome, Edge, Safari or Firefox on a recent device.');
+              return;
+            }
             switch (data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR:
                 setErrorState('Network error connecting to stream source. The upstream media host may be unreachable or subject to CORS restrictions.');

@@ -37,6 +37,8 @@ export async function episodeMetadata(params: EpisodeRouteParams, segment?: stri
     title,
     description: video?.title || `Watch ${title} ad-free.`,
     alternates: { canonical: `${siteConfig.domain}${url}` },
+    // Native HLS (Safari) and the XHR fallback use the page policy; see CustomVideoPlayer.
+    referrer: 'no-referrer',
     openGraph: {
       title,
       images: video?.thumbnail_urls?.[0] ? [{ url: video.thumbnail_urls[0] }] : [],
