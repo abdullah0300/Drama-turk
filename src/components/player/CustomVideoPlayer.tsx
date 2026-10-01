@@ -10,6 +10,8 @@ import {
   Maximize, 
   Minimize, 
   RotateCcw, 
+  RotateCw,
+  SkipForward,
   Settings, 
   AlertCircle, 
   Copy, 
@@ -317,7 +319,58 @@ export function CustomVideoPlayer({
     setCountdown(null);
   };
 
-  // Controls
+  // ---- Controls visibility (auto-hide while playing; tap or mouse move brings them back) ----
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showControls = useCallback(() => {
+    setControlsVisible(true);
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = setTimeout(() => {
+      if (videoRef.current && !videoRef.current.paused) setControlsVisible(false);
+    }, 3000);
+  }, []);
+  useEffect(() => {
+    if (!isPlaying) setControlsVisible(true);
+    else showControls();
+  }, [isPlaying, showControls]);
+  useEffect(() => () => { if (hideTimerRef.current) clearTimeout(hideTimerRef.current); }, []);
+
+  // ---- Seeking helpers ----
+  const [buffered, setBuffered] = useState(0);
+  const [seekFlash, setSeekFlash] = useState<{ side: 'back' | 'fwd'; amount: number; key: number; gesture: boolean } | null>(null);
+  const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const seekTo = useCallback((target: number) => {
+    const v = videoRef.current;
+    if (!v) return;
+    const d = v.duration || duration;
+    const t = Math.max(0, d ? Math.min(target, d - 0.25) : target);
+    v.currentTime = t;
+    setCurrentTime(t);
+  }, [duration]);
+
+  const seekBy = useCallback((delta: number, gesture = false) => {
+    const v = videoRef.current;
+    if (!v) return;
+    seekTo(v.currentTime + delta);
+    const side = delta < 0 ? 'back' : 'fwd';
+    setSeekFlash((prev) => ({ side, amount: prev && prev.side === side ? prev.amount + Math.abs(delta) : Math.abs(delta), key: Date.now(), gesture }));
+    if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    flashTimerRef.current = setTimeout(() => setSeekFlash(null), 800);
+  }, [seekTo]);
+
+  const handleProgress = () => {
+    const v = videoRef.current;
+    if (!v || !v.buffered.length) return;
+    for (let i = 0; i < v.buffered.length; i++) {
+      if (v.buffered.start(i) <= v.currentTime + 0.5 && v.buffered.end(i) >= v.currentTime) {
+        setBuffered(v.buffered.end(i));
+        return;
+      }
+    }
+  };
+
+  // ---- Controls ----
   const togglePlay = () => {
     if (!videoRef.current) return;
     if (videoRef.current.paused) {
@@ -325,14 +378,6 @@ export function CustomVideoPlayer({
     } else {
       videoRef.current.pause();
       setIsPlaying(false);
-    }
-  };
-
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const target = parseFloat(e.target.value);
-    setCurrentTime(target);
-    if (videoRef.current) {
-      videoRef.current.currentTime = target;
     }
   };
 
@@ -371,12 +416,31 @@ export function CustomVideoPlayer({
     setShowSettingsMenu(false);
   };
 
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onChange);
+    return () => document.removeEventListener('fullscreenchange', onChange);
+  }, []);
+
   const toggleFullscreen = () => {
-    if (!containerRef.current) return;
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(console.warn);
-    } else {
-      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(console.warn);
+    const el = containerRef.current;
+    const v = videoRef.current as (HTMLVideoElement & { webkitEnterFullscreen?: () => void }) | null;
+    if (!el) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(console.warn);
+      return;
+    }
+    if (el.requestFullscreen) {
+      el.requestFullscreen()
+        .then(() => {
+          // Phones: turn to landscape where the browser allows it.
+          const o = screen.orientation as ScreenOrientation & { lock?: (o: string) => Promise<void> };
+          o?.lock?.('landscape').catch(() => {});
+        })
+        .catch(console.warn);
+    } else if (v?.webkitEnterFullscreen) {
+      // iPhone Safari only allows the native video player to go fullscreen.
+      v.webkitEnterFullscreen();
     }
   };
 
@@ -393,11 +457,115 @@ export function CustomVideoPlayer({
     }
   };
 
+  // ---- Touch gestures: tap = show/hide controls, double-tap sides = ±10 s, horizontal swipe = scrub ----
+  const SWIPE_RANGE = 120; // seconds covered by a swipe across the full player width
+  const [scrub, setScrub] = useState<{ target: number; delta: number } | null>(null);
+  const gestureRef = useRef<{ id: number; x: number; y: number; startTime: number; mode: 'pending' | 'scrub' } | null>(null);
+  const lastTapRef = useRef<{ t: number; side: 'back' | 'fwd' | 'mid' } | null>(null);
+  const singleTapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const sideOf = (clientX: number): 'back' | 'fwd' | 'mid' => {
+    const r = containerRef.current?.getBoundingClientRect();
+    if (!r) return 'mid';
+    const f = (clientX - r.left) / r.width;
+    return f < 0.4 ? 'back' : f > 0.6 ? 'fwd' : 'mid';
+  };
+
+  const lastPointerTypeRef = useRef<string>('mouse');
+  const onSurfacePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    lastPointerTypeRef.current = e.pointerType;
+    if (e.pointerType === 'mouse') return;
+    gestureRef.current = { id: e.pointerId, x: e.clientX, y: e.clientY, startTime: videoRef.current?.currentTime ?? 0, mode: 'pending' };
+  };
+
+  const onSurfacePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const g = gestureRef.current;
+    if (!g || g.id !== e.pointerId) return;
+    const dx = e.clientX - g.x;
+    const dy = e.clientY - g.y;
+    if (g.mode === 'pending') {
+      if (Math.abs(dx) > 14 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+        g.mode = 'scrub';
+        e.currentTarget.setPointerCapture(e.pointerId);
+        showControls();
+      } else if (Math.abs(dy) > 14) {
+        gestureRef.current = null; // vertical: let the page scroll
+        return;
+      } else return;
+    }
+    const width = containerRef.current?.getBoundingClientRect().width || 1;
+    const d = videoRef.current?.duration || duration || 0;
+    const range = d ? Math.min(SWIPE_RANGE, d) : SWIPE_RANGE;
+    const target = Math.max(0, Math.min(d || Infinity, g.startTime + (dx / width) * range));
+    setScrub({ target, delta: target - g.startTime });
+  };
+
+  const onSurfacePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const g = gestureRef.current;
+    gestureRef.current = null;
+    if (e.pointerType === 'mouse') return;
+    if (g?.mode === 'scrub') {
+      if (scrub) seekTo(scrub.target);
+      setScrub(null);
+      showControls();
+      return;
+    }
+    if (!g) return;
+    // Tap handling
+    const side = sideOf(e.clientX);
+    const now = Date.now();
+    const last = lastTapRef.current;
+    const inSeekRun = seekFlash && side !== 'mid' && seekFlash.side === side;
+    if ((last && now - last.t < 300 && last.side === side && side !== 'mid') || inSeekRun) {
+      if (singleTapTimerRef.current) clearTimeout(singleTapTimerRef.current);
+      lastTapRef.current = null;
+      setControlsVisible(false);
+      seekBy(side === 'back' ? -10 : 10, true);
+      return;
+    }
+    lastTapRef.current = { t: now, side };
+    if (singleTapTimerRef.current) clearTimeout(singleTapTimerRef.current);
+    singleTapTimerRef.current = setTimeout(() => {
+      if (controlsVisible && isPlaying) setControlsVisible(false);
+      else showControls();
+    }, 260);
+  };
+
+  const onSurfacePointerCancel = () => {
+    gestureRef.current = null;
+    setScrub(null);
+  };
+
+  // ---- Seek bar (pointer driven so it works for mouse and touch) ----
+  const barRef = useRef<HTMLDivElement | null>(null);
+  const [barDrag, setBarDrag] = useState<number | null>(null);
+  const [barHover, setBarHover] = useState<number | null>(null);
+  const timeAtBar = (clientX: number) => {
+    const r = barRef.current?.getBoundingClientRect();
+    if (!r || !duration) return 0;
+    return Math.max(0, Math.min(duration, ((clientX - r.left) / r.width) * duration));
+  };
+  const onBarDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setBarDrag(timeAtBar(e.clientX));
+    showControls();
+  };
+  const onBarMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (barDrag !== null) setBarDrag(timeAtBar(e.clientX));
+    else if (e.pointerType === 'mouse') setBarHover(timeAtBar(e.clientX));
+  };
+  const onBarUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (barDrag === null) return;
+    seekTo(timeAtBar(e.clientX));
+    setBarDrag(null);
+    showControls();
+  };
+
   // Keyboard accessibility
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Only capture keys when focused on the player
     if (['input', 'textarea', 'select'].includes((e.target as HTMLElement).tagName.toLowerCase())) return;
-
+    showControls();
     switch (e.key.toLowerCase()) {
       case ' ':
       case 'k':
@@ -405,12 +573,14 @@ export function CustomVideoPlayer({
         togglePlay();
         break;
       case 'arrowleft':
+      case 'j':
         e.preventDefault();
-        if (videoRef.current) videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 10);
+        seekBy(-10);
         break;
       case 'arrowright':
+      case 'l':
         e.preventDefault();
-        if (videoRef.current) videoRef.current.currentTime = Math.min(duration, videoRef.current.currentTime + 10);
+        seekBy(10);
         break;
       case 'm':
         e.preventDefault();
@@ -457,14 +627,25 @@ export function CustomVideoPlayer({
     }
   };
 
+  const renditionLabel = (rend: VideoRecord) => {
+    const lang = rend.languages && rend.languages.length > 0 ? rend.languages.join(' & ') : 'Original';
+    return rend.version === 'dubbed' ? `${lang} Dubbed` : `${lang} Subtitles`;
+  };
+
+  const shownTime = barDrag ?? scrub?.target ?? currentTime;
+  const pct = (t: number) => (duration > 0 ? Math.min(100, (t / duration) * 100) : 0);
+  const idle = isPlaying && !controlsVisible && !showSettingsMenu && barDrag === null && !scrub;
+  const blocked = !!errorState || showResumePrompt || countdown !== null;
+
   return (
-    <div 
+    <div
       ref={containerRef}
       tabIndex={0}
       data-video-id={currentVideo.id}
       data-stream-url={streamUrl}
       onKeyDown={handleKeyDown}
-      className="relative w-full aspect-video bg-black rounded-[16px] overflow-hidden shadow-player group select-none focus:outline-none focus:ring-2 focus:ring-amber-500"
+      onMouseMove={showControls}
+      className={`wp gn-player${isPlaying ? '' : ' paused'}${idle ? ' idle' : ''}`}
       aria-label={`Video player for ${currentVideo.title || episodeGroup.display_label}`}
     >
       <video
@@ -472,6 +653,7 @@ export function CustomVideoPlayer({
         playsInline
         preload="metadata"
         onTimeUpdate={handleTimeUpdate}
+        onProgress={handleProgress}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleEnded}
         onWaiting={() => setIsLoading(true)}
@@ -481,65 +663,80 @@ export function CustomVideoPlayer({
           setIsLoading(false);
           setErrorState('The media source encountered a playback error or network block.');
         }}
-        className="w-full h-full object-contain cursor-pointer"
-        onClick={togglePlay}
+        className="gn-video"
       />
+
+      {/* Gesture surface: mouse click = play/pause, double-click = fullscreen; touch gestures above */}
+      <div
+        className="gn-surface"
+        onClick={() => { if (lastPointerTypeRef.current === 'mouse' && !blocked) { togglePlay(); showControls(); } }}
+        onDoubleClick={() => { if (lastPointerTypeRef.current === 'mouse' && !blocked) toggleFullscreen(); }}
+        onPointerDown={onSurfacePointerDown}
+        onPointerMove={onSurfacePointerMove}
+        onPointerUp={onSurfacePointerUp}
+        onPointerCancel={onSurfacePointerCancel}
+      />
+
+      {/* Double-tap / key seek feedback */}
+      {seekFlash && (
+        <div key={seekFlash.key} className={`gn-seekflash ${seekFlash.side}`} aria-live="polite">
+          {seekFlash.side === 'back' ? <RotateCcw className="i" /> : <RotateCw className="i" />}
+          <b>{seekFlash.side === 'back' ? '−' : '+'}{seekFlash.amount}s</b>
+        </div>
+      )}
+
+      {/* Swipe scrub preview */}
+      {scrub && (
+        <div className="gn-scrub" aria-live="polite">
+          <b>{scrub.delta >= 0 ? '+' : '−'}{formatTime(Math.abs(scrub.delta))}</b>
+          <span>{formatTime(scrub.target)} / {formatTime(duration)}</span>
+        </div>
+      )}
 
       {/* Loading Spinner */}
       {isLoading && !errorState && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm pointer-events-none">
-          <div className="w-12 h-12 border-3 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
+        <div className="gn-loading" aria-hidden="true"><span /></div>
+      )}
+
+      {/* Big centre controls: play/pause with ±10 s (touch-friendly) */}
+      {!blocked && (
+        <div className={`gn-center${(controlsVisible || !isPlaying) && !scrub && !seekFlash?.gesture ? ' on' : ''}`}>
+          <button className="gn-c-skip" onClick={() => { seekBy(-10); showControls(); }} aria-label="Back 10 seconds">
+            <RotateCcw className="i" /><small>10</small>
+          </button>
+          <button className="gn-c-play" onClick={() => { togglePlay(); showControls(); }} aria-label={isPlaying ? 'Pause' : 'Play'}>
+            {isPlaying ? <Pause className="i f" /> : <Play className="i f" />}
+          </button>
+          <button className="gn-c-skip" onClick={() => { seekBy(10); showControls(); }} aria-label="Forward 10 seconds">
+            <RotateCw className="i" /><small>10</small>
+          </button>
         </div>
       )}
 
       {/* Resume Overlay */}
       {showResumePrompt && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/85 backdrop-blur-md z-30 p-6">
-          <div className="max-w-md w-full bg-surface p-6 rounded-lg border border-surface-border text-center shadow-elevated">
-            <h3 className="text-lg font-medium text-text-primary mb-2">Resume Watching?</h3>
-            <p className="text-sm text-text-secondary mb-6">
-              You previously stopped at <span className="text-amber-400 font-mono font-medium">{formatTime(resumeTimeTarget)}</span>.
-            </p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => handleResumeChoice(true)}
-                className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-stone-950 font-medium rounded-md text-sm transition-colors"
-              >
-                Resume ({formatTime(resumeTimeTarget)})
-              </button>
-              <button
-                onClick={() => handleResumeChoice(false)}
-                className="px-5 py-2.5 bg-surface-hover hover:bg-surface-active text-text-secondary hover:text-text-primary border border-surface-border rounded-md text-sm transition-colors"
-              >
-                Start Over
-              </button>
+        <div className="gn-dlg-wrap">
+          <div className="gn-dlg">
+            <h3>Resume watching?</h3>
+            <p>You stopped at <b>{formatTime(resumeTimeTarget)}</b>.</p>
+            <div className="gn-dlg-acts">
+              <button className="btn btn-play" onClick={() => handleResumeChoice(true)}>Resume ({formatTime(resumeTimeTarget)})</button>
+              <button className="btn btn-ghost" onClick={() => handleResumeChoice(false)}>Start Over</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Autoplay Next Episode Overlay */}
+      {/* Autoplay Next Episode */}
       {countdown !== null && nextEpisodeGroup && onNavigateNext && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-30 p-6">
-          <div className="max-w-md w-full bg-surface p-6 rounded-lg border border-surface-border text-center shadow-elevated">
-            <div className="text-amber-500 text-xs font-semibold uppercase tracking-wider mb-1">Up Next</div>
-            <h3 className="text-base font-medium text-text-primary mb-2">{nextEpisodeGroup.display_label}</h3>
-            <p className="text-sm text-text-secondary mb-6">
-              Starting automatically in <span className="font-mono font-bold text-amber-400 text-base">{countdown}s</span>
-            </p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={onNavigateNext}
-                className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-stone-950 font-medium rounded-md text-sm flex items-center gap-2 transition-colors"
-              >
-                Play Now <ArrowRight size={16} />
-              </button>
-              <button
-                onClick={cancelAutoplay}
-                className="px-5 py-2.5 bg-surface-hover hover:bg-surface-active text-text-secondary hover:text-text-primary border border-surface-border rounded-md text-sm transition-colors"
-              >
-                Cancel Autoplay
-              </button>
+        <div className="gn-dlg-wrap">
+          <div className="gn-dlg">
+            <small className="gn-kick">Up next</small>
+            <h3>{nextEpisodeGroup.display_label}</h3>
+            <p>Starting in <b>{countdown}s</b></p>
+            <div className="gn-dlg-acts">
+              <button className="btn btn-play" onClick={onNavigateNext}>Play now <ArrowRight className="i" /></button>
+              <button className="btn btn-ghost" onClick={cancelAutoplay}>Cancel</button>
             </div>
           </div>
         </div>
@@ -547,84 +744,81 @@ export function CustomVideoPlayer({
 
       {/* Error Fallback State */}
       {errorState && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-stone-950/95 p-6 text-center z-20">
-          <AlertCircle className="w-12 h-12 text-amber-500 mb-3" />
-          <h3 className="text-lg font-medium text-text-primary mb-2">Stream Playback Notice</h3>
-          <p className="text-sm text-text-secondary max-w-lg mb-6 leading-relaxed">
-            {errorState}
-          </p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <button
-              onClick={() => {
-                setErrorState(null);
-                setIsLoading(true);
-                if (hlsRef.current) hlsRef.current.startLoad();
-              }}
-              className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-stone-950 text-sm font-medium rounded transition-colors"
-            >
-              Retry Stream
-            </button>
-            <button
-              onClick={copyDiagnosticInfo}
-              className="px-4 py-2 bg-surface-hover hover:bg-surface-active text-text-primary border border-surface-border text-sm font-medium rounded flex items-center gap-2 transition-colors"
-            >
-              {copiedDiagnostic ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
-              {copiedDiagnostic ? 'Diagnostic Copied' : 'Copy Diagnostics'}
-            </button>
+        <div className="gn-dlg-wrap solid">
+          <div className="gn-dlg">
+            <AlertCircle className="gn-dlg-icon" />
+            <h3>Stream Playback Notice</h3>
+            <p>{errorState}</p>
+            <div className="gn-dlg-acts">
+              <button
+                className="btn btn-play"
+                onClick={() => {
+                  setErrorState(null);
+                  setIsLoading(true);
+                  if (hlsRef.current) hlsRef.current.startLoad();
+                }}
+              >
+                Retry Stream
+              </button>
+              <button className="btn btn-ghost" onClick={copyDiagnosticInfo}>
+                {copiedDiagnostic ? <Check className="i" /> : <Copy className="i" />}
+                {copiedDiagnostic ? 'Copied' : 'Copy Diagnostics'}
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Custom Accessible Controls Overlay */}
-      <div 
-        className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-4 transition-opacity duration-200 ${
-          isPlaying ? 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100' : 'opacity-100'
-        }`}
-      >
-        {/* Seek Bar */}
-        <div className="relative mb-3">
-          <input
-            type="range"
-            min={0}
-            max={duration || 100}
-            step={0.1}
-            value={currentTime}
-            onChange={handleSeek}
-            aria-label="Seek video position"
-            className="w-full h-1.5 bg-white/20 hover:h-2.5 rounded-lg appearance-none cursor-pointer accent-amber-500 transition-all duration-150"
-          />
+      {/* Controls */}
+      <div className="wp-ui">
+        <div className="wp-top">
+          <b>{dramaTitle}</b>
+          <span>{episodeGroup.display_label}</span>
+          {allRenditions.length > 1 && <span className="gn-ver">{renditionLabel(currentVideo)}</span>}
         </div>
 
-        <div className="flex items-center justify-between text-xs text-text-primary">
-          {/* Left Controls */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={togglePlay}
-              aria-label={isPlaying ? 'Pause' : 'Play'}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors text-white"
-            >
-              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-            </button>
+        <div className="wp-bottom">
+          <div
+            ref={barRef}
+            className={`wp-bar${barDrag !== null ? ' drag' : ''}`}
+            role="slider"
+            tabIndex={0}
+            aria-label="Seek video position"
+            aria-valuemin={0}
+            aria-valuemax={Math.round(duration)}
+            aria-valuenow={Math.round(shownTime)}
+            aria-valuetext={`${formatTime(shownTime)} of ${formatTime(duration)}`}
+            onPointerDown={onBarDown}
+            onPointerMove={onBarMove}
+            onPointerUp={onBarUp}
+            onPointerCancel={() => setBarDrag(null)}
+            onPointerLeave={() => setBarHover(null)}
+          >
+            <div className="wp-track">
+              <i className="buf" style={{ width: `${pct(buffered)}%` }} />
+              <i className="pl" style={{ width: `${pct(shownTime)}%` }} />
+              <span className="knob" style={{ left: `${pct(shownTime)}%` }} />
+            </div>
+            {(barDrag ?? barHover) !== null && (
+              <div className="wp-tip gn-tip" style={{ left: `${pct((barDrag ?? barHover) as number)}%` }}>
+                <span>{formatTime((barDrag ?? barHover) as number)}</span>
+              </div>
+            )}
+          </div>
 
-            {/* Rewind 10s */}
-            <button
-              onClick={() => {
-                if (videoRef.current) videoRef.current.currentTime = Math.max(0, currentTime - 10);
-              }}
-              aria-label="Rewind 10 seconds"
-              className="p-2 hover:bg-white/10 rounded-full transition-colors text-text-secondary hover:text-white"
-            >
-              <RotateCcw size={16} />
+          <div className="wp-ctrl">
+            <button className="icon-btn" onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
+              {isPlaying ? <Pause className="i f" /> : <Play className="i f" />}
             </button>
-
-            {/* Volume */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={toggleMute}
-                aria-label={isMuted ? 'Unmute' : 'Mute'}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors text-white"
-              >
-                {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            <button className="icon-btn gn-skip" onClick={() => seekBy(-10)} aria-label="Rewind 10 seconds">
+              <RotateCcw className="i" /><small>10</small>
+            </button>
+            <button className="icon-btn gn-skip" onClick={() => seekBy(10)} aria-label="Forward 10 seconds">
+              <RotateCw className="i" /><small>10</small>
+            </button>
+            <div className="vol">
+              <button className="icon-btn" onClick={toggleMute} aria-label={isMuted ? 'Unmute' : 'Mute'}>
+                {isMuted || volume === 0 ? <VolumeX className="i" /> : <Volume2 className="i" />}
               </button>
               <input
                 type="range"
@@ -634,128 +828,73 @@ export function CustomVideoPlayer({
                 value={isMuted ? 0 : volume}
                 onChange={handleVolumeChange}
                 aria-label="Volume slider"
-                className="w-16 h-1 bg-white/20 rounded appearance-none cursor-pointer accent-amber-500"
               />
             </div>
-
-            {/* Time Stamp */}
-            <span className="font-mono text-[11px] text-text-secondary ml-1">
-              {formatTime(currentTime)} / {formatTime(duration)}
+            <span className="wp-time">
+              {formatTime(shownTime)} <span>/ {formatTime(duration)}</span>
             </span>
-          </div>
-
-          {/* Right Controls */}
-          <div className="flex items-center gap-2">
-            {/* Rendition / Language Switcher */}
-            {allRenditions.length > 1 && onRenditionChange && (
-              <div className="flex items-center gap-1 bg-surface/70 px-2 py-1 rounded border border-surface-border text-[11px]">
-                <span className="text-text-tertiary">Rendition:</span>
-                {allRenditions.map(rend => {
-                  const isActive = rend.id === currentVideo.id;
-                  const lang = rend.languages && rend.languages.length > 0 ? rend.languages.join(' & ') : 'Original';
-                  const label = rend.version === 'dubbed' ? `${lang} Dub` : `${lang} Subtitles`;
-                  return (
-                    <button
-                      key={rend.id}
-                      onClick={() => onRenditionChange(rend)}
-                      className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
-                        isActive
-                          ? 'bg-amber-500 text-stone-950 font-semibold'
-                          : 'text-text-secondary hover:text-white hover:bg-white/10'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Settings Menu Toggle */}
-            <div className="relative">
-              <button
-                onClick={() => setShowSettingsMenu(!showSettingsMenu)}
-                aria-label="Settings"
-                className="p-2 hover:bg-white/10 rounded-full transition-colors text-text-secondary hover:text-white"
-              >
-                <Settings size={18} />
+            <span className="grow" />
+            {nextEpisodeGroup && onNavigateNext && (
+              <button className="icon-btn gn-hide-sm" onClick={onNavigateNext} aria-label="Next episode">
+                <SkipForward className="i" />
               </button>
-
-              {showSettingsMenu && (
-                <div className="absolute right-0 bottom-full mb-2 w-48 bg-surface-bg border border-surface-border rounded-lg shadow-elevated p-2 z-40 text-xs">
-                  <div className="font-semibold text-text-secondary px-2 py-1 border-b border-surface-border mb-1">
-                    Speed
-                  </div>
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {[0.75, 1, 1.25, 1.5, 2].map(speed => (
-                      <button
-                        key={speed}
-                        onClick={() => handleSpeedChange(speed)}
-                        className={`px-2 py-1 rounded text-xs transition-colors ${
-                          playbackSpeed === speed
-                            ? 'bg-amber-500 text-stone-950 font-semibold'
-                            : 'text-text-secondary hover:bg-white/10'
-                        }`}
-                      >
-                        {speed}x
-                      </button>
-                    ))}
-                  </div>
-
-                  {qualityLevels.length > 0 && (
-                    <>
-                      <div className="font-semibold text-text-secondary px-2 py-1 border-b border-surface-border mb-1">
-                        Adaptive Quality
-                      </div>
-                      <div className="flex flex-col gap-0.5">
-                        <button
-                          onClick={() => handleQualitySelect(-1)}
-                          className={`text-left px-2 py-1 rounded transition-colors ${
-                            currentQualityIndex === -1
-                              ? 'bg-amber-500 text-stone-950 font-semibold'
-                              : 'text-text-secondary hover:bg-white/10'
-                          }`}
-                        >
-                          Auto
-                        </button>
-                        {qualityLevels.map(ql => (
-                          <button
-                            key={ql.id}
-                            onClick={() => handleQualitySelect(ql.id)}
-                            className={`text-left px-2 py-1 rounded transition-colors ${
-                              currentQualityIndex === ql.id
-                                ? 'bg-amber-500 text-stone-950 font-semibold'
-                                : 'text-text-secondary hover:bg-white/10'
-                            }`}
-                          >
-                            {ql.label}
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* PiP */}
+            )}
             <button
-              onClick={togglePiP}
-              aria-label="Picture in Picture"
-              className="p-2 hover:bg-white/10 rounded-full transition-colors text-text-secondary hover:text-white"
+              className={`icon-btn${showSettingsMenu ? ' on' : ''}`}
+              onClick={() => setShowSettingsMenu(!showSettingsMenu)}
+              aria-label="Settings"
+              aria-expanded={showSettingsMenu}
             >
-              <PictureInPicture2 size={18} />
+              <Settings className="i" />
             </button>
-
-            {/* Fullscreen */}
-            <button
-              onClick={toggleFullscreen}
-              aria-label={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors text-white"
-            >
-              {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+            <button className="icon-btn gn-hide-sm" onClick={togglePiP} aria-label="Picture in Picture">
+              <PictureInPicture2 className="i" />
+            </button>
+            <button className="icon-btn" onClick={toggleFullscreen} aria-label={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}>
+              {isFullscreen ? <Minimize className="i" /> : <Maximize className="i" />}
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Settings menu */}
+      <div className={`wp-menu gn-menu${showSettingsMenu ? ' open' : ''}`} role="dialog" aria-label="Player settings">
+        {allRenditions.length > 1 && onRenditionChange && (
+          <>
+            <h6>Version</h6>
+            <div className="seg2">
+              {allRenditions.map((rend) => (
+                <button
+                  key={rend.id}
+                  className={rend.id === currentVideo.id ? 'on' : ''}
+                  onClick={() => { onRenditionChange(rend); setShowSettingsMenu(false); }}
+                >
+                  {renditionLabel(rend)}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        {qualityLevels.length > 0 && (
+          <>
+            <h6>Quality</h6>
+            <div className="seg2">
+              <button className={currentQualityIndex === -1 ? 'on' : ''} onClick={() => handleQualitySelect(-1)}>Auto</button>
+              {qualityLevels.map((ql) => (
+                <button key={ql.id} className={currentQualityIndex === ql.id ? 'on' : ''} onClick={() => handleQualitySelect(ql.id)}>
+                  {ql.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        <h6>Speed</h6>
+        <div className="seg2">
+          {[0.75, 1, 1.25, 1.5, 2].map((speed) => (
+            <button key={speed} className={playbackSpeed === speed ? 'on' : ''} onClick={() => handleSpeedChange(speed)}>
+              {speed}×
+            </button>
+          ))}
         </div>
       </div>
     </div>

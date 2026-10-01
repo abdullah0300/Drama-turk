@@ -965,3 +965,95 @@ a.sn{display:block}
   .lg-text h2{font-size:19px}
   .lg-intro p:first-child{font-size:21px}
 }
+
+/* ---------- Video player (episode page) ---------- */
+.gn-player{width:100%;-webkit-tap-highlight-color:transparent}
+.gn-player:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.gn-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.gn-surface{position:absolute;inset:0;z-index:1;touch-action:pan-y;cursor:pointer}
+.gn-player .wp-ui{pointer-events:none;z-index:3}
+.gn-player .wp-bottom{pointer-events:auto}
+.gn-player.idle .wp-bottom{pointer-events:none}
+.gn-player .wp-top{flex-wrap:wrap;row-gap:4px;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.gn-player .wp-top b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
+.gn-ver{padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.14);color:var(--text)!important;font-size:12px}
+.gn-tip{display:flex}
+.gn-player .knob{display:block}
+.gn-skip{position:relative}
+.gn-skip small,.gn-c-skip small{position:absolute;left:50%;top:50%;transform:translate(-50%,-42%);font-size:8px;font-weight:800;line-height:1;pointer-events:none}
+.gn-player .wp-ctrl .icon-btn.on{background:rgba(255,255,255,.12)}
+/* centre controls */
+.gn-center{position:absolute;left:50%;top:50%;z-index:4;display:flex;align-items:center;gap:clamp(18px,6vw,44px);transform:translate(-50%,-50%);opacity:0;pointer-events:none;transition:opacity .25s}
+.gn-center.on{opacity:1}
+.gn-center.on button{pointer-events:auto}
+.gn-c-play,.gn-c-skip{position:relative;display:grid;place-items:center;border-radius:50%;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .2s var(--ease),background .2s}
+.gn-c-play{width:72px;height:72px}.gn-c-play svg.i{width:30px;height:30px}
+.gn-c-skip{width:52px;height:52px}.gn-c-skip svg.i{width:26px;height:26px}
+.gn-c-play:active,.gn-c-skip:active{transform:scale(.92);background:rgba(0,0,0,.7)}
+@media (hover:hover) and (pointer:fine){
+  .gn-center .gn-c-skip{display:none}
+  .gn-player:not(.paused) .gn-center{opacity:0}
+  .gn-player:not(.paused) .gn-center button{pointer-events:none}
+  .gn-c-play{width:84px;height:84px}
+  .gn-c-play:hover{transform:scale(1.06)}
+}
+@media (hover:none){.gn-player .knob{transform:scale(1)}}
+/* double-tap / keyboard seek feedback */
+.gn-seekflash{position:absolute;top:0;bottom:0;width:42%;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;pointer-events:none;animation:gnSeek .8s ease-out forwards}
+.gn-seekflash.back{left:0;border-radius:0 50% 50% 0/0 50% 50% 0;background:radial-gradient(circle at 20% 50%,rgba(255,255,255,.2),rgba(255,255,255,0) 70%)}
+.gn-seekflash.fwd{right:0;border-radius:50% 0 0 50%/50% 0 0 50%;background:radial-gradient(circle at 80% 50%,rgba(255,255,255,.2),rgba(255,255,255,0) 70%)}
+.gn-seekflash svg.i{width:30px;height:30px}
+.gn-seekflash b{font-size:15px;font-weight:800;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+@keyframes gnSeek{0%{opacity:0}15%{opacity:1}70%{opacity:1}100%{opacity:0}}
+/* swipe scrub preview */
+.gn-scrub{position:absolute;left:50%;top:18%;z-index:4;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 16px;border-radius:12px;background:rgba(0,0,0,.72);pointer-events:none;font-variant-numeric:tabular-nums}
+.gn-scrub b{font-size:20px;font-weight:800;color:var(--gold)}
+.gn-scrub span{font-size:12px;font-weight:700;color:var(--muted)}
+/* loading */
+.gn-loading{position:absolute;inset:0;z-index:2;display:grid;place-items:center;pointer-events:none}
+.gn-loading span{width:46px;height:46px;border-radius:50%;border:3px solid rgba(242,179,61,.2);border-top-color:var(--gold);animation:gnSpin .8s linear infinite}
+@keyframes gnSpin{to{transform:rotate(360deg)}}
+/* dialogs inside the player (resume, up next, errors) */
+.gn-dlg-wrap{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);overflow:auto}
+.gn-dlg-wrap.solid{background:rgba(9,9,11,.96)}
+.gn-dlg{width:100%;max-width:440px;margin:auto;text-align:center}
+.gn-dlg h3{margin:0 0 6px;font-size:20px;font-weight:800}
+.gn-dlg p{margin:0 0 16px;font-size:14px;line-height:1.5;color:var(--muted)}
+.gn-dlg p b{color:var(--gold)}
+.gn-kick{display:block;margin-bottom:4px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.gn-dlg-icon{width:34px;height:34px;margin:0 auto 8px;color:var(--gold)}
+.gn-dlg-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.gn-dlg-acts .btn{height:42px;padding:0 18px;font-size:14px;gap:8px}
+/* settings menu */
+.gn-menu{max-height:calc(100% - 80px);overflow-y:auto;overscroll-behavior:contain}
+.gn-menu .seg2 button{min-height:32px}
+@media (max-width:640px){
+  .gn-player .wp-top{padding:10px 12px;font-size:12px}
+  .gn-player .wp-bottom{padding:0 6px 2px}
+  .gn-player .wp-bar{height:26px}
+  .gn-player .wp-ctrl{gap:0}
+  .gn-player .wp-ctrl .icon-btn{width:38px;height:38px}
+  .gn-player .wp-time{margin-left:4px;font-size:12px}
+  .gn-hide-sm{display:none!important}
+  .gn-dlg h3{font-size:16px;margin-bottom:4px}
+  .gn-dlg p{font-size:12.5px;margin-bottom:10px}
+  .gn-dlg-acts .btn{height:36px;padding:0 14px;font-size:13px}
+  .gn-dlg-icon{width:26px;height:26px;margin-bottom:4px}
+  .gn-menu{right:8px;bottom:54px;width:min(260px,calc(100% - 16px));padding:12px}
+}
+@media (max-width:640px) and (hover:none){.gn-player .wp-ctrl .gn-skip{display:none}}
+@media (max-width:380px){.gn-c-play{width:60px;height:60px}.gn-c-skip{width:46px;height:46px}.gn-center{gap:22px}}
+.gn-player:fullscreen .gn-video{object-fit:contain}
+/* episode page: action pills scroll in one row on phones */
+@media (max-width:640px){
+  .w-head{gap:12px}
+  .w-acts{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 2px;width:calc(100% + 32px)}
+  .w-acts::-webkit-scrollbar{display:none}
+  .w-acts .pill{flex:none;height:38px;padding:0 14px;font-size:13px}
+  .w-title{font-size:34px}
+  .w-sum{padding:14px 16px}
+  .w-sum p{font-size:14px}
+  .rend-bar{flex-wrap:wrap}
+}
+.ft-made a{color:var(--text);font-weight:700;text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}
+.ft-made a:hover{color:var(--gold)}

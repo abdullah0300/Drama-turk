@@ -77,6 +77,10 @@ export function Footer({ dramas = [] }: { dramas?: FooterDrama[] }) {
           <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">TMDB</a>
           . Not endorsed or certified by TMDB.
         </p>
+        <p className="ft-made">
+          Designed &amp; developed by{' '}
+          <a href="https://webcraftio.com" target="_blank" rel="noopener">webcraftio.com</a>
+        </p>
         <a href="#" className="ft-top" aria-label="Back to top"><ArrowUp className="i" aria-hidden="true" />Top</a>
       </div>
     </footer>
