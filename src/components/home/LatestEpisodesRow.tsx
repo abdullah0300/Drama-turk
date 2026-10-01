@@ -27,7 +27,7 @@ export function LatestEpisodesRow({ episodes }: { episodes: PlayableEpisodeItem[
     <Rail
       id="new"
       title="Latest Episodes"
-      sub="Verified playable · subtitled renditions"
+      sub={`The newest episode from each of ${episodes.length} ${episodes.length === 1 ? 'drama' : 'dramas'}`}
       headClassName="ne-head"
       aside={
         langs.length > 2 ? (
@@ -51,8 +51,8 @@ export function LatestEpisodesRow({ episodes }: { episodes: PlayableEpisodeItem[
             <span className="shade" />
             <Link href={watchUrl} className="ne-hit" aria-label={`Watch ${group.display_label}`} />
             <div className="ne-top">
-              <span className={`badge${i === 0 ? ' live' : ''}`}>{i === 0 ? 'Latest' : 'Episode'}</span>
-              <span className="ne-when">S{collection.reported_seasons?.[0] ?? 2}</span>
+              <span className={`badge${i === 0 ? ' live' : ''}`}>Latest episode</span>
+              <span className="ne-when">S{collection.reported_seasons?.[0] ?? 1}{collection.version === 'dubbed' ? ' · Dubbed' : ''}</span>
             </div>
             {num !== '' && <div className="ne-num"><small>E</small>{num}</div>}
             <div className="ne-bot">

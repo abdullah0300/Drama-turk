@@ -7,6 +7,7 @@ import {
   EpisodeGroup,
   VideoRecord,
   compareCollections,
+  isDramaPlayable,
 } from '@/types/catalog';
 
 /** Published season ids, in natural season order, from an embedded collections(...) select. */
@@ -503,6 +504,40 @@ export class SupabaseCatalogRepository {
     }
 
     return result.length > 0 ? result : localCatalog.getLatestPlayableEpisodes(limit);
+  }
+
+  /**
+   * One card per drama: the last episode of its newest season (subtitled preferred when a season
+   * exists in both editions). Featured drama first, then the getAllDramas order.
+   */
+  public async getLatestEpisodePerDrama(): Promise<Array<{
+    group: EpisodeGroup;
+    video: VideoRecord;
+    collection: CatalogCollection;
+    drama: Drama;
+  }>> {
+    const dramas = (await this.getAllDramas()).filter(isDramaPlayable);
+
+    const picks = await Promise.all(dramas.map(async (drama) => {
+      const cols = (await this.getDramaCollections(drama.id))
+        .filter((c) => c.status === 'published' || c.id === siteConfig.pilotCollectionId);
+      if (cols.length === 0) return null;
+
+      const newest = Math.max(...cols.map((c) => c.reported_seasons?.[0] ?? 0));
+      const top = cols.filter((c) => (c.reported_seasons?.[0] ?? 0) === newest);
+      const collection = top.find((c) => c.version !== 'dubbed') ?? top[0];
+
+      const groups = await this.getCollectionEpisodeGroups(collection.id);
+      // Walk back from the last episode until one has a playable stream
+      for (let i = groups.length - 1; i >= Math.max(0, groups.length - 3); i--) {
+        const videos = await this.getVideosForGroup(groups[i].id);
+        const video = videos.find((v) => v.stream_present);
+        if (video) return { group: groups[i], video, collection, drama };
+      }
+      return null;
+    }));
+
+    return picks.filter((p): p is NonNullable<typeof p> => p !== null);
   }
 
   public async getSiteSettings(): Promise<any> {

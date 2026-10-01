@@ -50,7 +50,7 @@ export default async function RootLayout({
 }) {
   const [dramas, latest] = await Promise.all([
     supabaseCatalog.getAllDramas().catch(() => []),
-    supabaseCatalog.getLatestPlayableEpisodes(4).catch(() => []),
+    supabaseCatalog.getLatestEpisodePerDrama().then((l) => l.slice(0, 5)).catch(() => []),
   ]);
   const searchDramas = dramas.map((d) => ({
     id: d.id,

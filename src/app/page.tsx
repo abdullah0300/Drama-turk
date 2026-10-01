@@ -5,7 +5,6 @@ import { FeaturedHero, HeroItem } from '@/components/home/FeaturedHero';
 import { Rail } from '@/components/sezon/Rail';
 import { LatestSeasons, LatestSeasonItem } from '@/components/home/LatestSeasons';
 import { MyListSection } from '@/components/home/MyListSection';
-import { TopTenRow } from '@/components/home/TopTenRow';
 import { ContinueWatchingRow } from '@/components/home/ContinueWatchingRow';
 import { LatestEpisodesRow } from '@/components/home/LatestEpisodesRow';
 import { DramaCard } from '@/components/dramas/DramaCard';
@@ -20,7 +19,7 @@ export default async function HomePage() {
   const pilotGroups = pilotCollection ? await supabaseCatalog.getCollectionEpisodeGroups(pilotCollection.id) : [];
   const firstGroup = pilotGroups.length > 0 ? pilotGroups[0] : undefined;
 
-  const latestEpisodes = await supabaseCatalog.getLatestPlayableEpisodes(6);
+  const latestEpisodes = await supabaseCatalog.getLatestEpisodePerDrama();
   const allDramas = await supabaseCatalog.getAllDramas();
 
   const heroItems: HeroItem[] = [];
@@ -151,9 +150,6 @@ export default async function HomePage() {
 
         {/* Latest Playable Episodes in Pilot Release */}
         <LatestEpisodesRow episodes={latestEpisodes} />
-
-        {/* Top 10 */}
-        <TopTenRow dramas={allDramas} />
 
         {/* Latest Seasons */}
         {seasonItems.length > 0 && <LatestSeasons items={seasonItems} />}
