@@ -23,6 +23,16 @@ function publishedCollectionIds(cols: any[] | undefined): string[] {
     .sort((a, b) => compareCollections(a as any, b as any))
     .map((c) => c.id);
 }
+
+/** Distinct published seasons from an embedded collections(...) select. */
+function publishedSeasonCount(cols: any[] | undefined): number {
+  const keys = new Set(
+    (cols || [])
+      .filter((c) => c.status === 'published')
+      .map((c) => (c.reported_seasons?.length ? c.reported_seasons.join('-') : `c:${c.source_id}`))
+  );
+  return keys.size;
+}
 import { siteConfig } from '@/config/site';
 
 export class SupabaseCatalogRepository {
@@ -83,6 +93,7 @@ export class SupabaseCatalogRepository {
         source_names: [d.display_name],
         collection_ids: publishedCollectionIds(d.collections),
         playable: publishedCollectionIds(d.collections).length > 0,
+        season_count: publishedSeasonCount(d.collections),
         video_records: d.video_records_count,
         synopsis: d.short_overview || undefined,
         poster_url: d.poster_url || undefined,
@@ -123,6 +134,7 @@ export class SupabaseCatalogRepository {
         source_names: [row.display_name],
         collection_ids: publishedCollectionIds(row.collections),
         playable: publishedCollectionIds(row.collections).length > 0,
+        season_count: publishedSeasonCount(row.collections),
         video_records: row.video_records_count,
         synopsis,
         poster_url: row.poster_url || undefined,

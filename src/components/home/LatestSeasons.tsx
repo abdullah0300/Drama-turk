@@ -119,7 +119,7 @@ export function LatestSeasons({ items }: { items: LatestSeasonItem[] }) {
           <div className={`ls-copy${swap ? ' swap' : ''}`}>
             <div className="ls-kick">
               <span className="pulse" />
-              <span>{cur.playable ? 'Playable' : 'Preview'} · {cur.edition} edition</span>
+              <span>{cur.playable ? 'Now streaming' : 'Preview'} · {cur.edition}</span>
             </div>
             <div className="ls-season">
               Season
@@ -132,19 +132,18 @@ export function LatestSeasons({ items }: { items: LatestSeasonItem[] }) {
             <h3 className="ls-title go">{show.title}</h3>
             <div className="ls-meta">
               <span><b>{show.genre}</b></span>
-              <span>{cur.label}</span>
               <span>{cur.episodes} episodes</span>
             </div>
             <div className="ls-prog">
               <div className="ls-bar"><i style={{ width: cur.playable ? '100%' : '30%' }} /></div>
               <small>
-                <span>{cur.episodes} episodes indexed</span>
-                <span>{cur.playable ? 'All episodes out' : 'Metadata only'}</span>
+                <span>{cur.episodes} episodes</span>
+                <span>{cur.playable ? 'Ready to stream' : 'Metadata only'}</span>
               </small>
             </div>
             <div className="actions">
               {cur.playable ? (
-                <Link href={cur.watchHref ?? seasonHref} className="btn btn-play"><Play className="i f" />Watch S{cur.n}</Link>
+                <Link href={cur.watchHref ?? seasonHref} className="btn btn-play"><Play className="i f" />Watch {cur.label}</Link>
               ) : null}
               <Link href={seasonHref} className="btn btn-ghost"><List className="i" />View season</Link>
               <button className="btn btn-round" onClick={toggleList} aria-label={saved ? 'Remove from My List' : 'Add to My List'}>
@@ -173,7 +172,7 @@ export function LatestSeasons({ items }: { items: LatestSeasonItem[] }) {
                     <span className="shade" />
                     {s.playable && <span className="badge">Playable</span>}
                     <div className="ls-cnum"><small>S</small>{s.n}</div>
-                    <div className="ls-cfoot"><span>{s.episodes} episodes</span><span style={{ textTransform: 'capitalize' }}>{s.edition}</span></div>
+                    <div className="ls-cfoot"><span>{s.episodes} episodes</span><span>{s.edition}</span></div>
                   </div>
                 );
               })}

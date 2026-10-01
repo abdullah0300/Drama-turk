@@ -5,13 +5,17 @@ import { notFound } from 'next/navigation';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { DramaActions } from './DramaActions';
 import { DramaCard } from '@/components/dramas/DramaCard';
-import { Play } from 'lucide-react';
+import { Play, ArrowRight } from 'lucide-react';
 import { siteConfig } from '@/config/site';
-import { isDramaPlayable, seasonLabel } from '@/types/catalog';
+import { isDramaPlayable, groupSeasons, editionName, pluralSeasons, VideoRecord } from '@/types/catalog';
 
 interface DramaPageProps {
   params: {
     dramaId: string;
+  };
+  searchParams?: {
+    season?: string;
+    edition?: string;
   };
 }
 
@@ -33,46 +37,62 @@ export async function generateMetadata({ params }: DramaPageProps): Promise<Meta
   };
 }
 
-export default async function DramaPage({ params }: DramaPageProps) {
+export default async function DramaPage({ params, searchParams }: DramaPageProps) {
   const drama = await supabaseCatalog.getDrama(params.dramaId);
   if (!drama) notFound();
 
   const collections = await supabaseCatalog.getDramaCollections(drama.id);
-  const isPilot = drama.isPilot ?? false;
+  const seasons = groupSeasons(collections);
   const playable = isDramaPlayable(drama) || collections.some((c) => c.status === 'published');
 
-  // Primary season shown on this page: the pilot season for the pilot drama, otherwise the first published season
-  const pilotCollection = isPilot
-    ? await supabaseCatalog.getPilotCollection()
-    : playable
-      ? collections.find((c) => c.status === 'published')
-      : undefined;
-  const pilotEpisodeGroups = pilotCollection
-    ? await supabaseCatalog.getCollectionEpisodeGroups(pilotCollection.id)
-    : [];
-  const firstPlayableGroup = pilotEpisodeGroups.length > 0 ? pilotEpisodeGroups[0] : undefined;
-  let pilotVideos = pilotCollection
-    ? await supabaseCatalog.getCollectionVideos(pilotCollection.id)
-    : [];
-  if (pilotVideos.length === 0 && pilotEpisodeGroups.length > 0) {
+  // Selected season and edition come from the URL (?season=3&edition=dubbed); default is the first season
+  const season = seasons.find((s) => s.key === searchParams?.season) ?? seasons[0];
+  const edition = season?.editions.find((e) => e.version === searchParams?.edition) ?? season?.editions[0];
+
+  const [groups, videos] = edition
+    ? await Promise.all([
+        supabaseCatalog.getCollectionEpisodeGroups(edition.id),
+        supabaseCatalog.getCollectionVideos(edition.id),
+      ])
+    : [[], [] as VideoRecord[]];
+  let editionVideos = videos;
+  if (editionVideos.length === 0 && groups.length > 0) {
     // Fall back to per-group lookups when the bulk collection query returns nothing
-    pilotVideos = (await Promise.all(pilotEpisodeGroups.map((g) => supabaseCatalog.getVideosForGroup(g.id)))).flat();
+    editionVideos = (await Promise.all(groups.map((g) => supabaseCatalog.getVideosForGroup(g.id)))).flat();
   }
-  const pilotVideosByGroup = new Map<string, any[]>();
-  pilotVideos.forEach(v => {
-    if (v.episode_group_id) {
-      if (!pilotVideosByGroup.has(v.episode_group_id)) {
-        pilotVideosByGroup.set(v.episode_group_id, []);
-      }
-      pilotVideosByGroup.get(v.episode_group_id)!.push(v);
-    }
+  const videosByGroup = new Map<string, VideoRecord[]>();
+  editionVideos.forEach((v) => {
+    if (!v.episode_group_id) return;
+    if (!videosByGroup.has(v.episode_group_id)) videosByGroup.set(v.episode_group_id, []);
+    videosByGroup.get(v.episode_group_id)!.push(v);
   });
+
+  // "Play" always starts at the first episode of the first season
+  const firstSeason = seasons[0];
+  const firstEdition = firstSeason?.editions[0];
+  const firstGroups =
+    firstEdition && firstEdition.id === edition?.id
+      ? groups
+      : firstEdition
+        ? await supabaseCatalog.getCollectionEpisodeGroups(firstEdition.id)
+        : [];
+  const firstPlayableGroup = playable ? firstGroups[0] : undefined;
+
+  // Episode totals per version (subtitled and dubbed releases are numbered differently)
+  const totalsByEdition = new Map<string, number>();
+  collections.forEach((c) => {
+    const name = editionName(c);
+    totalsByEdition.set(name, (totalsByEdition.get(name) ?? 0) + (c.episode_group_ids?.length ?? 0));
+  });
+  const editionNames = Array.from(totalsByEdition.keys());
+  const totalEpisodes = Math.max(0, ...Array.from(totalsByEdition.values()));
+  const yearsLabel = pluralSeasons(seasons.length);
 
   // Related dramas
   const allDramas = await supabaseCatalog.getAllDramas();
   const relatedDramas = allDramas
-    .filter(d => d.id !== drama.id && d.genres?.some(g => drama.genres?.includes(g)))
-    .slice(0, 4);
+    .filter((d) => d.id !== drama.id && d.genres?.some((g) => drama.genres?.includes(g)))
+    .slice(0, 6);
 
   // Structured Data (Schema.org)
   const jsonLd = {
@@ -80,154 +100,183 @@ export default async function DramaPage({ params }: DramaPageProps) {
     '@type': 'TVSeries',
     name: drama.name,
     description: drama.synopsis,
-    numberOfSeasons: collections.length,
+    numberOfSeasons: seasons.length,
+    numberOfEpisodes: totalEpisodes,
     genre: drama.genres,
     image: drama.poster_url,
   };
 
   const heroImage = drama.backdrop_url || drama.poster_url;
-  const pilotPlayable = pilotEpisodeGroups.filter((g) => (pilotVideosByGroup.get(g.id) || []).some((v: any) => v.stream_present));
+  const tabHref = (seasonKey: string, version?: string) =>
+    `/drama/${drama.id}?season=${encodeURIComponent(seasonKey)}${version ? `&edition=${version}` : ''}#episodes`;
 
   return (
-    <div className="sv">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+    <div className="series">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      {/* Hero */}
-      <div className="sv-hero">
-        {heroImage ? <img className="sv-bg" src={heroImage} alt="" /> : <div className="art-fallback" style={{ zIndex: -2 }} />}
-        <div className="sv-shade" />
-        <div className="sv-num" aria-hidden="true">
-          {String(collections.length).padStart(2, '0').split('').map((c, i) => <span key={i}>{c}</span>)}
-        </div>
-
-        <div className="sv-hero-in">
+      {/* Hero: series identity */}
+      <header className="dw-hero">
+        {heroImage ? <img src={heroImage} alt="" /> : <div className="art-fallback" />}
+        <span className="shade" />
+        {drama.poster_url && (
+          <div className="series-poster" aria-hidden="true">
+            <img src={drama.poster_url} alt="" />
+          </div>
+        )}
+        <div className="dw-top">
           <nav className="sv-crumb" aria-label="Breadcrumb">
             <Link href="/">Home</Link><i>/</i>
             <Link href="/browse">Dramas</Link><i>/</i>
             <span style={{ color: 'var(--text)' }}>{drama.name}</span>
           </nav>
-          <div className="sv-kick">
-            <span className={`badge${playable ? ' live' : ' dark'}`}>{isPilot ? 'Featured' : playable ? 'Now streaming' : 'Preview Catalog'}</span>
-            <span>
-              {collections.length} {collections.length === 1 ? 'season' : 'seasons'}
-              {drama.genres?.[0] ? ` · ${drama.genres[0]}` : ''}
-            </span>
+          <div className="dw-kick">
+            <span className={`badge${playable ? ' live' : ' dark'}`}>{drama.isPilot ? 'Featured' : playable ? 'Now streaming' : 'Preview'}</span>
+            <span>Series · {drama.genres?.slice(0, 2).join(' · ') || 'Drama'}</span>
           </div>
-          <h1 className="sv-h" style={{ fontSize: 'clamp(44px,6.4vw,104px)' }}>{drama.name}</h1>
-          {drama.source_names.length > 1 && (
-            <p className="sv-line" style={{ fontSize: 13, color: 'var(--muted)', marginTop: 6 }}>
-              Also recorded as: {drama.source_names.filter((n) => n !== drama.name).join(', ')}
-            </p>
-          )}
-          {drama.synopsis && <p className="sv-line">{drama.synopsis}</p>}
-
+          <h1 className="dw-title">{drama.name}</h1>
+          <div className="meta">
+            <span className="gold">{yearsLabel}</span>
+            <span className="sep" />
+            <span>{editionNames.join(' & ')}</span>
+          </div>
+          {drama.synopsis && <p className="dw-line">{drama.synopsis}</p>}
           <DramaActions
             drama={drama}
             firstPlayableGroup={firstPlayableGroup}
             isPlayable={playable}
-            seasonName={pilotCollection ? seasonLabel(pilotCollection) : undefined}
+            seasonName={firstSeason?.label}
           />
         </div>
-      </div>
+      </header>
 
-      <div className="sv-body">
-        <div className="sv-stats">
-          <div className="st"><small>Video records</small><b>{drama.video_records}</b><span>Preserved from source</span></div>
-          <div className="st"><small>Seasons</small><b>{collections.length}</b><span>Dubbed &amp; subtitled kept separate</span></div>
-          <div className="st"><small>Languages</small><b style={{ fontSize: 22 }}>{drama.languages?.slice(0, 2).join(' · ') || '—'}</b><span>{drama.languages && drama.languages.length > 2 ? `+${drama.languages.length - 2} more` : 'Available renditions'}</span></div>
-          <div className="st"><small>Genres</small><b style={{ fontSize: 22 }}>{drama.genres?.slice(0, 2).join(' · ') || '—'}</b><span>Verified metadata</span></div>
-          <div className="st"><small>Status</small><b>{playable ? 'Live' : 'Preview'}</b><span>{playable ? `${pilotPlayable.length} episodes in ${pilotCollection ? seasonLabel(pilotCollection) : 'this season'}` : 'Metadata only'}</span></div>
+      {/* Section navigation */}
+      <nav className="dw-nav" aria-label="Series sections">
+        <a href="#episodes">Episodes</a>
+        <a href="#seasons">Seasons</a>
+        <a href="#details">Details</a>
+        {relatedDramas.length > 0 && <a href="#more">More like this</a>}
+      </nav>
+
+      {/* Episodes of the selected season & edition */}
+      <section className="dw-sec" id="episodes">
+        <div className="eps-head">
+          <h3>
+            Episodes
+            <small>
+              {season ? `${season.label} · ${edition ? editionName(edition) : ''} · ${groups.length} episodes` : 'No seasons yet'}
+            </small>
+          </h3>
+          {edition && (
+            <Link className="sortbtn" href={`/drama/${drama.id}/collection/${edition.id}`}>
+              Open season page <ArrowRight className="i" />
+            </Link>
+          )}
         </div>
 
-        {/* Playable Pilot Episode Browser (Only for pilot collection) */}
-        {playable && pilotCollection && (
-          <section className="sv-sec" aria-label="Pilot Episodes">
-            <div className="sv-sec-h">
-              <h2>
-                {pilotCollection.source_heading}
-                <small>{pilotEpisodeGroups.length} episodes · {pilotCollection.languages?.join(' & ') || 'Urdu'} · <span style={{ textTransform: 'capitalize' }}>{pilotCollection.version || 'subtitled'}</span>{collections.length > 1 ? ' · more seasons below' : ''}</small>
-              </h2>
-              <Link href={`/drama/${drama.id}/collection/${pilotCollection.id}`} className="pill">View season page</Link>
-            </div>
-
-            <div className="sv-grid">
-              {pilotEpisodeGroups.map((group, i) => {
-                const videos = pilotVideosByGroup.get(group.id) || [];
-                const firstVideo = videos[0];
-                const thumbnail = firstVideo?.thumbnail_urls?.[0];
-                return (
-                  <Link
-                    key={group.id}
-                    href={`/drama/${drama.id}/watch/${group.id}`}
-                    className="se"
-                    style={{ ['--d' as string]: `${Math.min(i, 12) * 50}ms` }}
-                  >
-                    <div className="media">
-                      {thumbnail ? <img src={thumbnail} alt={group.display_label} loading="lazy" /> : <div className="thumb-fallback"><Play size={24} style={{ opacity: .4 }} /></div>}
-                      <span className="shade" />
-                      <span className="se-num">{group.episode_number ?? group.bolum ?? i + 1}</span>
-                      <span className="c-play"><Play className="i f" /></span>
-                    </div>
-                    <div className="se-b">
-                      <b>{group.display_label}{group.bolum ? <span>Bolum {group.bolum}</span> : null}</b>
-                      <p>{firstVideo?.title || `${drama.name} ${group.display_label}`}</p>
-                      <p style={{ marginTop: 2, fontSize: 12 }}>
-                        {videos.map((v: any) => v.languages?.join(', ')).filter(Boolean).join(' / ')} · <span style={{ textTransform: 'capitalize' }}>{firstVideo?.version || 'subtitled'}</span>
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
+        {seasons.length > 1 && (
+          <div className="tabs series-tabs" role="tablist" aria-label="Season">
+            {seasons.map((s) => (
+              <Link key={s.key} href={tabHref(s.key)} className={`tab${s.key === season?.key ? ' on' : ''}`} role="tab" aria-selected={s.key === season?.key} scroll={false}>
+                {s.label}
+              </Link>
+            ))}
+          </div>
+        )}
+        {season && season.editions.length > 1 && (
+          <div className="tabs series-tabs ed" role="tablist" aria-label="Edition">
+            {season.editions.map((e) => (
+              <Link key={e.id} href={tabHref(season.key, e.version)} className={`tab${e.id === edition?.id ? ' on' : ''}`} role="tab" aria-selected={e.id === edition?.id} scroll={false}>
+                {editionName(e)} · {e.episode_group_ids?.length ?? 0}
+              </Link>
+            ))}
+          </div>
         )}
 
-        {/* Catalog Collections (honest separation of Dubbed vs Subtitled cuts) */}
-        <section className="sv-sec" aria-label="Catalog Collections">
-          <div className="sv-sec-h">
-            <h2>
-              Seasons &amp; collections ({collections.length})
-              <small>Dubbed and subtitled editions are distinct source broadcast collections and numbering cuts; they are kept individually to preserve authenticity.</small>
-            </h2>
+        <div className="eps">
+          {groups.length === 0 && <div className="dw-empty">No episodes indexed for this season yet.</div>}
+          {groups.map((g, i) => {
+            const vs = videosByGroup.get(g.id) || [];
+            const thumb = vs.find((v) => v.thumbnail_urls?.[0])?.thumbnail_urls[0];
+            const canPlay = playable && (vs.length === 0 || vs.some((v) => v.stream_present));
+            const langs = Array.from(new Set(vs.flatMap((v) => v.languages || []))).join(' / ');
+            const inner = (
+              <>
+                <span className="ep-n">{g.episode_number ?? i + 1}</span>
+                <span className="ep-t">
+                  {thumb ? <img src={thumb} alt="" loading="lazy" /> : <span className="thumb-fallback" />}
+                  {canPlay && <span className="c-play"><Play className="i f" /></span>}
+                </span>
+                <span>
+                  <h5>
+                    {g.display_label}
+                    {i === groups.length - 1 && season?.key === seasons[seasons.length - 1]?.key && <span className="badge">Latest</span>}
+                  </h5>
+                  <div className="ep-m">
+                    {[g.bolum ? `Bolum ${g.bolum}` : null, langs || null, edition ? editionName(edition) : null].filter(Boolean).join(' · ')}
+                  </div>
+                </span>
+                <span className="ep-d">{vs.length > 1 ? `${vs.length} versions` : ''}</span>
+              </>
+            );
+            return canPlay ? (
+              <Link key={g.id} href={`/drama/${drama.id}/watch/${g.id}`} className="ep">{inner}</Link>
+            ) : (
+              <div key={g.id} className="ep up">{inner}</div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* All seasons */}
+      <section className="dw-sec" id="seasons">
+        <h3>Seasons <small>{yearsLabel} · {editionNames.join(' & ')}</small></h3>
+        <div className="dw-seasons">
+          {seasons.map((s, i) => {
+            const pref = s.editions[0];
+            return (
+              <Link key={s.key} href={`/drama/${drama.id}/collection/${pref.id}`} className={`sn${s.key === season?.key ? ' on' : ''}`}>
+                {drama.poster_url ? <img src={drama.poster_url} alt="" /> : <span className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
+                <span className="shade" />
+                <span className={`badge${i === seasons.length - 1 ? '' : ' dark'}`}>{i === seasons.length - 1 ? 'Latest' : 'Complete'}</span>
+                <span className="sn-n"><small>S</small>{s.key.includes('-') ? s.key.replace('-', '–') : s.number}</span>
+                <span className="sn-i">
+                  {pref.episode_group_ids?.length ?? 0} episodes
+                  <span className="sn-ed">{s.editions.map(editionName).join(' · ')}</span>
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Details */}
+      <section className="dw-sec" id="details">
+        <h3>Details</h3>
+        <div className="facts2">
+          <div>Seasons<b>{seasons.length}</b></div>
+          {Array.from(totalsByEdition.entries()).map(([name, n]) => (
+            <div key={name}>{name} episodes<b>{n}</b></div>
+          ))}
+          <div>Genres<b>{drama.genres?.join(', ') || 'Drama'}</b></div>
+          <div>Languages<b>{drama.languages?.join(', ') || 'Urdu'}</b></div>
+          <div>Status<b>{playable ? 'Streaming now, ad-free' : 'Preview catalog'}</b></div>
+        </div>
+        {drama.source_names.length > 1 && (
+          <div className="tags">
+            {drama.source_names.filter((n) => n !== drama.name).map((n) => <span key={n}>Also known as {n}</span>)}
           </div>
-          <div className="sv-others">
-            {collections.map((col, i) => {
-              const isColPilot = col.id === siteConfig.pilotCollectionId;
-              return (
-                <Link key={col.id} href={`/drama/${drama.id}/collection/${col.id}`} className="so">
-                  {heroImage ? <img src={heroImage} alt="" /> : <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
-                  <span className="shade" />
-                  {isColPilot ? <span className="badge">Featured</span> : col.status === 'published' ? <span className="badge">Watch now</span> : <span className="badge dark">Preview</span>}
-                  <span className="so-in">
-                    <strong><small>S</small>{col.reported_seasons?.[0] ?? i + 1}</strong>
-                    <span>
-                      {seasonLabel(col)} · {col.source_heading}
-                    </span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)' }}>
-                      {col.video_records} video entries · {col.episode_group_ids.length} episode groups · <span style={{ textTransform: 'capitalize' }}>{col.version} cut</span>
-                    </span>
-                  </span>
-                </Link>
-              );
-            })}
+        )}
+      </section>
+
+      {/* Related Dramas */}
+      {relatedDramas.length > 0 && (
+        <section className="dw-sec" id="more">
+          <h3>More like this</h3>
+          <div className="sv-more">
+            {relatedDramas.map((rd) => <DramaCard key={rd.id} drama={rd} />)}
           </div>
         </section>
-
-        {/* Related Dramas */}
-        {relatedDramas.length > 0 && (
-          <section className="sv-sec" aria-label="Related Dramas">
-            <div className="sv-sec-h"><h2>More like this</h2></div>
-            <div className="sv-more">
-              {relatedDramas.map((rd) => (
-                <DramaCard key={rd.id} drama={rd} />
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
+      )}
     </div>
   );
 }

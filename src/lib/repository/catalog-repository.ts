@@ -9,7 +9,7 @@ import {
   DuplicateStreamGroup,
   CatalogSummary,
   PlaybackCheckLog,
-  EditorialDraft, compareCollections } from '@/types/catalog';
+  EditorialDraft, compareCollections, seasonKey } from '@/types/catalog';
 import { siteConfig } from '@/config/site';
 
 interface RawCatalogFile {
@@ -187,9 +187,15 @@ class CatalogRepository {
           genres,
           languages: langs,
           isPilot,
+          season_count: new Set(
+            d.collection_ids
+              .map((id: string) => this.collectionsMap.get(id))
+              .filter(Boolean)
+              .map((c: any) => seasonKey(c))
+          ).size || d.collection_ids.length,
           synopsis: isPilot 
             ? 'A dramatic historical chronicle capturing the life, intellect, military stratagems, and rise of Sultan Mehmed II towards the conquest of Constantinople.'
-            : `Preserved catalog records for ${d.name}, containing ${d.video_records} video entries across ${d.collection_ids.length} collections.`
+            : `Preserved catalog records for ${d.name}, containing ${d.video_records} video entries.`
         };
 
         this.dramasMap.set(d.id, enrichedDrama);

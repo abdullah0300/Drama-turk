@@ -3,7 +3,7 @@
 import React, { useState, useTransition, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, X, Film, Sparkles, Play } from 'lucide-react';
-import { Drama, isDramaPlayable } from '@/types/catalog';
+import { Drama, isDramaPlayable, dramaSeasonCount, pluralSeasons } from '@/types/catalog';
 
 interface SearchClientProps {
   allDramas: Drama[];
@@ -141,7 +141,7 @@ export function SearchClient({ allDramas, initialQuery = '' }: SearchClientProps
                       {drama.name}
                     </h3>
                     <p className="text-xs text-text-tertiary mt-1">
-                      {drama.video_records} records · {drama.collection_ids.length} {drama.collection_ids.length === 1 ? 'season' : 'seasons'}
+                      {pluralSeasons(dramaSeasonCount(drama))} · {drama.video_records} videos
                     </p>
                   </div>
 

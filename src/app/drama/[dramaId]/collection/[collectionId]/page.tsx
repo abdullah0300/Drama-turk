@@ -6,7 +6,7 @@ import { catalogRepository } from '@/lib/repository/catalog-repository';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { SeasonClient, SeasonEpisode, OtherSeason } from './SeasonClient';
 import { siteConfig } from '@/config/site';
-import { seasonLabel } from '@/types/catalog';
+import { groupSeasons, seasonKey, seasonTitle, editionName } from '@/types/catalog';
 
 interface CollectionPageProps {
   params: {
@@ -94,17 +94,25 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
     };
   });
 
-  const dramaCollections = await supabaseCatalog.getDramaCollections(drama.id);
-  const others: OtherSeason[] = [];
-  for (const c of dramaCollections.filter((c) => c.id !== collection.id)) {
-    others.push({
-      id: c.id,
-      heading: c.source_heading,
-      seasonLabel: seasonLabel(c),
-      episodeCount: c.episode_group_ids?.length ?? 0,
-      playable: c.status === 'published' || c.id === siteConfig.pilotCollectionId,
-    });
-  }
+  // Seasons of this drama; subtitled/dubbed releases of a season are editions of the same season
+  const seasons = groupSeasons(await supabaseCatalog.getDramaCollections(drama.id));
+  const thisKey = seasonKey(collection);
+  const thisSeason = seasons.find((s) => s.key === thisKey);
+  const editions = (thisSeason?.editions ?? [collection]).map((e) => ({
+    id: e.id,
+    name: editionName(e),
+    episodes: e.episode_group_ids?.length ?? 0,
+    active: e.id === collection.id,
+  }));
+  const others: OtherSeason[] = seasons
+    .filter((s) => s.key !== thisKey)
+    .map((s) => ({
+      id: s.editions[0].id,
+      heading: s.editions.map(editionName).join(' · '),
+      seasonLabel: s.label,
+      episodeCount: s.editions[0].episode_group_ids?.length ?? 0,
+      playable: s.editions.some((c) => c.status === 'published' || c.id === siteConfig.pilotCollectionId),
+    }));
 
   const allDramas = await supabaseCatalog.getAllDramas();
   const moreDramas = allDramas.filter((d) => d.id !== drama.id).slice(0, 6);
@@ -121,8 +129,10 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
       collectionId={collection.id}
       collectionHeading={collection.source_heading}
       seasonNumber={seasonNumber}
-      seasonNote={isCombinedSeason ? `Seasons ${collection.reported_seasons.join(' & ')} — combined collection. Boundaries preserved as provided in source records.` : undefined}
-      edition={collection.version || 'preserved'}
+      seasonName={seasonTitle(collection)}
+      editions={editions}
+      seasonNote={isCombinedSeason ? `Seasons ${collection.reported_seasons.join(' & ')} were released together as one collection; episode numbering is kept as in the source.` : undefined}
+      edition={editionName(collection)}
       videoCount={collectionVideos.length || collection.video_records}
       published={isCollectionPublished}
       isPilot={isPilot}

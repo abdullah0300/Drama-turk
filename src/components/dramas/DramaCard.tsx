@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Check, Play, Plus } from 'lucide-react';
-import { Drama, isDramaPlayable } from '@/types/catalog';
+import { Drama, isDramaPlayable, dramaSeasonCount, pluralSeasons } from '@/types/catalog';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
 
 interface DramaCardProps {
@@ -34,7 +34,7 @@ export function DramaCard({ drama, priority = false, fluid = true }: DramaCardPr
     }
   };
 
-  const collections = drama.collection_ids.length;
+  const seasons = dramaSeasonCount(drama);
   const playable = isDramaPlayable(drama);
 
   return (
@@ -72,7 +72,7 @@ export function DramaCard({ drama, priority = false, fluid = true }: DramaCardPr
       </div>
       <div className="c-info">
         <b>{drama.genres?.[0] || (playable ? 'Watch now' : 'Catalog')}</b>
-        <span>{collections} {collections === 1 ? 'season' : 'seasons'} · {drama.video_records} records</span>
+        <span>{pluralSeasons(seasons)}</span>
       </div>
     </Link>
   );

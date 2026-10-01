@@ -38,6 +38,8 @@ interface SeasonClientProps {
   collectionId: string;
   collectionHeading: string;
   seasonNumber: number;
+  seasonName: string;
+  editions: { id: string; name: string; episodes: number; active: boolean }[];
   seasonNote?: string;
   edition: string;
   videoCount: number;
@@ -54,7 +56,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 export function SeasonClient(props: SeasonClientProps) {
   const {
-    dramaId, dramaName, dramaPoster, heroImage, collectionHeading, seasonNumber, seasonNote, edition,
+    dramaId, dramaName, dramaPoster, heroImage, collectionHeading, seasonNumber, seasonName, editions, seasonNote, edition,
     videoCount, published, isPilot, episodes, extras, others, more,
   } = props;
   const { history, isInMyList, addToMyList, removeFromMyList } = useUserPreferences();
@@ -154,17 +156,26 @@ export function SeasonClient(props: SeasonClientProps) {
           <nav className="sv-crumb" aria-label="Breadcrumb">
             <Link href="/">Home</Link><i>/</i>
             <Link href={`/drama/${dramaId}`}>{dramaName}</Link><i>/</i>
-            <span style={{ color: 'var(--text)' }}>{collectionHeading}</span>
+            <span style={{ color: 'var(--text)' }}>{seasonName}</span>
           </nav>
           <div className="sv-kick">
             <span className={`badge${published ? ' live' : ' dark'}`}>
-              {published ? (isPilot ? 'Featured' : 'Now streaming') : 'Preview Catalog'}
+              {published ? 'Now streaming' : 'Preview Catalog'}
             </span>
-            <span>{episodes.length} episodes · {edition} edition</span>
+            <span>{episodes.length} episodes · {edition}</span>
           </div>
-          <h1 className="sv-h"><em>{dramaName}</em>Season {seasonNumber}</h1>
+          <h1 className="sv-h"><em>{dramaName}</em>{seasonName}</h1>
+          {editions.length > 1 && (
+            <div className="tabs sv-editions" role="tablist" aria-label="Version">
+              {editions.map((e) => (
+                <Link key={e.id} href={`/drama/${dramaId}/collection/${e.id}`} className={`tab${e.active ? ' on' : ''}`} role="tab" aria-selected={e.active} scroll={false}>
+                  {e.name} · {e.episodes}
+                </Link>
+              ))}
+            </div>
+          )}
           <Link className="sv-series" href={`/drama/${dramaId}`}>Series overview →</Link>
-          <p className="sv-line">{collectionHeading}</p>
+          <p className="sv-line" style={{ fontSize: 14, color: 'var(--muted)' }}>{collectionHeading}</p>
           {seasonNote && <p className="sv-line" style={{ fontSize: 14, color: 'var(--muted)', display: 'flex', gap: 8, alignItems: 'flex-start' }}><Info size={15} style={{ flex: 'none', marginTop: 3, color: 'var(--gold)' }} />{seasonNote}</p>}
 
           {playable.length > 0 && (
@@ -209,7 +220,7 @@ export function SeasonClient(props: SeasonClientProps) {
         <div className="sv-stats">
           <div className="st"><small>Episodes</small><b>{episodes.length}</b><span>{playable.length ? `${playable.length} playable` : 'Preview records'}</span></div>
           <div className="st"><small>Video records</small><b>{videoCount}</b><span>Verified renditions kept separate</span></div>
-          <div className="st"><small>Edition</small><b style={{ textTransform: 'capitalize' }}>{edition}</b><span>{published ? 'Ad-free playback' : 'Not yet playable'}</span></div>
+          <div className="st"><small>Version</small><b style={{ fontSize: 24 }}>{edition}</b><span>{published ? 'Ad-free playback' : 'Not yet playable'}</span></div>
           <div className="st"><small>Your progress</small><b>{progressPct}%</b><span>{playable.length - watchedCount > 0 ? `${playable.length - watchedCount} left to watch` : playable.length ? 'All caught up' : '—'}</span></div>
           <div className="st"><small>Status</small><b>{published ? 'Live' : 'Preview'}</b><span>{published ? 'Ready to stream' : 'Metadata only'}</span></div>
         </div>
@@ -318,7 +329,7 @@ export function SeasonClient(props: SeasonClientProps) {
                   {o.playable && <span className="badge">Playable</span>}
                   <span className="so-in">
                     <strong>{o.seasonLabel}</strong>
-                    <span>{o.heading} · {o.episodeCount} episodes</span>
+                    <span>{o.episodeCount} episodes · {o.heading}</span>
                   </span>
                 </Link>
               ))}

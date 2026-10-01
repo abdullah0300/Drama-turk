@@ -14,6 +14,8 @@ export interface Drama {
   isPilot?: boolean;
   /** True when at least one season of this drama is published for streaming. */
   playable?: boolean;
+  /** Distinct seasons (subtitled and dubbed releases of one season count once). */
+  season_count?: number;
 }
 
 export interface CatalogCollection {
@@ -198,6 +200,55 @@ export function compareCollections(a: CatalogCollection, b: CatalogCollection): 
 
 /** "Season 4 · Dubbed" — distinguishes same-numbered seasons released as separate editions. */
 export function seasonLabel(c: Pick<CatalogCollection, 'reported_seasons' | 'version' | 'source_heading'>): string {
-  const base = c.reported_seasons?.length ? `Season ${c.reported_seasons.join(' & ')}` : c.source_heading;
+  const base = seasonTitle(c);
   return c.version === 'dubbed' ? `${base} · Dubbed` : base;
+}
+
+/** A season of a drama, with its releases (subtitled, dubbed…) as editions. */
+export interface SeasonGroup {
+  key: string;
+  number: number;
+  label: string;
+  editions: CatalogCollection[];
+}
+
+export function seasonKey(c: Pick<CatalogCollection, 'reported_seasons' | 'id'>): string {
+  return c.reported_seasons?.length ? c.reported_seasons.join('-') : `c:${c.id}`;
+}
+
+export function seasonTitle(c: Pick<CatalogCollection, 'reported_seasons' | 'source_heading'>): string {
+  const s = c.reported_seasons || [];
+  if (s.length > 1) return `Seasons ${s.join(' & ')}`;
+  if (s.length === 1) return `Season ${s[0]}`;
+  return c.source_heading;
+}
+
+export function editionName(c: Pick<CatalogCollection, 'version'>): string {
+  switch (c.version) {
+    case 'dubbed': return 'Urdu Dubbed';
+    case 'original': return 'Original';
+    case 'subtitled': return 'Subtitled';
+    default: return 'Edition';
+  }
+}
+
+/** Group collections into seasons; editions are ordered subtitled first. */
+export function groupSeasons(collections: CatalogCollection[]): SeasonGroup[] {
+  const map = new Map<string, SeasonGroup>();
+  [...collections].sort(compareCollections).forEach((c) => {
+    const key = seasonKey(c);
+    if (!map.has(key)) {
+      map.set(key, { key, number: c.reported_seasons?.[0] ?? 0, label: seasonTitle(c), editions: [] });
+    }
+    map.get(key)!.editions.push(c);
+  });
+  return Array.from(map.values()).sort((a, b) => a.number - b.number || a.key.localeCompare(b.key));
+}
+
+export function dramaSeasonCount(d: Pick<Drama, 'season_count' | 'collection_ids'>): number {
+  return d.season_count ?? d.collection_ids.length;
+}
+
+export function pluralSeasons(n: number): string {
+  return `${n} ${n === 1 ? 'season' : 'seasons'}`;
 }

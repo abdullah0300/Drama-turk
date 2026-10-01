@@ -9,43 +9,58 @@ import { ContinueWatchingRow } from '@/components/home/ContinueWatchingRow';
 import { LatestEpisodesRow } from '@/components/home/LatestEpisodesRow';
 import { DramaCard } from '@/components/dramas/DramaCard';
 import { siteConfig } from '@/config/site';
-import { isDramaPlayable, seasonLabel } from '@/types/catalog';
+import { isDramaPlayable, groupSeasons, editionName, pluralSeasons, dramaSeasonCount } from '@/types/catalog';
 
 export const revalidate = 3600; // 1 hour ISR
 
 export default async function HomePage() {
-  const pilotDrama = await supabaseCatalog.getPilotDrama();
-  const pilotCollection = await supabaseCatalog.getPilotCollection();
-  const pilotGroups = pilotCollection ? await supabaseCatalog.getCollectionEpisodeGroups(pilotCollection.id) : [];
-  const firstGroup = pilotGroups.length > 0 ? pilotGroups[0] : undefined;
+  // Featured drama comes from site settings; nothing here is tied to a particular season
+  const featured = await supabaseCatalog.getPilotDrama();
+  const [latestEpisodes, allDramas] = await Promise.all([
+    supabaseCatalog.getLatestEpisodePerDrama(),
+    supabaseCatalog.getAllDramas(),
+  ]);
 
-  const latestEpisodes = await supabaseCatalog.getLatestEpisodePerDrama();
-  const allDramas = await supabaseCatalog.getAllDramas();
+  // The featured drama starts from its first season (subtitled edition preferred)
+  const featuredSeasons = featured ? groupSeasons(await supabaseCatalog.getDramaCollections(featured.id)) : [];
+  const firstSeason = featuredSeasons[0];
+  const firstEdition = firstSeason?.editions[0];
+  const [firstGroups, firstVideos] = firstEdition
+    ? await Promise.all([
+        supabaseCatalog.getCollectionEpisodeGroups(firstEdition.id),
+        supabaseCatalog.getCollectionVideos(firstEdition.id),
+      ])
+    : [[], []];
+  const thumbByGroup = new Map<string, string>();
+  firstVideos.forEach((v) => {
+    if (v.episode_group_id && v.thumbnail_urls?.[0] && !thumbByGroup.has(v.episode_group_id)) {
+      thumbByGroup.set(v.episode_group_id, v.thumbnail_urls[0]);
+    }
+  });
+  const firstGroup = firstGroups[0];
 
   const heroItems: HeroItem[] = [];
-  if (pilotDrama) {
+  if (featured) {
+    const editions = Array.from(new Set(featuredSeasons.flatMap((s) => s.editions.map(editionName))));
     heroItems.push({
-      id: pilotDrama.id,
-      title: pilotDrama.name,
-      kicker: 'Pilot feature · Playable release',
-      genres: pilotDrama.genres?.slice(0, 2) ?? [],
-      meta: pilotCollection
-        ? `Season ${pilotCollection.reported_seasons.join(', ')} · Urdu & English subtitles`
-        : 'Urdu & English subtitles',
-      line:
-        pilotDrama.synopsis ||
-        'An epic historical narrative chronicling the vision, statecraft, and tactical campaigns of Sultan Mehmed II.',
-      image: pilotDrama.backdrop_url || pilotDrama.poster_url,
-      thumb: pilotDrama.backdrop_url || pilotDrama.poster_url,
-      thumbnailForList: pilotDrama.poster_url,
-      episodeCount: pilotGroups.length,
-      playHref: firstGroup ? `/drama/${pilotDrama.id}/watch/${firstGroup.id}` : `/drama/${pilotDrama.id}`,
-      playLabel: 'Start watching',
-      infoHref: `/drama/${pilotDrama.id}`,
+      id: featured.id,
+      title: featured.name,
+      kicker: `Featured · ${pluralSeasons(featuredSeasons.length)} streaming`,
+      genres: featured.genres?.slice(0, 2) ?? [],
+      meta: editions.join(' & ') || 'Ad-free',
+      line: featured.synopsis || '',
+      image: featured.backdrop_url || featured.poster_url,
+      thumb: featured.backdrop_url || featured.poster_url,
+      thumbnailForList: featured.poster_url,
+      episodeCount: firstGroups.length,
+      segLabel: firstSeason ? `episodes in ${firstSeason.label}` : 'episodes',
+      playHref: firstGroup ? `/drama/${featured.id}/watch/${firstGroup.id}` : `/drama/${featured.id}`,
+      playLabel: firstSeason ? `Play ${firstSeason.label}` : 'Start watching',
+      infoHref: `/drama/${featured.id}`,
     });
   }
   allDramas
-    .filter((d) => d.id !== pilotDrama?.id && (d.backdrop_url || d.poster_url))
+    .filter((d) => d.id !== featured?.id && (d.backdrop_url || d.poster_url))
     .slice(0, 3)
     .forEach((d) =>
       heroItems.push({
@@ -53,8 +68,8 @@ export default async function HomePage() {
         title: d.name,
         kicker: isDramaPlayable(d) ? 'Now streaming · ad-free' : 'Preview catalog',
         genres: d.genres?.slice(0, 2) ?? [],
-        meta: `${d.collection_ids.length} ${d.collection_ids.length === 1 ? 'season' : 'seasons'} · ${d.video_records} records`,
-        line: d.synopsis || 'Browse authentic catalog metadata and source collection groupings.',
+        meta: pluralSeasons(dramaSeasonCount(d)),
+        line: d.synopsis || '',
         image: d.backdrop_url || d.poster_url,
         thumb: d.backdrop_url || d.poster_url,
         thumbnailForList: d.poster_url,
@@ -65,60 +80,58 @@ export default async function HomePage() {
       })
     );
 
-  // Latest seasons stage: dramas with their season collections
+  // Latest seasons stage: one card per season (editions merged), newest first
   const seasonCandidates = [
-    ...(pilotDrama ? [pilotDrama] : []),
+    ...(featured ? [featured] : []),
     ...allDramas
-      .filter((d) => d.id !== pilotDrama?.id && d.collection_ids.length > 0 && (d.poster_url || d.backdrop_url))
-      .sort((a, b) => b.collection_ids.length - a.collection_ids.length),
+      .filter((d) => d.id !== featured?.id && dramaSeasonCount(d) > 0 && (d.poster_url || d.backdrop_url))
+      .sort((a, b) => dramaSeasonCount(b) - dramaSeasonCount(a)),
   ].slice(0, 5);
-  const seasonItems: LatestSeasonItem[] = [];
-  for (const d of seasonCandidates) {
-    const allCols = await supabaseCatalog.getDramaCollections(d.id);
-    const cols = allCols.slice(-5); // the five newest seasons go in the deck
-    if (cols.length === 0) continue;
-    const seasons = cols
-      .map((c, i) => ({
-        id: c.id,
-        n: c.reported_seasons?.[0] ?? i + 1,
-        label: seasonLabel(c),
-        edition: c.version || 'preserved',
-        episodes: c.episode_group_ids?.length ?? 0,
-        playable: c.status === 'published' || c.id === siteConfig.pilotCollectionId,
-        watchHref: c.id === pilotCollection?.id && firstGroup ? `/drama/${d.id}/watch/${firstGroup.id}` : undefined,
-      }))
-      .reverse(); // newest season at the front of the deck
-    seasonItems.push({
-      id: d.id,
-      title: d.name,
-      genre: d.genres?.[0] || 'Drama',
-      totalSeasons: allCols.length,
-      image: d.backdrop_url || d.poster_url,
-      poster: d.poster_url,
-      seasons,
-    });
-  }
-  // Opening episodes of the pilot, shown in Continue Watching before anything has been watched
-  const pilotVideos = pilotCollection ? await supabaseCatalog.getCollectionVideos(pilotCollection.id) : [];
-  const thumbByGroup = new Map<string, string>();
-  pilotVideos.forEach((v) => {
-    if (v.episode_group_id && v.thumbnail_urls?.[0] && !thumbByGroup.has(v.episode_group_id)) {
-      thumbByGroup.set(v.episode_group_id, v.thumbnail_urls[0]);
-    }
-  });
+  const seasonItems: LatestSeasonItem[] = (
+    await Promise.all(
+      seasonCandidates.map(async (d) => {
+        const seasons = groupSeasons(await supabaseCatalog.getDramaCollections(d.id));
+        if (seasons.length === 0) return null;
+        const item: LatestSeasonItem = {
+          id: d.id,
+          title: d.name,
+          genre: d.genres?.[0] || 'Drama',
+          totalSeasons: seasons.length,
+          image: d.backdrop_url || d.poster_url,
+          poster: d.poster_url,
+          seasons: seasons
+            .slice(-5)
+            .reverse()
+            .map((s) => ({
+              id: s.editions[0].id,
+              n: s.number,
+              label: s.label,
+              edition: s.editions.map(editionName).join(' · '),
+              episodes: s.editions[0].episode_group_ids?.length ?? 0,
+              playable: s.editions.some((c) => c.status === 'published'),
+            })),
+        };
+        return item;
+      })
+    )
+  ).filter((x): x is LatestSeasonItem => x !== null);
+
+  // Opening episodes of the featured drama, shown in Continue Watching before anything has been watched
   const starters =
-    pilotDrama && pilotCollection
-      ? pilotGroups.slice(0, 5).map((g) => ({
-          dramaId: pilotDrama.id,
-          dramaTitle: pilotDrama.name,
+    featured && firstEdition
+      ? firstGroups.slice(0, 5).map((g) => ({
+          dramaId: featured.id,
+          dramaTitle: featured.name,
           groupId: g.id,
           label: g.display_label,
-          thumb: thumbByGroup.get(g.id) || pilotDrama.backdrop_url || pilotDrama.poster_url,
-          seasonHref: `/drama/${pilotDrama.id}/collection/${pilotCollection.id}`,
+          thumb: thumbByGroup.get(g.id) || featured.backdrop_url || featured.poster_url,
+          seasonHref: `/drama/${featured.id}/collection/${firstEdition.id}`,
         }))
       : [];
 
-  const myListTotals: Record<string, number> = pilotDrama ? { [pilotDrama.id]: pilotGroups.length } : {};
+  const myListTotals: Record<string, number> = featured
+    ? { [featured.id]: featuredSeasons.reduce((n, s) => n + (s.editions[0].episode_group_ids?.length ?? 0), 0) }
+    : {};
 
   // Structured data JSON-LD
   const jsonLd = {

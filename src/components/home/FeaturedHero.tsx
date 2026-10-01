@@ -15,6 +15,7 @@ export interface HeroItem {
   image?: string;
   thumb?: string;
   episodeCount: number;
+  segLabel?: string;
   playHref: string;
   playLabel: string;
   infoHref: string;
@@ -114,7 +115,7 @@ export function FeaturedHero({ items }: { items: HeroItem[] }) {
         {item.episodeCount > 0 && (
           <div className="seg rise" style={{ ['--d' as string]: '.55s' }}>
             <div className="seg-label">
-              <span><b>{item.episodeCount}</b> episodes playable</span>
+              <span><b>{item.episodeCount}</b> {item.segLabel ?? 'episodes'}</span>
               <span>{watched > 0 ? `${watched} started` : 'Ad-free'}</span>
             </div>
             <div className="seg-bar">

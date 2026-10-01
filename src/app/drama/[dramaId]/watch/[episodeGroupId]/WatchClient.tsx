@@ -28,6 +28,7 @@ import {
   Play,
 } from 'lucide-react';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
+import { seasonLabel as seasonLabelOf } from '@/types/catalog';
 import { siteConfig } from '@/config/site';
 
 export interface EpisodeSidebarItem {
@@ -69,7 +70,7 @@ export function WatchClient({
   const { isInMyList, addToMyList, removeFromMyList, preferences, setAutoplayNext } = useUserPreferences();
   const inList = isInMyList(drama.id);
   const nextThumb = nextGroup ? sidebarEpisodes.find((e) => e.id === nextGroup.id)?.thumbnailUrl : undefined;
-  const seasonLabel = collection.reported_seasons?.length ? `Season ${collection.reported_seasons.join(' & ')}` : collection.source_heading;
+  const seasonLabel = seasonLabelOf(collection);
 
   const toggleList = () => {
     if (inList) removeFromMyList(drama.id);
