@@ -42,6 +42,7 @@ export class SupabaseCatalogRepository {
   private static instance: SupabaseCatalogRepository;
   private client: SupabaseClient<Database> | null = null;
   private isSupabaseConfigured = false;
+  private collectionMetaCache = new Map<string, { id: any; dramaSourceId: string; dramaName?: string }>();
 
   private constructor() {
     this.getClient();
@@ -181,6 +182,13 @@ export class SupabaseCatalogRepository {
         return localCatalog.getDramaCollections(dramaSourceId);
       }
 
+      for (const c of collections as any[]) {
+        this.collectionMetaCache.set(c.source_id, {
+          id: c.id,
+          dramaSourceId,
+        });
+      }
+
       return (collections as any[]).map(c => ({
         id: c.source_id,
         source_catalog_id: c.source_id.replace('collection-', ''),
@@ -255,15 +263,23 @@ export class SupabaseCatalogRepository {
     if (!supabase) return localCatalog.getCollectionEpisodeGroups(collectionSourceId);
 
     try {
-      const { data: col } = await supabase
-        .from('collections')
-        .select('id, drama_id, dramas(source_id)')
-        .eq('source_id', collectionSourceId)
-        .single();
+      let col = this.collectionMetaCache.get(collectionSourceId);
+      if (!col) {
+        const { data } = await supabase
+          .from('collections')
+          .select('id, drama_id, dramas(source_id)')
+          .eq('source_id', collectionSourceId)
+          .single();
+
+        if (data) {
+          col = { id: (data as any).id, dramaSourceId: (data as any).dramas?.source_id || siteConfig.pilotDramaId };
+          this.collectionMetaCache.set(collectionSourceId, col);
+        }
+      }
 
       if (!col) return localCatalog.getCollectionEpisodeGroups(collectionSourceId);
 
-      const dramaSourceId = (col as any).dramas?.source_id || siteConfig.pilotDramaId;
+      const dramaSourceId = col.dramaSourceId;
 
       const { data: groups, error } = await supabase
         .from('episode_groups')
@@ -413,28 +429,37 @@ export class SupabaseCatalogRepository {
     }
 
     try {
-      const { data: col } = await supabase
-        .from('collections')
-        .select('id, source_id, dramas(source_id, display_name)')
-        .eq('source_id', collectionSourceId)
-        .single();
+      let col = this.collectionMetaCache.get(collectionSourceId);
+      let dramaName = col?.dramaName || 'Drama';
+      let dramaSourceId = col?.dramaSourceId || siteConfig.pilotDramaId;
+
+      if (!col) {
+        const { data: colData } = await supabase
+          .from('collections')
+          .select('id, source_id, dramas(source_id, display_name)')
+          .eq('source_id', collectionSourceId)
+          .single();
+
+        if (colData) {
+          dramaName = (colData as any).dramas?.display_name || 'Drama';
+          dramaSourceId = (colData as any).dramas?.source_id || siteConfig.pilotDramaId;
+          col = { id: (colData as any).id, dramaSourceId, dramaName };
+          this.collectionMetaCache.set(collectionSourceId, col);
+        }
+      }
 
       if (!col) return [];
 
       const { data: variants, error } = await supabase
         .from('video_variants')
         .select('*, stream_sources(*), episode_groups(source_id, still_url)')
-        .eq('collection_id', (col as any).id)
+        .eq('collection_id', col.id)
         .eq('publication_state', 'published');
 
       if (error || !variants || (variants as any[]).length === 0) {
         const groups = localCatalog.getCollectionEpisodeGroups(collectionSourceId);
         return groups.flatMap(g => localCatalog.getVideosForGroup(g.id));
       }
-
-      const colRow = col as any;
-      const dramaName = colRow.dramas?.display_name || 'Drama';
-      const dramaSourceId = colRow.dramas?.source_id || siteConfig.pilotDramaId;
 
       return (variants as any[]).map(v => {
         const activeStreams = (v.stream_sources || [])
