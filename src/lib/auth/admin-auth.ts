@@ -53,6 +53,15 @@ export async function verifyAdminAccess(request?: NextRequest | Request): Promis
     }
   }
 
+  // Fallback to raw Cookie header (e.g. standard Request or Server Component)
+  if (!token) {
+    const cookieHeader = request.headers.get('cookie') || '';
+    const match = cookieHeader.match(/(?:^|;\s*)(?:sb-access-token|supabase-auth-token)=([^;]+)/);
+    if (match) {
+      token = decodeURIComponent(match[1]);
+    }
+  }
+
   if (!token) {
     return {
       isAuthorized: false,

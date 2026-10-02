@@ -3,11 +3,11 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { catalogRepository } from '@/lib/repository/catalog-repository';
 import { AdminDashboardClient } from './AdminDashboardClient';
+import { AdminLoginForm } from './AdminLoginForm';
 import { verifyAdminAccess } from '@/lib/auth/admin-auth';
-import { ShieldAlert } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Admin Console & Review Queue',
+  title: 'Admin Console & Operations',
   robots: {
     index: false,
     follow: false,
@@ -19,19 +19,7 @@ export default async function AdminPage() {
   const auth = await verifyAdminAccess(new Request('http://localhost', { headers: reqHeaders }));
 
   if (!auth.isAuthorized) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-surface border border-surface-border p-8 rounded-xl text-center space-y-4">
-          <ShieldAlert className="w-12 h-12 text-red-400 mx-auto" />
-          <h1 className="text-xl font-bold font-display text-text-primary">
-            Admin Access Restricted
-          </h1>
-          <p className="text-sm text-text-secondary leading-relaxed">
-            {auth.message || 'Authorization is strictly required to view or mutate catalog review data.'}
-          </p>
-        </div>
-      </div>
-    );
+    return <AdminLoginForm />;
   }
 
   catalogRepository.ensureLoaded();
@@ -54,6 +42,8 @@ export default async function AdminPage() {
         summary={summary}
         reviewQueue={reviewQueue}
         duplicateStreams={duplicateStreams}
+        user={auth.user}
+        role={auth.role}
       />
     </div>
   );

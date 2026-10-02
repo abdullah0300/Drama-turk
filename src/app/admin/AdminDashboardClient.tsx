@@ -12,7 +12,8 @@ import {
   Layers, 
   ShieldCheck, 
   ExternalLink, 
-  RefreshCw 
+  RefreshCw,
+  LogOut
 } from 'lucide-react';
 import { CatalogSummary, OrganizationReviewRecord, DuplicateStreamGroup, PlaybackCheckLog } from '@/types/catalog';
 import { siteConfig } from '@/config/site';
@@ -21,12 +22,19 @@ interface AdminDashboardClientProps {
   summary: CatalogSummary | null;
   reviewQueue: OrganizationReviewRecord[];
   duplicateStreams: DuplicateStreamGroup[];
+  user?: {
+    id: string;
+    email?: string;
+  };
+  role?: string;
 }
 
 export function AdminDashboardClient({
   summary,
   reviewQueue,
   duplicateStreams,
+  user,
+  role,
 }: AdminDashboardClientProps) {
   const [activeTab, setActiveTab] = useState<'metrics' | 'reviews' | 'duplicates' | 'health' | 'editorial' | 'config'>('metrics');
 
@@ -84,6 +92,14 @@ export function AdminDashboardClient({
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/auth/logout', { method: 'POST' });
+    } finally {
+      window.location.reload();
+    }
+  };
+
   const filteredReviews = reviewQueue.filter(r => {
     if (reviewFilter === 'uncertain') return !r.resolved;
     if (reviewFilter === 'resolved') return r.resolved;
@@ -99,17 +115,34 @@ export function AdminDashboardClient({
             <ShieldCheck size={20} />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-text-primary">
-              Admin &amp; Operational Console
-            </h2>
-            <p className="text-xs text-text-secondary">
-              Inspect catalog uncertainty, stream health checks, review queues, and configuration. Protected by environment credentials.
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-text-primary">
+                Admin &amp; Operational Console
+              </h2>
+              {role && (
+                <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                  {role}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-text-secondary mt-0.5">
+              {user?.email ? `Authenticated as ${user.email}.` : 'Inspect catalog uncertainty, stream health checks, and review queues.'}
             </p>
           </div>
         </div>
 
-        <div className="px-3 py-1 rounded bg-stone-900 border border-surface-border text-xs text-amber-400 font-mono">
-          Pilot: {siteConfig.pilotCollectionId}
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+          <div className="px-3 py-1 rounded bg-stone-900 border border-surface-border text-xs text-amber-400 font-mono">
+            Pilot: {siteConfig.pilotCollectionId}
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-text-secondary hover:text-text-primary border border-surface-border text-xs transition-colors font-medium active:scale-[0.98]"
+            title="Sign out of Admin Console"
+          >
+            <LogOut size={13} />
+            Sign Out
+          </button>
         </div>
       </div>
 

@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Forbidden: User is not authorized as staff or administrator.' }, { status: 403 });
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       user: {
         id: data.user.id,
@@ -52,6 +52,18 @@ export async function POST(req: NextRequest) {
       access_token: data.session.access_token,
       expires_in: data.session.expires_in,
     });
+
+    response.cookies.set({
+      name: 'sb-access-token',
+      value: data.session.access_token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: data.session.expires_in || 60 * 60 * 24 * 7,
+    });
+
+    return response;
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Internal login error.' }, { status: 500 });
   }
