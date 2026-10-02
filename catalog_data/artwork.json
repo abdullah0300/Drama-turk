@@ -13,8 +13,8 @@
    "backdrop_url": "https://image.tmdb.org/t/p/w1280/hOxTHKWxKM69OOg4C3WIfMqaOt6.jpg"
   },
   "ask-ve-taht": {
-   "poster_url": "https://play.niazitv.pk/images/serie_1788975485.jpg",
-   "backdrop_url": "https://play.niazitv.pk/images/serie_1788975485.jpg"
+   "poster_url": "/dramas/ask-ve-taht.png",
+   "backdrop_url": "/dramas/ask-ve-taht.png"
   },
   "ates-kuslari": {
    "poster_url": "https://image.tmdb.org/t/p/w780/zqfI3o3wRSAOVUtfRXnUTjtLVOZ.jpg",
@@ -110,7 +110,7 @@
    "2": "https://image.tmdb.org/t/p/w780/riRJMzU0WWpelitHH4RWjRIj4fM.jpg"
   },
   "ask-ve-taht": {
-   "1": "https://play.niazitv.pk/images/serie_1788975485.jpg"
+   "1": "/dramas/ask-ve-taht.png"
   },
   "ates-kuslari": {
    "1": "https://image.tmdb.org/t/p/w780/e6gK5i4KYNeCyA4AYf3ofrFvGEn.jpg",
