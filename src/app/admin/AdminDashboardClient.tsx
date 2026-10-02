@@ -15,10 +15,17 @@ import {
   Check,
   RotateCcw,
   Radio,
-  ExternalLink
+  ExternalLink,
+  Sparkles
 } from 'lucide-react';
 import { DuplicateStreamGroup, PlaybackCheckLog } from '@/types/catalog';
 import { siteConfig } from '@/config/site';
+
+export interface DramaOption {
+  source_id: string;
+  display_name: string;
+  is_pilot?: boolean;
+}
 
 export interface LiveAdminSummary {
   dramas: number;
@@ -59,6 +66,8 @@ interface AdminDashboardClientProps {
   reviewFindings: LiveReviewFinding[];
   recentStreamChecks: LiveStreamCheck[];
   duplicateStreams: DuplicateStreamGroup[];
+  dramaOptions?: DramaOption[];
+  currentHeroDramaId?: string;
   user?: {
     id: string;
     email?: string;
@@ -71,10 +80,20 @@ export function AdminDashboardClient({
   reviewFindings: initialFindings,
   recentStreamChecks: initialChecks,
   duplicateStreams,
+  dramaOptions = [],
+  currentHeroDramaId,
   user,
   role,
 }: AdminDashboardClientProps) {
   const [activeTab, setActiveTab] = useState<'metrics' | 'reviews' | 'duplicates' | 'health' | 'automation' | 'config'>('metrics');
+
+  // Hero Drama state
+  const [heroDramaId, setHeroDramaId] = useState<string>(currentHeroDramaId || siteConfig.pilotDramaId || 'mehmed-fetihler-sultani');
+  const [selectedHeroDrama, setSelectedHeroDrama] = useState<string>(currentHeroDramaId || siteConfig.pilotDramaId || 'mehmed-fetihler-sultani');
+  const [isUpdatingHero, setIsUpdatingHero] = useState<boolean>(false);
+  const [heroUpdateMessage, setHeroUpdateMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const heroDramaName = dramaOptions.find((d) => d.source_id === heroDramaId)?.display_name || heroDramaId;
 
   // Review Findings State
   const [findings, setFindings] = useState<LiveReviewFinding[]>(initialFindings);
@@ -87,6 +106,32 @@ export function AdminDashboardClient({
   const [isChecking, setIsChecking] = useState(false);
   const [checkResult, setCheckResult] = useState<PlaybackCheckLog | null>(null);
   const [recentChecks, setRecentChecks] = useState<LiveStreamCheck[]>(initialChecks);
+
+  const handleUpdateHero = async () => {
+    setIsUpdatingHero(true);
+    setHeroUpdateMessage(null);
+    try {
+      const res = await fetch('/api/admin/settings/hero', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dramaSourceId: selectedHeroDrama }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update hero drama');
+      setHeroDramaId(selectedHeroDrama);
+      setHeroUpdateMessage({
+        type: 'success',
+        text: `Homepage Hero successfully updated to "${data.heroDrama?.display_name || selectedHeroDrama}"!`,
+      });
+    } catch (err: any) {
+      setHeroUpdateMessage({
+        type: 'error',
+        text: err.message || 'Error updating hero drama',
+      });
+    } finally {
+      setIsUpdatingHero(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -220,8 +265,12 @@ export function AdminDashboardClient({
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-          <div className="px-3 py-1.5 rounded-lg bg-stone-900 border border-surface-border text-xs text-amber-400 font-mono">
-            Featured Pilot: {siteConfig.pilotCollectionId}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-900 border border-surface-border text-xs text-text-secondary">
+            <Sparkles size={12} className="text-amber-400 shrink-0" />
+            <span>Hero:</span>
+            <span className="font-semibold text-amber-400 truncate max-w-[140px] sm:max-w-[200px]" title={heroDramaName}>
+              {heroDramaName}
+            </span>
           </div>
           <button
             onClick={handleLogout}
@@ -307,6 +356,86 @@ export function AdminDashboardClient({
               <p className="text-2xl font-bold font-mono text-sky-400 mt-1">{summary.total_stream_checks}</p>
               <span className="text-[10px] text-text-muted">Automated 4h checks recorded</span>
             </div>
+          </div>
+
+          {/* HOMEPAGE HERO SHOWCASE CONTROLS */}
+          <div className="p-5 bg-surface border border-surface-border rounded-xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-surface-border">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Sparkles size={16} className="text-amber-400" />
+                  <h3 className="text-sm font-semibold text-text-primary">Homepage Featured Hero Drama</h3>
+                </div>
+                <p className="text-xs text-text-secondary mt-0.5">
+                  Select which drama series is highlighted in the flagship banner on the homepage (<code className="text-amber-400">/</code>). Viewers start seamlessly from Season 1, Episode 1.
+                </p>
+              </div>
+              <div className="text-xs shrink-0">
+                <span className="text-text-muted mr-1.5">Currently active:</span>
+                <span className="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
+                  {heroDramaName}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="flex-1">
+                <label className="block text-[11px] font-medium text-text-secondary mb-1">
+                  Change Flagship Hero Series
+                </label>
+                <select
+                  value={selectedHeroDrama}
+                  onChange={(e) => {
+                    setSelectedHeroDrama(e.target.value);
+                    setHeroUpdateMessage(null);
+                  }}
+                  className="w-full bg-stone-900 border border-surface-border rounded-lg px-3 py-2 text-xs text-text-primary focus:border-amber-400 focus:outline-none"
+                >
+                  {(dramaOptions || []).map((d) => (
+                    <option key={d.source_id} value={d.source_id}>
+                      {d.display_name} ({d.source_id})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="sm:self-end">
+                <button
+                  onClick={handleUpdateHero}
+                  disabled={isUpdatingHero || selectedHeroDrama === heroDramaId}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed text-stone-950 text-xs font-semibold transition-all active:scale-[0.98]"
+                >
+                  {isUpdatingHero ? (
+                    <>
+                      <RefreshCw size={13} className="animate-spin" />
+                      Saving to Supabase...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={13} />
+                      Set as Homepage Hero
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {heroUpdateMessage && (
+              <div
+                className={`p-3 rounded-lg text-xs flex items-center gap-2 ${
+                  heroUpdateMessage.type === 'success'
+                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                    : 'bg-red-500/10 text-red-400 border border-red-500/30'
+                }`}
+              >
+                {heroUpdateMessage.type === 'success' ? (
+                  <CheckCircle2 size={14} className="shrink-0" />
+                ) : (
+                  <XCircle size={14} className="shrink-0" />
+                )}
+                <span>{heroUpdateMessage.text}</span>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -640,12 +769,8 @@ export function AdminDashboardClient({
               <span className="font-mono text-text-primary">{siteConfig.brandPromise}</span>
             </div>
             <div className="flex justify-between py-1 border-b border-surface-border/50">
-              <span className="text-text-secondary">Featured Pilot Drama ID</span>
-              <span className="font-mono text-amber-400">{siteConfig.pilotDramaId}</span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-surface-border/50">
-              <span className="text-text-secondary">Featured Pilot Collection ID</span>
-              <span className="font-mono text-amber-400">{siteConfig.pilotCollectionId}</span>
+              <span className="text-text-secondary">Homepage Hero Drama</span>
+              <span className="font-mono text-amber-400 font-semibold">{heroDramaName} ({heroDramaId})</span>
             </div>
             <div className="flex justify-between py-1 border-b border-surface-border/50">
               <span className="text-text-secondary">Database Host</span>

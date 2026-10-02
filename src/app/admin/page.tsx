@@ -30,6 +30,8 @@ export default async function AdminPage() {
   let liveSummary: LiveAdminSummary;
   let liveReviewFindings: LiveReviewFinding[] = [];
   let recentStreamChecks: LiveStreamCheck[] = [];
+  let currentHeroId = 'mehmed-fetihler-sultani';
+  let dramaOptions: { source_id: string; display_name: string; is_pilot?: boolean }[] = [];
 
   try {
     const [
@@ -41,6 +43,8 @@ export default async function AdminPage() {
       streamChecksRes,
       reviewFindingsRes,
       recentChecksRes,
+      settingsRes,
+      allDramasRes,
     ] = await Promise.all([
       client.from('dramas').select('*', { count: 'exact', head: true }),
       client.from('collections').select('*', { count: 'exact', head: true }),
@@ -58,10 +62,21 @@ export default async function AdminPage() {
         .select('id, variant_source_id, stream_url, check_method, status, http_status, content_type, error_message, checked_at')
         .order('checked_at', { ascending: false })
         .limit(15),
+      client
+        .from('public_site_settings')
+        .select('pilot_drama_source_id')
+        .eq('id', 'current')
+        .single(),
+      client
+        .from('dramas')
+        .select('source_id, display_name, is_pilot')
+        .order('display_name', { ascending: true }),
     ]);
 
     liveReviewFindings = (reviewFindingsRes.data || []) as LiveReviewFinding[];
     recentStreamChecks = (recentChecksRes.data || []) as LiveStreamCheck[];
+    currentHeroId = (settingsRes?.data?.pilot_drama_source_id as string) || 'mehmed-fetihler-sultani';
+    dramaOptions = (allDramasRes?.data || []) as { source_id: string; display_name: string; is_pilot?: boolean }[];
 
     const openCount = liveReviewFindings.filter((f) => !f.is_resolved).length;
     const resolvedCount = liveReviewFindings.filter((f) => f.is_resolved).length;
@@ -115,6 +130,8 @@ export default async function AdminPage() {
         reviewFindings={liveReviewFindings}
         recentStreamChecks={recentStreamChecks}
         duplicateStreams={duplicateStreams}
+        dramaOptions={dramaOptions}
+        currentHeroDramaId={currentHeroId}
         user={auth.user}
         role={auth.role}
       />
