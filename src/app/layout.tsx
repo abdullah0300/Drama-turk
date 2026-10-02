@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import './sezon.css';
 import { UserPreferencesProvider } from '@/context/UserPreferencesContext';
@@ -79,6 +80,31 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-canvas text-text-primary antialiased selection:bg-amber-500/30 selection:text-amber-200">
+        {/* Google Analytics (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-GB5Z70JQXM"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-GB5Z70JQXM');
+          `}
+        </Script>
+
+        {/* Microsoft Clarity */}
+        <Script id="microsoft-clarity" strategy="afterInteractive">
+          {`
+            (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "yqx7y2skf6");
+          `}
+        </Script>
+
         <UserPreferencesProvider>
           <Navbar dramas={searchDramas} notifications={notifications} />
           <PageShell>{children}</PageShell>
