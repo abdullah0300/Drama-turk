@@ -12,6 +12,10 @@
    "poster_url": "https://image.tmdb.org/t/p/w780/4wKqK8T1wTdhXfhnZzz2TuJE2Zh.jpg",
    "backdrop_url": "https://image.tmdb.org/t/p/w1280/hOxTHKWxKM69OOg4C3WIfMqaOt6.jpg"
   },
+  "ask-ve-taht": {
+   "poster_url": "https://play.niazitv.pk/images/serie_1788975485.jpg",
+   "backdrop_url": "https://play.niazitv.pk/images/serie_1788975485.jpg"
+  },
   "ates-kuslari": {
    "poster_url": "https://image.tmdb.org/t/p/w780/zqfI3o3wRSAOVUtfRXnUTjtLVOZ.jpg",
    "backdrop_url": "https://image.tmdb.org/t/p/w1280/WyomW8bBeRRR4ilqMXZoItMqFy.jpg"
@@ -104,6 +108,9 @@
   "alparslan-buyuk-selcuklu": {
    "1": "https://image.tmdb.org/t/p/w780/mbZMAl1zEPCKOG41K7vZWn1zUer.jpg",
    "2": "https://image.tmdb.org/t/p/w780/riRJMzU0WWpelitHH4RWjRIj4fM.jpg"
+  },
+  "ask-ve-taht": {
+   "1": "https://play.niazitv.pk/images/serie_1788975485.jpg"
   },
   "ates-kuslari": {
    "1": "https://image.tmdb.org/t/p/w780/e6gK5i4KYNeCyA4AYf3ofrFvGEn.jpg",
