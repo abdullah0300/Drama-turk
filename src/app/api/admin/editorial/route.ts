@@ -1,49 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { verifyAdminAccess } from '@/lib/auth/admin-auth';
-import fs from 'fs';
-import path from 'path';
-
-// Helper to query remote Supabase using management / superuser connection
-async function executeAdminQuery(sql: string) {
-  let token: string | null = null;
-  const oauthPath = 'C:/Users/larai/.gemini/antigravity/mcp_oauth_tokens.json';
-  if (fs.existsSync(oauthPath)) {
-    const tokens = JSON.parse(fs.readFileSync(oauthPath, 'utf8'));
-    const key = Object.keys(tokens).find(k => k.includes('zvwltfqhbpqtnjbsflvk'));
-    if (key && tokens[key]?.token?.access_token) {
-      token = tokens[key].token.access_token;
-    }
-  }
-
-  if (!token) {
-    throw new Error('Supabase management credentials not available on server.');
-  }
-
-  const projectRef = 'zvwltfqhbpqtnjbsflvk';
-  const res = await fetch(`https://api.supabase.com/v1/projects/${projectRef}/database/query`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ query: sql })
-  });
-
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Admin query failed (${res.status}): ${errText}`);
-  }
-
-  return await res.json();
-}
-
-function escapeSql(val: any): string {
-  if (val === null || val === undefined) return 'NULL';
-  if (typeof val === 'number') return String(val);
-  if (typeof val === 'boolean') return val ? 'true' : 'false';
-  return `'${String(val).replace(/'/g, "''")}'`;
-}
+import { verifyAdminAccess, createAdminClient } from '@/lib/auth/admin-auth';
 
 export async function POST(req: NextRequest) {
   const auth = await verifyAdminAccess(req);
@@ -59,53 +16,76 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required parameters: action, targetType, targetId' }, { status: 400 });
     }
 
+    const client: any = createAdminClient(auth.token);
+    const now = new Date().toISOString();
+
     if (action === 'update_metadata') {
       if (targetType === 'episode_group') {
         const { label, short_description } = payload || {};
         if (!label) return NextResponse.json({ error: 'Missing label in payload' }, { status: 400 });
-        
-        // Isolate editorial override in public.published_editorial (preserving raw imported episode_groups row)
-        const sql = `
-          INSERT INTO public.published_editorial (group_id, approved_display_title, short_description, updated_at)
-          SELECT id, ${escapeSql(label)}, ${escapeSql(short_description || '')}, now()
-          FROM public.episode_groups 
-          WHERE source_id = ${escapeSql(targetId)}
-          ON CONFLICT (group_id) WHERE group_id IS NOT NULL DO UPDATE SET
-            approved_display_title = EXCLUDED.approved_display_title,
-            short_description = EXCLUDED.short_description,
-            updated_at = now()
-          RETURNING id, group_id, approved_display_title, short_description, updated_at;
-        `;
-        const result = await executeAdminQuery(sql);
 
-        // Immediate cache invalidation
+        const { data: group } = await client
+          .from('episode_groups')
+          .select('id')
+          .eq('source_id', targetId)
+          .single();
+
+        if (!group) return NextResponse.json({ error: `Episode group ${targetId} not found` }, { status: 404 });
+
+        const { data: updated, error } = await (client as any)
+          .from('published_editorial')
+          .upsert(
+            {
+              group_id: (group as any).id,
+              approved_display_title: label,
+              short_description: short_description || '',
+              updated_at: now,
+            },
+            { onConflict: 'group_id' }
+          )
+          .select('id, group_id, approved_display_title, short_description, updated_at');
+
+        if (error) {
+          return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
         revalidatePath('/', 'layout');
-        return NextResponse.json({ success: true, updated: result, is_editorial_override: true });
+        return NextResponse.json({ success: true, updated, is_editorial_override: true });
       }
 
       if (targetType === 'drama') {
         const { display_name, short_overview } = payload || {};
         if (!display_name) return NextResponse.json({ error: 'Missing display_name in payload' }, { status: 400 });
 
-        // Isolate editorial override in public.published_editorial (preserving raw imported dramas row)
-        const sql = `
-          INSERT INTO public.published_editorial (drama_id, approved_display_title, short_description, updated_at)
-          SELECT id, ${escapeSql(display_name)}, ${escapeSql(short_overview || '')}, now()
-          FROM public.dramas 
-          WHERE source_id = ${escapeSql(targetId)}
-          ON CONFLICT (drama_id) WHERE drama_id IS NOT NULL DO UPDATE SET
-            approved_display_title = EXCLUDED.approved_display_title,
-            short_description = EXCLUDED.short_description,
-            updated_at = now()
-          RETURNING id, drama_id, approved_display_title, short_description, updated_at;
-        `;
-        const result = await executeAdminQuery(sql);
+        const { data: drama } = await client
+          .from('dramas')
+          .select('id')
+          .eq('source_id', targetId)
+          .single();
 
-        // Immediate cache invalidation
+        if (!drama) return NextResponse.json({ error: `Drama ${targetId} not found` }, { status: 404 });
+
+        const { data: updated, error } = await (client as any)
+          .from('published_editorial')
+          .upsert(
+            {
+              drama_id: (drama as any).id,
+              approved_display_title: display_name,
+              short_description: short_overview || '',
+              updated_at: now,
+            },
+            { onConflict: 'drama_id' }
+          )
+          .select('id, drama_id, approved_display_title, short_description, updated_at');
+
+        if (error) {
+          return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
         revalidatePath(`/drama/${targetId}`);
         revalidatePath('/browse');
         revalidatePath('/');
-        return NextResponse.json({ success: true, updated: result, is_editorial_override: true });
+        return NextResponse.json({ success: true, updated, is_editorial_override: true });
       }
     }
 
@@ -116,40 +96,40 @@ export async function POST(req: NextRequest) {
       }
 
       if (targetType === 'episode_group') {
-        const sql = `
-          UPDATE public.episode_groups
-          SET status = ${escapeSql(status)}, updated_at = now()
-          WHERE source_id = ${escapeSql(targetId)}
-          RETURNING id, source_id, label, status, updated_at;
-        `;
-        const result = await executeAdminQuery(sql);
+        const { data: group, error: grpErr } = await client
+          .from('episode_groups')
+          .update({ status, updated_at: now })
+          .eq('source_id', targetId)
+          .select('id, source_id, label, status, updated_at')
+          .single();
 
-        // Also update child video variants publication_state
-        await executeAdminQuery(`
-          UPDATE public.video_variants
-          SET publication_state = ${escapeSql(status)}, updated_at = now()
-          WHERE group_id = (SELECT id FROM public.episode_groups WHERE source_id = ${escapeSql(targetId)});
-        `);
+        if (grpErr) return NextResponse.json({ error: grpErr.message }, { status: 500 });
 
-        // Immediate cache invalidation
+        if (group) {
+          await client
+            .from('video_variants')
+            .update({ publication_state: status, updated_at: now })
+            .eq('group_id', (group as any).id);
+        }
+
         revalidatePath('/', 'layout');
-        return NextResponse.json({ success: true, updated: result });
+        return NextResponse.json({ success: true, updated: group });
       }
 
       if (targetType === 'drama') {
-        const sql = `
-          UPDATE public.dramas
-          SET status = ${escapeSql(status)}, updated_at = now()
-          WHERE source_id = ${escapeSql(targetId)}
-          RETURNING id, source_id, display_name, status, updated_at;
-        `;
-        const result = await executeAdminQuery(sql);
+        const { data: drama, error: drmErr } = await client
+          .from('dramas')
+          .update({ status, updated_at: now })
+          .eq('source_id', targetId)
+          .select('id, source_id, display_name, status, updated_at')
+          .single();
 
-        // Immediate cache invalidation
+        if (drmErr) return NextResponse.json({ error: drmErr.message }, { status: 500 });
+
         revalidatePath(`/drama/${targetId}`);
         revalidatePath('/browse');
         revalidatePath('/');
-        return NextResponse.json({ success: true, updated: result });
+        return NextResponse.json({ success: true, updated: drama });
       }
     }
 
@@ -171,39 +151,48 @@ export async function GET(req: NextRequest) {
 
   if (targetType === 'draft_preview' && targetId) {
     try {
-      const groupSql = `
-        SELECT 
-          eg.id, eg.source_id, eg.label, eg.status, eg.reported_episode_number, eg.bolum,
-          c.source_id as collection_source_id, c.label as collection_label,
-          d.source_id as drama_source_id, d.display_name as drama_name
-        FROM public.episode_groups eg
-        JOIN public.collections c ON eg.collection_id = c.id
-        JOIN public.dramas d ON c.drama_id = d.id
-        WHERE eg.source_id = ${escapeSql(targetId)};
-      `;
-      const groupRows = await executeAdminQuery(groupSql);
-      if (!groupRows || groupRows.length === 0) {
+      const client = createAdminClient(auth.token);
+      const { data: group } = await client
+        .from('episode_groups')
+        .select('id, source_id, label, status, reported_episode_number, bolum, collections(source_id, label, dramas(source_id, display_name))')
+        .eq('source_id', targetId)
+        .single();
+
+      if (!group) {
         return NextResponse.json({ draft_preview: null }, { status: 404 });
       }
 
-      const group = groupRows[0];
-      const variantsSql = `
-        SELECT 
-          vv.id, vv.source_id as variant_id, vv.version, vv.display_label, vv.publication_state,
-          COALESCE(
-            (SELECT json_agg(ss.delivery_url) FROM public.stream_sources ss WHERE ss.variant_id = vv.id AND ss.is_active = true),
-            '[]'::json
-          ) as streams
-        FROM public.video_variants vv
-        WHERE vv.group_id = '${group.id}';
-      `;
-      const variants = await executeAdminQuery(variantsSql);
+      const { data: variants } = await client
+        .from('video_variants')
+        .select('id, source_id, version, display_label, publication_state, stream_sources(delivery_url, is_active)')
+        .eq('group_id', (group as any).id);
+
+      const formattedVariants = (variants || []).map((v: any) => ({
+        id: v.id,
+        variant_id: v.source_id,
+        version: v.version,
+        display_label: v.display_label,
+        publication_state: v.publication_state,
+        streams: (v.stream_sources || []).filter((s: any) => s.is_active).map((s: any) => s.delivery_url),
+      }));
+
+      const col = (group as any).collections;
+      const drm = col?.dramas;
 
       return NextResponse.json({
         draft_preview: {
-          ...group,
-          variants
-        }
+          id: (group as any).id,
+          source_id: (group as any).source_id,
+          label: (group as any).label,
+          status: (group as any).status,
+          reported_episode_number: (group as any).reported_episode_number,
+          bolum: (group as any).bolum,
+          collection_source_id: col?.source_id,
+          collection_label: col?.label,
+          drama_source_id: drm?.source_id,
+          drama_name: drm?.display_name,
+          variants: formattedVariants,
+        },
       });
     } catch (err: any) {
       return NextResponse.json({ error: err.message }, { status: 500 });

@@ -1,26 +1,63 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { 
   Database, 
   AlertTriangle, 
-  Copy, 
-  Check, 
-  Activity, 
-  FileText, 
   Layers, 
+  Activity, 
   ShieldCheck, 
-  ExternalLink, 
   RefreshCw,
-  LogOut
+  LogOut,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Check,
+  RotateCcw,
+  Radio,
+  ExternalLink
 } from 'lucide-react';
-import { CatalogSummary, OrganizationReviewRecord, DuplicateStreamGroup, PlaybackCheckLog } from '@/types/catalog';
+import { DuplicateStreamGroup, PlaybackCheckLog } from '@/types/catalog';
 import { siteConfig } from '@/config/site';
 
+export interface LiveAdminSummary {
+  dramas: number;
+  collections: number;
+  episode_groups: number;
+  video_variants: number;
+  active_streams: number;
+  total_stream_checks: number;
+  open_reviews: number;
+  resolved_reviews: number;
+}
+
+export interface LiveReviewFinding {
+  id: string;
+  target_source_id: string;
+  flag_type: string;
+  severity: string;
+  evidence: string | null;
+  is_resolved: boolean;
+  resolution_notes: string | null;
+  reviewed_at: string | null;
+}
+
+export interface LiveStreamCheck {
+  id: string;
+  variant_source_id: string;
+  stream_url: string;
+  check_method: string;
+  status: string;
+  http_status: number | null;
+  content_type: string | null;
+  error_message: string | null;
+  checked_at: string;
+}
+
 interface AdminDashboardClientProps {
-  summary: CatalogSummary | null;
-  reviewQueue: OrganizationReviewRecord[];
+  summary: LiveAdminSummary;
+  reviewFindings: LiveReviewFinding[];
+  recentStreamChecks: LiveStreamCheck[];
   duplicateStreams: DuplicateStreamGroup[];
   user?: {
     id: string;
@@ -31,45 +68,109 @@ interface AdminDashboardClientProps {
 
 export function AdminDashboardClient({
   summary,
-  reviewQueue,
+  reviewFindings: initialFindings,
+  recentStreamChecks: initialChecks,
   duplicateStreams,
   user,
   role,
 }: AdminDashboardClientProps) {
-  const [activeTab, setActiveTab] = useState<'metrics' | 'reviews' | 'duplicates' | 'health' | 'editorial' | 'config'>('metrics');
+  const [activeTab, setActiveTab] = useState<'metrics' | 'reviews' | 'duplicates' | 'health' | 'automation' | 'config'>('metrics');
+
+  // Review Findings State
+  const [findings, setFindings] = useState<LiveReviewFinding[]>(initialFindings);
+  const [reviewFilter, setReviewFilter] = useState<'open' | 'resolved' | 'all'>('open');
+  const [resolvingId, setResolvingId] = useState<string | null>(null);
 
   // Health check state
-  const [testVideoId, setTestVideoId] = useState('video-3222');
-  const [testStreamUrl, setTestStreamUrl] = useState('https://cdn4.niazitv.pk/NiaziPlay-1/Mehmed-Fetihler-Sultani/Urdu/S2/Episode-17.mp4/index.m3u8');
+  const [testVideoId, setTestVideoId] = useState('');
+  const [testStreamUrl, setTestStreamUrl] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [checkResult, setCheckResult] = useState<PlaybackCheckLog | null>(null);
+  const [recentChecks, setRecentChecks] = useState<LiveStreamCheck[]>(initialChecks);
 
-  // Review queue filter
-  const [reviewFilter, setReviewFilter] = useState<'all' | 'uncertain' | 'resolved'>('uncertain');
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/auth/logout', { method: 'POST' });
+    } finally {
+      window.location.reload();
+    }
+  };
 
-  // Editorial batch import demo state
-  const [editorialDraftStatus, setEditorialDraftStatus] = useState<string | null>(null);
+  const handleToggleResolve = async (finding: LiveReviewFinding) => {
+    setResolvingId(finding.id);
+    const nextResolved = !finding.is_resolved;
+    try {
+      const res = await fetch('/api/admin/reviews/resolve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          findingId: finding.id,
+          isResolved: nextResolved,
+          resolutionNotes: nextResolved ? 'Resolved via Admin Console' : null,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setFindings((prev) =>
+          prev.map((f) =>
+            f.id === finding.id
+              ? {
+                  ...f,
+                  is_resolved: nextResolved,
+                  reviewed_at: nextResolved ? new Date().toISOString() : null,
+                  resolution_notes: nextResolved ? 'Resolved via Admin Console' : null,
+                }
+              : f
+          )
+        );
+      }
+    } catch (err) {
+      console.error('Failed to update finding status:', err);
+    } finally {
+      setResolvingId(null);
+    }
+  };
 
   const runReachabilityCheck = async () => {
+    if (!testStreamUrl.trim()) return;
     setIsChecking(true);
     setCheckResult(null);
+
+    const vid = testVideoId.trim() || 'manual-check';
+
     try {
       const res = await fetch('/api/admin/playback-check', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          videoId: testVideoId,
-          streamUrl: testStreamUrl,
+          videoId: vid,
+          streamUrl: testStreamUrl.trim(),
           checkType: 'reachability_head',
         }),
       });
       const data = await res.json();
-      setCheckResult(data.check);
+      if (data.check) {
+        setCheckResult(data.check);
+        setRecentChecks((prev) => [
+          {
+            id: data.check.id,
+            variant_source_id: vid,
+            stream_url: testStreamUrl.trim(),
+            check_method: 'reachability_head',
+            status: data.check.status,
+            http_status: data.check.http_status,
+            content_type: data.check.content_type,
+            error_message: data.check.error_message,
+            checked_at: data.check.checked_at,
+          },
+          ...prev.slice(0, 14),
+        ]);
+      }
     } catch (err: any) {
       setCheckResult({
         id: `err-${Date.now()}`,
-        video_id: testVideoId,
-        stream_url: testStreamUrl,
+        video_id: vid,
+        stream_url: testStreamUrl.trim(),
         check_type: 'reachability_head',
         status: 'failed',
         error_message: err.message,
@@ -80,60 +181,47 @@ export function AdminDashboardClient({
     }
   };
 
-  const handleImportSampleDraft = async () => {
-    setEditorialDraftStatus('Importing offline Gemma batch draft...');
-    try {
-      // Demo load sample batch
-      const res = await fetch('/api/admin/drafts', { method: 'POST' });
-      const data = await res.json();
-      setEditorialDraftStatus(data.message || 'Successfully validated and registered Gemma draft for Episode 17.');
-    } catch (e: any) {
-      setEditorialDraftStatus(`Import simulated: Registered 1 Gemma draft with non-spoiler & spoiler sections.`);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/admin/auth/logout', { method: 'POST' });
-    } finally {
-      window.location.reload();
-    }
-  };
-
-  const filteredReviews = reviewQueue.filter(r => {
-    if (reviewFilter === 'uncertain') return !r.resolved;
-    if (reviewFilter === 'resolved') return r.resolved;
+  const filteredFindings = findings.filter((f) => {
+    if (reviewFilter === 'open') return !f.is_resolved;
+    if (reviewFilter === 'resolved') return f.is_resolved;
     return true;
   });
 
+  const openFindingsCount = findings.filter((f) => !f.is_resolved).length;
+  const resolvedFindingsCount = findings.filter((f) => f.is_resolved).length;
+
   return (
     <div className="space-y-8">
-      {/* Admin Mode Notice */}
+      {/* Header bar with Live telemetry indicator & auth details */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-surface border border-surface-border">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20">
-            <ShieldCheck size={20} />
+          <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
+            <ShieldCheck size={22} />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-semibold text-text-primary">
-                Admin &amp; Operational Console
+                Live Operations &amp; Database Console
               </h2>
               {role && (
                 <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
                   {role}
                 </span>
               )}
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Live Supabase
+              </span>
             </div>
             <p className="text-xs text-text-secondary mt-0.5">
-              {user?.email ? `Authenticated as ${user.email}.` : 'Inspect catalog uncertainty, stream health checks, and review queues.'}
+              {user?.email ? `Session active as ${user.email}.` : 'Real-time database records and operational controls.'}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-          <div className="px-3 py-1 rounded bg-stone-900 border border-surface-border text-xs text-amber-400 font-mono">
-            Pilot: {siteConfig.pilotCollectionId}
+          <div className="px-3 py-1.5 rounded-lg bg-stone-900 border border-surface-border text-xs text-amber-400 font-mono">
+            Featured Pilot: {siteConfig.pilotCollectionId}
           </div>
           <button
             onClick={handleLogout}
@@ -149,13 +237,13 @@ export function AdminDashboardClient({
       {/* Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-surface-border pb-2 text-xs sm:text-sm">
         {[
-          { id: 'metrics', label: 'Catalog Overview', icon: Database },
-          { id: 'reviews', label: `Review Queue (${reviewQueue.length})`, icon: AlertTriangle },
-          { id: 'duplicates', label: `Duplicates (${duplicateStreams.length})`, icon: Layers },
+          { id: 'metrics', label: 'Live Database Overview', icon: Database },
+          { id: 'reviews', label: `Review Queue (${openFindingsCount})`, icon: AlertTriangle },
           { id: 'health', label: 'Stream Health Check', icon: Activity },
-          { id: 'editorial', label: 'Gemma Offline Importer', icon: FileText },
+          { id: 'automation', label: 'Automation & Sync Engine', icon: Radio },
+          { id: 'duplicates', label: `Duplicate Clusters (${duplicateStreams.length})`, icon: Layers },
           { id: 'config', label: 'Platform Config', icon: ShieldCheck },
-        ].map(tab => {
+        ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
@@ -175,134 +263,343 @@ export function AdminDashboardClient({
         })}
       </div>
 
-      {/* TAB 1: METRICS OVERVIEW */}
-      {activeTab === 'metrics' && summary && (
+      {/* TAB 1: LIVE METRICS OVERVIEW */}
+      {activeTab === 'metrics' && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="p-4 bg-surface border border-surface-border rounded-xl">
-              <span className="text-xs text-text-tertiary">Total Series</span>
+              <span className="text-xs text-text-tertiary">Total Series (dramas)</span>
               <p className="text-2xl font-bold font-mono text-amber-400 mt-1">{summary.dramas}</p>
-              <span className="text-[10px] text-text-muted">Distinct grouped titles</span>
+              <span className="text-[10px] text-text-muted">Direct from Supabase dramas</span>
             </div>
             <div className="p-4 bg-surface border border-surface-border rounded-xl">
-              <span className="text-xs text-text-tertiary">Catalog Collections</span>
-              <p className="text-2xl font-bold font-mono text-amber-400 mt-1">{summary.source_catalog_collections}</p>
-              <span className="text-[10px] text-text-muted">Broadcast editions &amp; cuts</span>
+              <span className="text-xs text-text-tertiary">Collections &amp; Seasons</span>
+              <p className="text-2xl font-bold font-mono text-amber-400 mt-1">{summary.collections}</p>
+              <span className="text-[10px] text-text-muted">Distinct broadcast editions</span>
             </div>
             <div className="p-4 bg-surface border border-surface-border rounded-xl">
               <span className="text-xs text-text-tertiary">Episode Groups</span>
-              <p className="text-2xl font-bold font-mono text-amber-400 mt-1">{summary.episode_groups_within_collections}</p>
-              <span className="text-[10px] text-text-muted">Logical numbering units</span>
+              <p className="text-2xl font-bold font-mono text-amber-400 mt-1">{summary.episode_groups}</p>
+              <span className="text-[10px] text-text-muted">Canonical episode units</span>
             </div>
             <div className="p-4 bg-surface border border-surface-border rounded-xl">
               <span className="text-xs text-text-tertiary">Active Streams</span>
-              <p className="text-2xl font-bold font-mono text-green-400 mt-1">{summary.records_with_stream_urls}</p>
-              <span className="text-[10px] text-text-muted">1 missing / 3,269 total</span>
+              <p className="text-2xl font-bold font-mono text-emerald-400 mt-1">{summary.active_streams}</p>
+              <span className="text-[10px] text-text-muted">Live verified HLS delivery links</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-5 bg-surface border border-surface-border rounded-xl space-y-3">
-              <h3 className="text-sm font-semibold text-text-primary">Content Type Breakdown</h3>
-              <div className="space-y-2 text-xs">
-                {Object.entries(summary.content_type_counts).map(([type, count]) => (
-                  <div key={type} className="flex justify-between items-center py-1 border-b border-surface-border/50">
-                    <span className="capitalize text-text-secondary">{type.replace(/_/g, ' ')}</span>
-                    <span className="font-mono text-text-primary font-bold">{count}</span>
-                  </div>
-                ))}
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 bg-surface border border-surface-border rounded-xl">
+              <span className="text-xs text-text-tertiary">Open Review Items</span>
+              <p className={`text-2xl font-bold font-mono mt-1 ${openFindingsCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                {openFindingsCount}
+              </p>
+              <span className="text-[10px] text-text-muted">Actionable triage items</span>
             </div>
-
-            <div className="p-5 bg-surface border border-surface-border rounded-xl space-y-3">
-              <h3 className="text-sm font-semibold text-text-primary">Organization Review Flags</h3>
-              <div className="space-y-2 text-xs">
-                {Object.entries(summary.organization_review_flags).map(([flag, count]) => (
-                  <div key={flag} className="flex justify-between items-center py-1 border-b border-surface-border/50">
-                    <span className="capitalize text-text-secondary">{flag.replace(/_/g, ' ')}</span>
-                    <span className="font-mono text-amber-400 font-bold">{count}</span>
-                  </div>
-                ))}
-              </div>
+            <div className="p-4 bg-surface border border-surface-border rounded-xl">
+              <span className="text-xs text-text-tertiary">Resolved Review Items</span>
+              <p className="text-2xl font-bold font-mono text-text-primary mt-1">{resolvedFindingsCount}</p>
+              <span className="text-[10px] text-text-muted">Completed historical triage</span>
+            </div>
+            <div className="p-4 bg-surface border border-surface-border rounded-xl">
+              <span className="text-xs text-text-tertiary">Total Stream Health Checks</span>
+              <p className="text-2xl font-bold font-mono text-sky-400 mt-1">{summary.total_stream_checks}</p>
+              <span className="text-[10px] text-text-muted">Automated 4h checks recorded</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* TAB 2: REVIEW QUEUE */}
+      {/* TAB 2: LIVE REVIEW QUEUE */}
       {activeTab === 'reviews' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <p className="text-xs text-text-secondary">
-              Preserved organization review items: 61 uncertain records and 13 resolved records.
+              Real-time issues from <code className="text-amber-400">review_findings</code>: unparsed episodes, link failures, and new seasons.
             </p>
             <div className="flex gap-2 text-xs">
               <button
-                onClick={() => setReviewFilter('uncertain')}
-                className={`px-2.5 py-1 rounded ${
-                  reviewFilter === 'uncertain' ? 'bg-amber-500 text-stone-950 font-bold' : 'bg-surface text-text-secondary'
+                onClick={() => setReviewFilter('open')}
+                className={`px-3 py-1.5 rounded-lg transition-colors font-semibold ${
+                  reviewFilter === 'open' ? 'bg-amber-500 text-stone-950' : 'bg-surface text-text-secondary hover:text-text-primary'
                 }`}
               >
-                Uncertain ({reviewQueue.filter(r => !r.resolved).length})
+                Open ({openFindingsCount})
               </button>
               <button
                 onClick={() => setReviewFilter('resolved')}
-                className={`px-2.5 py-1 rounded ${
-                  reviewFilter === 'resolved' ? 'bg-amber-500 text-stone-950 font-bold' : 'bg-surface text-text-secondary'
+                className={`px-3 py-1.5 rounded-lg transition-colors font-semibold ${
+                  reviewFilter === 'resolved' ? 'bg-amber-500 text-stone-950' : 'bg-surface text-text-secondary hover:text-text-primary'
                 }`}
               >
-                Resolved ({reviewQueue.filter(r => r.resolved).length})
+                Resolved ({resolvedFindingsCount})
               </button>
               <button
                 onClick={() => setReviewFilter('all')}
-                className={`px-2.5 py-1 rounded ${
-                  reviewFilter === 'all' ? 'bg-amber-500 text-stone-950 font-bold' : 'bg-surface text-text-secondary'
+                className={`px-3 py-1.5 rounded-lg transition-colors font-semibold ${
+                  reviewFilter === 'all' ? 'bg-amber-500 text-stone-950' : 'bg-surface text-text-secondary hover:text-text-primary'
                 }`}
               >
-                All ({reviewQueue.length})
+                All ({findings.length})
               </button>
             </div>
           </div>
 
-          <div className="border border-surface-border rounded-xl overflow-hidden divide-y divide-surface-border max-h-[600px] overflow-y-auto">
-            {filteredReviews.map((rev) => (
-              <div key={rev.record_id} className="p-4 bg-surface/40 hover:bg-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-text-primary">{rev.drama}</span>
-                    <span className="text-text-muted font-mono">Record #{rev.record_id}</span>
-                    {rev.resolved ? (
-                      <span className="px-1.5 py-0.5 rounded bg-green-500/20 text-green-400 font-bold text-[10px]">
-                        Resolved
-                      </span>
-                    ) : (
-                      <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold text-[10px]">
-                        Review Flagged
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-text-secondary">{rev.heading}</p>
-                  {rev.notes && <p className="text-[11px] text-text-tertiary mt-1 italic">{rev.notes}</p>}
-                </div>
-
-                <div className="flex flex-wrap gap-1">
-                  {rev.flags.map(f => (
-                    <span key={f} className="px-2 py-0.5 rounded bg-surface border border-surface-border text-amber-400 font-mono text-[10px]">
-                      {f}
-                    </span>
-                  ))}
-                </div>
+          <div className="border border-surface-border rounded-xl overflow-hidden divide-y divide-surface-border max-h-[620px] overflow-y-auto">
+            {filteredFindings.length === 0 ? (
+              <div className="p-8 text-center text-text-muted text-xs">
+                No review items matching the selected filter.
               </div>
-            ))}
+            ) : (
+              filteredFindings.map((rev) => {
+                const isResolving = resolvingId === rev.id;
+                const isCrit = rev.severity === 'critical';
+                const isWarn = rev.severity === 'warning';
+                return (
+                  <div
+                    key={rev.id}
+                    className={`p-4 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs ${
+                      rev.is_resolved ? 'bg-surface/20 opacity-70' : 'bg-surface/50 hover:bg-surface'
+                    }`}
+                  >
+                    <div className="space-y-1.5 flex-1 pr-4">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono font-bold text-text-primary">{rev.target_source_id}</span>
+                        <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase bg-stone-900 border border-surface-border text-amber-400">
+                          {rev.flag_type.replace(/_/g, ' ')}
+                        </span>
+                        <span
+                          className={`px-2 py-0.5 rounded font-bold text-[10px] uppercase ${
+                            isCrit
+                              ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                              : isWarn
+                              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                              : 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
+                          }`}
+                        >
+                          {rev.severity}
+                        </span>
+                        {rev.is_resolved && (
+                          <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold text-[10px]">
+                            Resolved
+                          </span>
+                        )}
+                      </div>
+
+                      {rev.evidence && (
+                        <p className="text-text-secondary text-[11px] font-mono break-all leading-relaxed bg-canvas/60 p-2 rounded-lg border border-surface-border/50">
+                          {rev.evidence}
+                        </p>
+                      )}
+
+                      {rev.resolution_notes && (
+                        <p className="text-[11px] text-emerald-400 flex items-center gap-1">
+                          <Check size={12} />
+                          {rev.resolution_notes}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="shrink-0 flex items-center">
+                      <button
+                        onClick={() => handleToggleResolve(rev)}
+                        disabled={isResolving}
+                        className={`px-3 py-1.5 rounded-lg font-medium text-xs flex items-center gap-1.5 transition-colors ${
+                          rev.is_resolved
+                            ? 'bg-stone-800 hover:bg-stone-700 text-text-secondary hover:text-text-primary border border-surface-border'
+                            : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm'
+                        } disabled:opacity-50`}
+                      >
+                        {isResolving ? (
+                          <RefreshCw size={12} className="animate-spin" />
+                        ) : rev.is_resolved ? (
+                          <>
+                            <RotateCcw size={12} />
+                            Reopen
+                          </>
+                        ) : (
+                          <>
+                            <Check size={12} />
+                            Mark Resolved
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       )}
 
-      {/* TAB 3: DUPLICATE STREAMS */}
+      {/* TAB 3: STREAM HEALTH CHECK & LOGS */}
+      {activeTab === 'health' && (
+        <div className="space-y-6">
+          <div className="p-5 bg-surface border border-surface-border rounded-xl space-y-4">
+            <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+              <Activity size={16} className="text-amber-400" />
+              Live HLS Reachability Health Check
+            </h3>
+            <p className="text-xs text-text-secondary">
+              Dispatches a live CORS/SSRF-safe HEAD request with a 6-second timeout. Results are saved directly into the database <code className="text-amber-400">stream_checks</code> table.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="text-xs text-text-tertiary block mb-1">Target Video ID</label>
+                <input
+                  type="text"
+                  placeholder="e.g. video-2400"
+                  value={testVideoId}
+                  onChange={(e) => setTestVideoId(e.target.value)}
+                  className="w-full px-3 py-2 bg-canvas border border-surface-border rounded-lg text-xs font-mono text-text-primary focus:outline-none focus:border-amber-500/60"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="text-xs text-text-tertiary block mb-1">Stream URL (.m3u8)</label>
+                <input
+                  type="url"
+                  placeholder="https://.../index.m3u8"
+                  value={testStreamUrl}
+                  onChange={(e) => setTestStreamUrl(e.target.value)}
+                  className="w-full px-3 py-2 bg-canvas border border-surface-border rounded-lg text-xs font-mono text-text-primary focus:outline-none focus:border-amber-500/60"
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={runReachabilityCheck}
+              disabled={isChecking || !testStreamUrl.trim()}
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-semibold rounded-lg text-xs flex items-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+            >
+              {isChecking ? <RefreshCw size={14} className="animate-spin" /> : <Activity size={14} />}
+              {isChecking ? 'Checking Stream Reachability...' : 'Run Live Stream Check'}
+            </button>
+
+            {checkResult && (
+              <div
+                className={`p-4 rounded-xl border text-xs font-mono space-y-1 ${
+                  checkResult.status === 'passed'
+                    ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-300'
+                    : 'bg-rose-950/20 border-rose-500/30 text-rose-300'
+                }`}
+              >
+                <div className="font-bold uppercase tracking-wider flex items-center gap-1.5">
+                  {checkResult.status === 'passed' ? <CheckCircle2 size={14} /> : <XCircle size={14} />}
+                  Check Result: {checkResult.status}
+                </div>
+                <div>HTTP Status Code: {checkResult.http_status ?? 'Network Timeout'}</div>
+                {checkResult.content_type && <div>Content-Type: {checkResult.content_type}</div>}
+                {checkResult.error_message && <div>Detail: {checkResult.error_message}</div>}
+                <div className="text-[10px] opacity-75 mt-1">Recorded to Supabase: {checkResult.checked_at}</div>
+              </div>
+            )}
+          </div>
+
+          {/* Recent Database Stream Checks */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+              <Clock size={13} />
+              Recent Stream Checks from Database ({recentChecks.length})
+            </h4>
+
+            <div className="border border-surface-border rounded-xl overflow-hidden divide-y divide-surface-border">
+              {recentChecks.map((sc) => (
+                <div key={sc.id} className="p-3 bg-surface/30 hover:bg-surface text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-text-primary">{sc.variant_source_id}</span>
+                      <span
+                        className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${
+                          sc.status === 'passed'
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                        }`}
+                      >
+                        {sc.status}
+                      </span>
+                      {sc.http_status && (
+                        <span className="font-mono text-text-muted text-[10px]">HTTP {sc.http_status}</span>
+                      )}
+                    </div>
+                    <p className="font-mono text-text-tertiary text-[11px] truncate max-w-xl">
+                      {sc.stream_url}
+                    </p>
+                    {sc.error_message && (
+                      <p className="text-rose-400 text-[10px]">{sc.error_message}</p>
+                    )}
+                  </div>
+                  <span className="text-[10px] font-mono text-text-muted shrink-0">
+                    {new Date(sc.checked_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: AUTOMATION & SYNC ENGINE */}
+      {activeTab === 'automation' && (
+        <div className="space-y-6 text-xs">
+          <div className="p-5 bg-surface border border-surface-border rounded-xl space-y-4">
+            <div className="flex items-center gap-2">
+              <Radio size={16} className="text-amber-400 animate-pulse" />
+              <h3 className="text-sm font-semibold text-text-primary">
+                GitHub Actions Scheduled Sync Engine
+              </h3>
+            </div>
+            <p className="text-text-secondary leading-relaxed">
+              The catalog is continuously kept synchronized with NiaziPlay using scheduled GitHub Actions workers (<code className="text-amber-400">.github/workflows/catalog-sync.yml</code>) and Python 3.12 sync automation.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div className="p-3.5 rounded-xl bg-canvas border border-surface-border space-y-1">
+                <span className="text-text-tertiary block font-semibold">1. Episode Ingestion</span>
+                <p className="text-amber-400 font-mono text-sm">Every 2 Hours</p>
+                <p className="text-[11px] text-text-muted leading-relaxed">
+                  Checks all active collections for newly released episodes and ingests clean records.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-canvas border border-surface-border space-y-1">
+                <span className="text-text-tertiary block font-semibold">2. Stream Self-Healing</span>
+                <p className="text-emerald-400 font-mono text-sm">Every 4 Hours</p>
+                <p className="text-[11px] text-text-muted leading-relaxed">
+                  Tests the stalest active streams, auto-repairs broken links, or flags them in the review queue.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-canvas border border-surface-border space-y-1">
+                <span className="text-text-tertiary block font-semibold">3. Season Discovery</span>
+                <p className="text-sky-400 font-mono text-sm">Daily at 03:05 UTC</p>
+                <p className="text-[11px] text-text-muted leading-relaxed">
+                  Probes NiaziPlay series sitemaps for newly added drama collections awaiting approval.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-stone-900/60 border border-surface-border space-y-2">
+              <h4 className="font-semibold text-text-primary">Manual Approval Command</h4>
+              <p className="text-text-secondary text-[11px]">
+                When the daily discovery job finds a new series or season, approve it directly via terminal:
+              </p>
+              <pre className="p-3 rounded-lg bg-black/60 font-mono text-[11px] text-amber-400 overflow-x-auto">
+                python3 scripts/catalog_sync.py approve &lt;collection_id&gt; --drama-id &lt;slug&gt; --drama "&lt;Name&gt;"
+              </pre>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: DUPLICATE STREAMS */}
       {activeTab === 'duplicates' && (
         <div className="space-y-4">
           <p className="text-xs text-text-secondary">
-            The catalog contains 6 duplicate stream URL clusters. In accordance with platform integrity rules, records are not silently merged or deleted; identity provenance is preserved.
+            Identified duplicate stream URL clusters across different cuts/releases. Preserved without destructive data loss.
           </p>
 
           <div className="space-y-4">
@@ -317,7 +614,7 @@ export function AdminDashboardClient({
                 </div>
                 <div className="flex flex-wrap gap-1 text-[11px]">
                   <span className="text-text-tertiary">Record IDs:</span>
-                  {dup.record_ids.map(rid => (
+                  {dup.record_ids.map((rid) => (
                     <span key={rid} className="px-1.5 py-0.5 rounded bg-surface-hover text-text-primary font-mono">
                       #{rid}
                     </span>
@@ -325,91 +622,6 @@ export function AdminDashboardClient({
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 4: STREAM HEALTH CHECK */}
-      {activeTab === 'health' && (
-        <div className="space-y-6">
-          <div className="p-5 bg-surface border border-surface-border rounded-xl space-y-4">
-            <h3 className="text-sm font-semibold text-text-primary">
-              Reachability Health Check (HEAD Request)
-            </h3>
-            <p className="text-xs text-text-secondary">
-              Dispatches an SSRF-safe HEAD request with a 6-second timeout to check stream availability without downloading segment data.
-            </p>
-
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs text-text-tertiary block mb-1">Video Record ID</label>
-                <input
-                  type="text"
-                  value={testVideoId}
-                  onChange={(e) => setTestVideoId(e.target.value)}
-                  className="w-full px-3 py-2 bg-canvas border border-surface-border rounded-lg text-xs font-mono text-text-primary"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs text-text-tertiary block mb-1">Stream URL (.m3u8)</label>
-                <input
-                  type="url"
-                  value={testStreamUrl}
-                  onChange={(e) => setTestStreamUrl(e.target.value)}
-                  className="w-full px-3 py-2 bg-canvas border border-surface-border rounded-lg text-xs font-mono text-text-primary"
-                />
-              </div>
-
-              <button
-                onClick={runReachabilityCheck}
-                disabled={isChecking}
-                className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold rounded-lg text-xs flex items-center gap-2 transition-colors"
-              >
-                {isChecking ? <RefreshCw size={14} className="animate-spin" /> : <Activity size={14} />}
-                {isChecking ? 'Checking Stream...' : 'Test Stream Reachability'}
-              </button>
-            </div>
-
-            {checkResult && (
-              <div className={`p-4 rounded-lg border text-xs font-mono space-y-1 ${
-                checkResult.status === 'passed' ? 'bg-green-950/20 border-green-500/30 text-green-300' : 'bg-red-950/20 border-red-500/30 text-red-300'
-              }`}>
-                <div className="font-bold uppercase tracking-wider">Result: {checkResult.status}</div>
-                <div>HTTP Status: {checkResult.http_status || 'N/A'}</div>
-                <div>Content-Type: {checkResult.content_type || 'N/A'}</div>
-                {checkResult.error_message && <div>Error: {checkResult.error_message}</div>}
-                <div className="text-[10px] text-text-tertiary mt-1">Checked at: {checkResult.checked_at}</div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 5: GEMMA EDITORIAL IMPORTER */}
-      {activeTab === 'editorial' && (
-        <div className="space-y-6">
-          <div className="p-5 bg-surface border border-surface-border rounded-xl space-y-4">
-            <h3 className="text-sm font-semibold text-text-primary">
-              Offline Gemma Editorial Workflow
-            </h3>
-            <p className="text-xs text-text-secondary leading-relaxed">
-              Import offline batches generated on another machine by local Gemma models. Schema enforces non-spoiler synopses, separated spoiler sections, and generation provenance without overwriting canonical video IDs.
-            </p>
-
-            <button
-              onClick={handleImportSampleDraft}
-              className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold rounded-lg text-xs flex items-center gap-2 transition-colors"
-            >
-              <FileText size={14} />
-              Validate &amp; Load Sample Gemma Batch
-            </button>
-
-            {editorialDraftStatus && (
-              <div className="p-3 bg-canvas border border-surface-border rounded-lg text-xs text-amber-400">
-                {editorialDraftStatus}
-              </div>
-            )}
           </div>
         </div>
       )}
@@ -428,12 +640,16 @@ export function AdminDashboardClient({
               <span className="font-mono text-text-primary">{siteConfig.brandPromise}</span>
             </div>
             <div className="flex justify-between py-1 border-b border-surface-border/50">
-              <span className="text-text-secondary">Pilot Drama ID</span>
+              <span className="text-text-secondary">Featured Pilot Drama ID</span>
               <span className="font-mono text-amber-400">{siteConfig.pilotDramaId}</span>
             </div>
             <div className="flex justify-between py-1 border-b border-surface-border/50">
-              <span className="text-text-secondary">Pilot Collection ID</span>
+              <span className="text-text-secondary">Featured Pilot Collection ID</span>
               <span className="font-mono text-amber-400">{siteConfig.pilotCollectionId}</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-surface-border/50">
+              <span className="text-text-secondary">Database Host</span>
+              <span className="font-mono text-text-primary">zvwltfqhbpqtnjbsflvk.supabase.co</span>
             </div>
             <div className="flex justify-between py-1 border-b border-surface-border/50">
               <span className="text-text-secondary">Diagnostic Target</span>

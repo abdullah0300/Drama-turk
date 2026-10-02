@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database.types';
 
 export interface AdminAuthResult {
@@ -11,6 +11,7 @@ export interface AdminAuthResult {
     email?: string;
   };
   role?: 'admin' | 'editor' | 'publisher';
+  token?: string;
 }
 
 /**
@@ -123,6 +124,7 @@ export async function verifyAdminAccess(request?: NextRequest | Request): Promis
         email: user.email,
       },
       role,
+      token,
     };
   } catch (err: any) {
     return {
@@ -131,4 +133,26 @@ export async function verifyAdminAccess(request?: NextRequest | Request): Promis
       message: err.message || 'Internal authorization failure.',
     };
   }
+}
+
+/**
+ * Returns a Supabase client configured for administrative operations.
+ * If SUPABASE_SERVICE_ROLE_KEY is present, it uses it for full bypass;
+ * otherwise it uses the authenticated user's JWT token which satisfies RLS policies.
+ */
+export function createAdminClient(token?: string): SupabaseClient<Database> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+  const keyToUse = serviceKey || anonKey;
+
+  return createClient<Database>(url, keyToUse, {
+    auth: { persistSession: false },
+    global: token && !serviceKey ? {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    } : undefined
+  });
 }
