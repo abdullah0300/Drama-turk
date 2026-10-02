@@ -554,14 +554,37 @@ export class SupabaseCatalogRepository {
    * One card per drama: the last episode of its newest season (subtitled preferred when a season
    * exists in both editions). Featured drama first, then the getAllDramas order.
    */
-  public async getLatestEpisodePerDrama(): Promise<Array<{
+  public async getLatestEpisodePerDrama(customPriorityIds?: string[]): Promise<Array<{
     group: EpisodeGroup;
     video: VideoRecord;
     collection: CatalogCollection;
     drama: Drama;
     href: string;
   }>> {
-    const dramas = (await this.getAllDramas()).filter(isDramaPlayable);
+    let priorityIds = customPriorityIds;
+    if (!priorityIds) {
+      try {
+        const settings = await this.getSiteSettings();
+        priorityIds = (settings?.feature_flags as any)?.latest_episodes_priority_ids || [];
+      } catch {
+        priorityIds = [];
+      }
+    }
+
+    const allPlayableDramas = (await this.getAllDramas()).filter(isDramaPlayable);
+    let dramas = allPlayableDramas;
+
+    if (priorityIds && priorityIds.length > 0) {
+      const validPriorityIds = priorityIds.filter(Boolean);
+      if (validPriorityIds.length > 0) {
+        const prioritySet = new Set(validPriorityIds);
+        const prioritized = validPriorityIds
+          .map((id) => allPlayableDramas.find((d) => d.id === id))
+          .filter((d): d is Drama => Boolean(d));
+        const rest = allPlayableDramas.filter((d) => !prioritySet.has(d.id));
+        dramas = [...prioritized, ...rest];
+      }
+    }
 
     const picks = await Promise.all(dramas.map(async (drama) => {
       const cols = (await this.getDramaCollections(drama.id))

@@ -32,6 +32,7 @@ export default async function AdminPage() {
   let recentStreamChecks: LiveStreamCheck[] = [];
   let currentHeroId = 'mehmed-fetihler-sultani';
   let initialHeroDramaIds = ['mehmed-fetihler-sultani', 'kurulus-osman', 'salahuddin-ayyubi', 'alparslan-buyuk-selcuklu'];
+  let initialLatestEpisodesPriorityIds: string[] = [];
   let dramaOptions: any[] = [];
 
   try {
@@ -83,6 +84,9 @@ export default async function AdminPage() {
     if (initialHeroDramaIds.length === 0) {
       initialHeroDramaIds = [pilotId, 'kurulus-osman', 'salahuddin-ayyubi', 'alparslan-buyuk-selcuklu'];
     }
+
+    const savedPriorityIds: string[] = (settingsRes?.data?.feature_flags as any)?.latest_episodes_priority_ids || [];
+    initialLatestEpisodesPriorityIds = savedPriorityIds.filter(Boolean);
     
     currentHeroId = pilotId;
     dramaOptions = (allDramasRes?.data || []) as any[];
@@ -142,6 +146,7 @@ export default async function AdminPage() {
         dramaOptions={dramaOptions}
         currentHeroDramaId={currentHeroId}
         initialHeroDramaIds={initialHeroDramaIds}
+        initialLatestEpisodesPriorityIds={initialLatestEpisodesPriorityIds}
         user={auth.user}
         role={auth.role}
       />

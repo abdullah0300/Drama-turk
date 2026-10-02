@@ -73,6 +73,7 @@ interface AdminDashboardClientProps {
   dramaOptions?: DramaOption[];
   currentHeroDramaId?: string;
   initialHeroDramaIds?: string[];
+  initialLatestEpisodesPriorityIds?: string[];
   user?: {
     id: string;
     email?: string;
@@ -88,6 +89,7 @@ export function AdminDashboardClient({
   dramaOptions = [],
   currentHeroDramaId,
   initialHeroDramaIds = [],
+  initialLatestEpisodesPriorityIds = [],
   user,
   role,
 }: AdminDashboardClientProps) {
@@ -108,6 +110,15 @@ export function AdminDashboardClient({
   });
   const [isUpdatingHero, setIsUpdatingHero] = useState<boolean>(false);
   const [heroUpdateMessage, setHeroUpdateMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Latest episodes priority slots (up to 5)
+  const [prioritySlots, setPrioritySlots] = useState<string[]>(() => {
+    const list = [...initialLatestEpisodesPriorityIds];
+    while (list.length < 5) list.push('');
+    return list.slice(0, 5);
+  });
+  const [isUpdatingPriority, setIsUpdatingPriority] = useState(false);
+  const [priorityMessage, setPriorityMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const heroDramaName = dramaOptions.find((d) => d.source_id === heroSlots[0])?.display_name || heroSlots[0];
 
@@ -142,6 +153,48 @@ export function AdminDashboardClient({
       });
     } finally {
       setIsUpdatingHero(false);
+    }
+  };
+
+  const handlePrioritySlotChange = (index: number, newDramaId: string) => {
+    setPrioritySlots((prev) => {
+      const copy = [...prev];
+      copy[index] = newDramaId;
+      return copy;
+    });
+    setPriorityMessage(null);
+  };
+
+  const handleClearAllPriority = () => {
+    setPrioritySlots(['', '', '', '', '']);
+    setPriorityMessage(null);
+  };
+
+  const handleSavePriority = async () => {
+    setIsUpdatingPriority(true);
+    setPriorityMessage(null);
+    try {
+      const res = await fetch('/api/admin/settings/latest-episodes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priorityDramaIds: prioritySlots }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update priority');
+      const activeCount = prioritySlots.filter(Boolean).length;
+      setPriorityMessage({
+        type: 'success',
+        text: activeCount > 0
+          ? `Saved! Top ${activeCount} slot(s) prioritized in Latest Episodes. The rest will follow automatic catalog logic.`
+          : 'Saved! Reset to 100% automated catalog logic for all Latest Episodes.',
+      });
+    } catch (err: any) {
+      setPriorityMessage({
+        type: 'error',
+        text: err.message || 'Error updating priority',
+      });
+    } finally {
+      setIsUpdatingPriority(false);
     }
   };
 
@@ -502,6 +555,101 @@ export function AdminDashboardClient({
                   <XCircle size={14} className="shrink-0" />
                 )}
                 <span>{heroUpdateMessage.text}</span>
+              </div>
+            )}
+          </div>
+
+          {/* LATEST EPISODES ROW PRIORITY (FIRST 5 SLOTS) */}
+          <div className="p-5 bg-surface border border-surface-border rounded-xl space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-surface-border">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Clock size={16} className="text-amber-400" />
+                  <h3 className="text-sm font-semibold text-text-primary">
+                    Latest Episodes Row Priority (First 5 Slots)
+                  </h3>
+                </div>
+                <p className="text-xs text-text-secondary mt-0.5">
+                  Prioritize up to 5 dramas to lead the &ldquo;Latest Episodes&rdquo; row on the homepage. Any unselected slot and all remaining dramas automatically follow standard catalog logic. If all slots are set to Auto, default logic applies.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={handleClearAllPriority}
+                  disabled={isUpdatingPriority || prioritySlots.every((s) => !s)}
+                  className="px-3 py-2 rounded-xl bg-stone-850 hover:bg-stone-800 disabled:opacity-40 text-text-secondary hover:text-text-primary text-xs font-medium border border-surface-border transition-all"
+                  title="Reset all 5 slots to automated catalog logic"
+                >
+                  Reset to 100% Auto
+                </button>
+                <button
+                  onClick={handleSavePriority}
+                  disabled={isUpdatingPriority}
+                  className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-stone-950 text-xs font-semibold shadow-md shadow-amber-500/10 transition-all active:scale-[0.98]"
+                >
+                  {isUpdatingPriority ? (
+                    <>
+                      <RefreshCw size={13} className="animate-spin" />
+                      Saving Priority...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={13} />
+                      Save Priority Order
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* 5 MODERN SEARCHABLE SLOTS WITH CLEAR / AUTO OPTION */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              {[0, 1, 2, 3, 4].map((slotIdx) => (
+                <SearchableDramaSelect
+                  key={slotIdx}
+                  slotNumber={slotIdx + 1}
+                  slotTitle={`Priority #${slotIdx + 1}`}
+                  slotBadge={prioritySlots[slotIdx] ? 'Prioritized' : 'Auto'}
+                  options={dramaOptions}
+                  value={prioritySlots[slotIdx]}
+                  onChange={(val) => handlePrioritySlotChange(slotIdx, val)}
+                  disabled={isUpdatingPriority}
+                  allowClear={true}
+                  clearLabel="Auto (Default Logic)"
+                />
+              ))}
+            </div>
+
+            {/* Active Status & Description Bar */}
+            <div className="flex items-center justify-between p-3 bg-stone-950/60 rounded-xl border border-surface-border/60 text-xs">
+              <span className="text-text-secondary">
+                Active Priority Mode:{' '}
+                <strong className={prioritySlots.filter(Boolean).length > 0 ? 'text-amber-400' : 'text-emerald-400'}>
+                  {prioritySlots.filter(Boolean).length > 0
+                    ? `${prioritySlots.filter(Boolean).length} of 5 slots customized`
+                    : '100% Automated Catalog Logic'}
+                </strong>
+              </span>
+              <span className="text-[11px] text-text-tertiary">
+                Remaining dramas follow automatically
+              </span>
+            </div>
+
+            {priorityMessage && (
+              <div
+                className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
+                  priorityMessage.type === 'success'
+                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                    : 'bg-red-500/10 text-red-400 border border-red-500/30'
+                }`}
+              >
+                {priorityMessage.type === 'success' ? (
+                  <CheckCircle2 size={14} className="shrink-0" />
+                ) : (
+                  <XCircle size={14} className="shrink-0" />
+                )}
+                <span>{priorityMessage.text}</span>
               </div>
             )}
           </div>

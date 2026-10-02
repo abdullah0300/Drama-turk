@@ -13,6 +13,8 @@ interface SearchableDramaSelectProps {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  allowClear?: boolean;
+  clearLabel?: string;
 }
 
 export function SearchableDramaSelect({
@@ -24,6 +26,8 @@ export function SearchableDramaSelect({
   value,
   onChange,
   disabled = false,
+  allowClear = false,
+  clearLabel = 'Automatic (Catalog Default)',
 }: SearchableDramaSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -119,11 +123,11 @@ export function SearchableDramaSelect({
             </div>
 
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-text-primary truncate">
-                {selectedOption?.display_name || value || 'Select series...'}
+              <p className={`text-xs font-semibold truncate ${!value && allowClear ? 'text-amber-400/90 font-medium' : 'text-text-primary'}`}>
+                {selectedOption?.display_name || (allowClear && !value ? clearLabel : 'Select series...')}
               </p>
               <p className="text-[10px] text-text-tertiary font-mono truncate">
-                {selectedOption?.source_id || value}
+                {selectedOption?.source_id || (!value && allowClear ? 'Automated default' : value)}
               </p>
             </div>
           </div>
@@ -168,6 +172,36 @@ export function SearchableDramaSelect({
 
             {/* Scrollable Series List */}
             <div className="max-h-60 overflow-y-auto divide-y divide-surface-border/40 scrollbar-thin scrollbar-thumb-stone-700 scrollbar-track-transparent">
+              {allowClear && !searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => handleSelect('')}
+                  className={`w-full flex items-center justify-between gap-3 px-3 py-2 text-left transition-colors border-b border-surface-border/50 ${
+                    !value
+                      ? 'bg-amber-500/10 text-text-primary'
+                      : 'hover:bg-stone-800/80 text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-7 h-9 rounded bg-stone-800/80 border border-dashed border-amber-500/30 overflow-hidden shrink-0 flex items-center justify-center font-mono text-[9px] text-amber-400 font-bold">
+                      AUTO
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-amber-400 truncate">
+                        {clearLabel}
+                      </p>
+                      <p className="text-[10px] text-text-tertiary">
+                        Use automated catalog logic (no priority override)
+                      </p>
+                    </div>
+                  </div>
+                  {!value && (
+                    <div className="w-5 h-5 rounded-full bg-amber-400 text-stone-950 flex items-center justify-center shrink-0">
+                      <Check size={12} strokeWidth={3} />
+                    </div>
+                  )}
+                </button>
+              )}
               {filteredOptions.length === 0 ? (
                 <div className="p-4 text-center text-xs text-text-muted">
                   No drama series matching &ldquo;{searchTerm}&rdquo;
