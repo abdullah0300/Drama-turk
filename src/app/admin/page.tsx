@@ -31,7 +31,8 @@ export default async function AdminPage() {
   let liveReviewFindings: LiveReviewFinding[] = [];
   let recentStreamChecks: LiveStreamCheck[] = [];
   let currentHeroId = 'mehmed-fetihler-sultani';
-  let dramaOptions: { source_id: string; display_name: string; is_pilot?: boolean }[] = [];
+  let initialHeroDramaIds = ['mehmed-fetihler-sultani', 'kurulus-osman', 'salahuddin-ayyubi', 'alparslan-buyuk-selcuklu'];
+  let dramaOptions: any[] = [];
 
   try {
     const [
@@ -64,19 +65,27 @@ export default async function AdminPage() {
         .limit(15),
       client
         .from('public_site_settings')
-        .select('pilot_drama_source_id')
+        .select('pilot_drama_source_id, feature_flags')
         .eq('id', 'current')
         .single(),
       client
         .from('dramas')
-        .select('source_id, display_name, is_pilot')
+        .select('source_id, display_name, poster_url, backdrop_url, genres, is_pilot')
         .order('display_name', { ascending: true }),
     ]);
 
     liveReviewFindings = (reviewFindingsRes.data || []) as LiveReviewFinding[];
     recentStreamChecks = (recentChecksRes.data || []) as LiveStreamCheck[];
-    currentHeroId = (settingsRes?.data?.pilot_drama_source_id as string) || 'mehmed-fetihler-sultani';
-    dramaOptions = (allDramasRes?.data || []) as { source_id: string; display_name: string; is_pilot?: boolean }[];
+    
+    const pilotId = (settingsRes?.data?.pilot_drama_source_id as string) || 'mehmed-fetihler-sultani';
+    const savedHeroIds: string[] = (settingsRes?.data?.feature_flags as any)?.hero_drama_ids || [];
+    let initialHeroDramaIds = savedHeroIds.filter(Boolean);
+    if (initialHeroDramaIds.length === 0) {
+      initialHeroDramaIds = [pilotId, 'kurulus-osman', 'salahuddin-ayyubi', 'alparslan-buyuk-selcuklu'];
+    }
+    
+    currentHeroId = pilotId;
+    dramaOptions = (allDramasRes?.data || []) as any[];
 
     const openCount = liveReviewFindings.filter((f) => !f.is_resolved).length;
     const resolvedCount = liveReviewFindings.filter((f) => f.is_resolved).length;
@@ -132,6 +141,7 @@ export default async function AdminPage() {
         duplicateStreams={duplicateStreams}
         dramaOptions={dramaOptions}
         currentHeroDramaId={currentHeroId}
+        initialHeroDramaIds={initialHeroDramaIds}
         user={auth.user}
         role={auth.role}
       />

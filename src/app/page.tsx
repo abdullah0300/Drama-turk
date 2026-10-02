@@ -12,15 +12,16 @@ import { siteConfig } from '@/config/site';
 import { isDramaPlayable, isReleasePublished, seasonPosterOf, groupSeasons, editionName, pluralSeasons, dramaSeasonCount } from '@/types/catalog';
 import { episodePath, episodeSlugs, seasonPath } from '@/lib/routes';
 
-export const revalidate = 3600; // 1 hour ISR
-
 export default async function HomePage() {
-  // Featured drama comes from site settings; nothing here is tied to a particular season
-  const featured = await supabaseCatalog.getPilotDrama();
-  const [latestEpisodes, allDramas] = await Promise.all([
+  const [latestEpisodes, allDramas, siteSettings] = await Promise.all([
     supabaseCatalog.getLatestEpisodePerDrama(),
     supabaseCatalog.getAllDramas(),
+    supabaseCatalog.getSiteSettings(),
   ]);
+
+  const configuredHeroIds: string[] = (siteSettings?.feature_flags as any)?.hero_drama_ids || [];
+  const slot1Id = configuredHeroIds[0] || siteSettings?.pilot_drama_source_id || 'mehmed-fetihler-sultani';
+  const featured = allDramas.find((d) => d.id === slot1Id) || (await supabaseCatalog.getPilotDrama());
 
   // The featured drama starts from its first season (subtitled edition preferred)
   const featuredSeasons = featured ? groupSeasons(await supabaseCatalog.getDramaCollections(featured.id)) : [];
@@ -63,26 +64,44 @@ export default async function HomePage() {
       infoHref: `/drama/${featured.id}`,
     });
   }
-  allDramas
-    .filter((d) => d.id !== featured?.id && (d.backdrop_url || d.poster_url))
-    .slice(0, 3)
-    .forEach((d) =>
-      heroItems.push({
-        id: d.id,
-        title: d.name,
-        kicker: isDramaPlayable(d) ? 'Now streaming · ad-free' : 'Preview catalog',
-        genres: d.genres?.slice(0, 2) ?? [],
-        meta: pluralSeasons(dramaSeasonCount(d)),
-        line: d.synopsis || '',
-        image: d.backdrop_url || d.poster_url,
-        thumb: d.backdrop_url || d.poster_url,
-        thumbnailForList: d.poster_url,
-        episodeCount: 0,
-        playHref: `/drama/${d.id}`,
-        playLabel: isDramaPlayable(d) ? 'Watch now' : 'View catalog',
-        infoHref: `/drama/${d.id}`,
-      })
+  const otherHeroDramas: typeof allDramas = [];
+  if (configuredHeroIds.length > 1) {
+    for (let i = 1; i < configuredHeroIds.length && otherHeroDramas.length < 3; i++) {
+      const match = allDramas.find((d) => d.id === configuredHeroIds[i]);
+      if (match && match.id !== featured?.id && !otherHeroDramas.some((x) => x.id === match.id)) {
+        otherHeroDramas.push(match);
+      }
+    }
+  }
+
+  if (otherHeroDramas.length < 3) {
+    const existingIds = new Set([featured?.id, ...otherHeroDramas.map((d) => d.id)]);
+    const fallbackDramas = allDramas.filter(
+      (d) => !existingIds.has(d.id) && (d.backdrop_url || d.poster_url)
     );
+    for (const d of fallbackDramas) {
+      if (otherHeroDramas.length >= 3) break;
+      otherHeroDramas.push(d);
+    }
+  }
+
+  otherHeroDramas.forEach((d) =>
+    heroItems.push({
+      id: d.id,
+      title: d.name,
+      kicker: isDramaPlayable(d) ? 'Now streaming · ad-free' : 'Preview catalog',
+      genres: d.genres?.slice(0, 2) ?? [],
+      meta: pluralSeasons(dramaSeasonCount(d)),
+      line: d.synopsis || '',
+      image: d.backdrop_url || d.poster_url,
+      thumb: d.backdrop_url || d.poster_url,
+      thumbnailForList: d.poster_url,
+      episodeCount: 0,
+      playHref: `/drama/${d.id}`,
+      playLabel: isDramaPlayable(d) ? 'Watch now' : 'View catalog',
+      infoHref: `/drama/${d.id}`,
+    })
+  );
 
   // Latest seasons stage: one card per season (editions merged), newest first
   const seasonCandidates = [

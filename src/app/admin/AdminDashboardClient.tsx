@@ -20,10 +20,14 @@ import {
 } from 'lucide-react';
 import { DuplicateStreamGroup, PlaybackCheckLog } from '@/types/catalog';
 import { siteConfig } from '@/config/site';
+import { SearchableDramaSelect } from './SearchableDramaSelect';
 
 export interface DramaOption {
   source_id: string;
   display_name: string;
+  poster_url?: string | null;
+  backdrop_url?: string | null;
+  genres?: string[] | null;
   is_pilot?: boolean;
 }
 
@@ -68,6 +72,7 @@ interface AdminDashboardClientProps {
   duplicateStreams: DuplicateStreamGroup[];
   dramaOptions?: DramaOption[];
   currentHeroDramaId?: string;
+  initialHeroDramaIds?: string[];
   user?: {
     id: string;
     email?: string;
@@ -82,18 +87,63 @@ export function AdminDashboardClient({
   duplicateStreams,
   dramaOptions = [],
   currentHeroDramaId,
+  initialHeroDramaIds = [],
   user,
   role,
 }: AdminDashboardClientProps) {
   const [activeTab, setActiveTab] = useState<'metrics' | 'reviews' | 'duplicates' | 'health' | 'automation' | 'config'>('metrics');
 
-  // Hero Drama state
-  const [heroDramaId, setHeroDramaId] = useState<string>(currentHeroDramaId || siteConfig.pilotDramaId || 'mehmed-fetihler-sultani');
-  const [selectedHeroDrama, setSelectedHeroDrama] = useState<string>(currentHeroDramaId || siteConfig.pilotDramaId || 'mehmed-fetihler-sultani');
+  // Hero Drama state for all 4 slots
+  const [heroSlots, setHeroSlots] = useState<string[]>(() => {
+    if (initialHeroDramaIds && initialHeroDramaIds.length >= 4) {
+      return initialHeroDramaIds.slice(0, 4);
+    }
+    const fallbackList = [
+      currentHeroDramaId || siteConfig.pilotDramaId || 'mehmed-fetihler-sultani',
+      'kurulus-osman',
+      'salahuddin-ayyubi',
+      'alparslan-buyuk-selcuklu',
+    ];
+    return fallbackList;
+  });
   const [isUpdatingHero, setIsUpdatingHero] = useState<boolean>(false);
   const [heroUpdateMessage, setHeroUpdateMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const heroDramaName = dramaOptions.find((d) => d.source_id === heroDramaId)?.display_name || heroDramaId;
+  const heroDramaName = dramaOptions.find((d) => d.source_id === heroSlots[0])?.display_name || heroSlots[0];
+
+  const handleSlotChange = (index: number, newDramaId: string) => {
+    setHeroSlots((prev) => {
+      const copy = [...prev];
+      copy[index] = newDramaId;
+      return copy;
+    });
+    setHeroUpdateMessage(null);
+  };
+
+  const handleUpdateAllHeroes = async () => {
+    setIsUpdatingHero(true);
+    setHeroUpdateMessage(null);
+    try {
+      const res = await fetch('/api/admin/settings/hero', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ heroDramaIds: heroSlots }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update hero series');
+      setHeroUpdateMessage({
+        type: 'success',
+        text: 'All 4 Homepage Hero series successfully saved to Supabase and cache refreshed!',
+      });
+    } catch (err: any) {
+      setHeroUpdateMessage({
+        type: 'error',
+        text: err.message || 'Error updating hero series',
+      });
+    } finally {
+      setIsUpdatingHero(false);
+    }
+  };
 
   // Review Findings State
   const [findings, setFindings] = useState<LiveReviewFinding[]>(initialFindings);
@@ -106,32 +156,6 @@ export function AdminDashboardClient({
   const [isChecking, setIsChecking] = useState(false);
   const [checkResult, setCheckResult] = useState<PlaybackCheckLog | null>(null);
   const [recentChecks, setRecentChecks] = useState<LiveStreamCheck[]>(initialChecks);
-
-  const handleUpdateHero = async () => {
-    setIsUpdatingHero(true);
-    setHeroUpdateMessage(null);
-    try {
-      const res = await fetch('/api/admin/settings/hero', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dramaSourceId: selectedHeroDrama }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to update hero drama');
-      setHeroDramaId(selectedHeroDrama);
-      setHeroUpdateMessage({
-        type: 'success',
-        text: `Homepage Hero successfully updated to "${data.heroDrama?.display_name || selectedHeroDrama}"!`,
-      });
-    } catch (err: any) {
-      setHeroUpdateMessage({
-        type: 'error',
-        text: err.message || 'Error updating hero drama',
-      });
-    } finally {
-      setIsUpdatingHero(false);
-    }
-  };
 
   const handleLogout = async () => {
     try {
@@ -358,71 +382,115 @@ export function AdminDashboardClient({
             </div>
           </div>
 
-          {/* HOMEPAGE HERO SHOWCASE CONTROLS */}
-          <div className="p-5 bg-surface border border-surface-border rounded-xl space-y-4">
+          {/* HOMEPAGE HERO SHOWCASE CONTROLS (ALL 4 SLOTS) */}
+          <div className="p-5 bg-surface border border-surface-border rounded-xl space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-surface-border">
               <div>
                 <div className="flex items-center gap-2">
                   <Sparkles size={16} className="text-amber-400" />
-                  <h3 className="text-sm font-semibold text-text-primary">Homepage Featured Hero Drama</h3>
+                  <h3 className="text-sm font-semibold text-text-primary">
+                    Homepage Hero Carousel (All 4 Featured Series)
+                  </h3>
                 </div>
                 <p className="text-xs text-text-secondary mt-0.5">
-                  Select which drama series is highlighted in the flagship banner on the homepage (<code className="text-amber-400">/</code>). Viewers start seamlessly from Season 1, Episode 1.
+                  Select all 4 series displayed in the homepage (<code className="text-amber-400">/</code>) hero slider. Each dropdown includes live search filtering and smooth scrolling.
                 </p>
               </div>
-              <div className="text-xs shrink-0">
-                <span className="text-text-muted mr-1.5">Currently active:</span>
-                <span className="px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
-                  {heroDramaName}
-                </span>
-              </div>
+
+              <button
+                onClick={handleUpdateAllHeroes}
+                disabled={isUpdatingHero}
+                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-stone-950 text-xs font-semibold shadow-md shadow-amber-500/10 transition-all active:scale-[0.98] shrink-0"
+              >
+                {isUpdatingHero ? (
+                  <>
+                    <RefreshCw size={13} className="animate-spin" />
+                    Saving 4 Slots to Supabase...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={13} />
+                    Save All 4 Hero Series
+                  </>
+                )}
+              </button>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <div className="flex-1">
-                <label className="block text-[11px] font-medium text-text-secondary mb-1">
-                  Change Flagship Hero Series
-                </label>
-                <select
-                  value={selectedHeroDrama}
-                  onChange={(e) => {
-                    setSelectedHeroDrama(e.target.value);
-                    setHeroUpdateMessage(null);
-                  }}
-                  className="w-full bg-stone-900 border border-surface-border rounded-lg px-3 py-2 text-xs text-text-primary focus:border-amber-400 focus:outline-none"
-                >
-                  {(dramaOptions || []).map((d) => (
-                    <option key={d.source_id} value={d.source_id}>
-                      {d.display_name} ({d.source_id})
-                    </option>
-                  ))}
-                </select>
-              </div>
+            {/* 4 MODERN SEARCHABLE SLOTS */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <SearchableDramaSelect
+                slotNumber={1}
+                slotTitle="Flagship Hero"
+                slotBadge="Slot 1 (Main Banner)"
+                options={dramaOptions}
+                value={heroSlots[0]}
+                onChange={(val) => handleSlotChange(0, val)}
+                disabled={isUpdatingHero}
+              />
+              <SearchableDramaSelect
+                slotNumber={2}
+                slotTitle="Slide 2"
+                slotBadge="Slot 2"
+                options={dramaOptions}
+                value={heroSlots[1]}
+                onChange={(val) => handleSlotChange(1, val)}
+                disabled={isUpdatingHero}
+              />
+              <SearchableDramaSelect
+                slotNumber={3}
+                slotTitle="Slide 3"
+                slotBadge="Slot 3"
+                options={dramaOptions}
+                value={heroSlots[2]}
+                onChange={(val) => handleSlotChange(2, val)}
+                disabled={isUpdatingHero}
+              />
+              <SearchableDramaSelect
+                slotNumber={4}
+                slotTitle="Slide 4"
+                slotBadge="Slot 4"
+                options={dramaOptions}
+                value={heroSlots[3]}
+                onChange={(val) => handleSlotChange(3, val)}
+                disabled={isUpdatingHero}
+              />
+            </div>
 
-              <div className="sm:self-end">
-                <button
-                  onClick={handleUpdateHero}
-                  disabled={isUpdatingHero || selectedHeroDrama === heroDramaId}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed text-stone-950 text-xs font-semibold transition-all active:scale-[0.98]"
-                >
-                  {isUpdatingHero ? (
-                    <>
-                      <RefreshCw size={13} className="animate-spin" />
-                      Saving to Supabase...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles size={13} />
-                      Set as Homepage Hero
-                    </>
-                  )}
-                </button>
+            {/* Live Carousel Order Preview */}
+            <div className="p-3 bg-stone-950/60 rounded-xl border border-surface-border/60">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-text-tertiary block mb-2">
+                Live Hero Carousel Order Preview
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {heroSlots.map((slotId, sIdx) => {
+                  const drama = dramaOptions.find((d) => d.source_id === slotId);
+                  return (
+                    <div
+                      key={sIdx}
+                      className="flex items-center gap-2 p-1.5 rounded-lg bg-surface border border-surface-border/50 text-xs min-w-0"
+                    >
+                      <span className="w-4 h-4 rounded bg-amber-500/20 text-amber-400 font-mono font-bold text-[9px] flex items-center justify-center shrink-0">
+                        #{sIdx + 1}
+                      </span>
+                      <div className="w-5 h-7 rounded bg-stone-800 overflow-hidden shrink-0 flex items-center justify-center">
+                        {drama?.poster_url ? (
+                          <img src={drama.poster_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-stone-800" />
+                        )}
+                      </div>
+                      <span className="truncate text-text-primary text-[11px] font-medium">
+                        {drama?.display_name || slotId}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
             {heroUpdateMessage && (
               <div
-                className={`p-3 rounded-lg text-xs flex items-center gap-2 ${
+                className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
                   heroUpdateMessage.type === 'success'
                     ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
                     : 'bg-red-500/10 text-red-400 border border-red-500/30'
@@ -769,8 +837,12 @@ export function AdminDashboardClient({
               <span className="font-mono text-text-primary">{siteConfig.brandPromise}</span>
             </div>
             <div className="flex justify-between py-1 border-b border-surface-border/50">
-              <span className="text-text-secondary">Homepage Hero Drama</span>
-              <span className="font-mono text-amber-400 font-semibold">{heroDramaName} ({heroDramaId})</span>
+              <span className="text-text-secondary">Homepage Hero Carousel (4 Slots)</span>
+              <span className="font-mono text-amber-400 font-semibold text-right">
+                {heroSlots
+                  .map((id, i) => `#${i + 1}: ${dramaOptions.find((d) => d.source_id === id)?.display_name || id}`)
+                  .join(' | ')}
+              </span>
             </div>
             <div className="flex justify-between py-1 border-b border-surface-border/50">
               <span className="text-text-secondary">Database Host</span>

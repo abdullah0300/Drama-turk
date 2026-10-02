@@ -12,30 +12,39 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { dramaSourceId } = body;
+    let heroDramaIds: string[] = [];
 
-    if (!dramaSourceId || typeof dramaSourceId !== 'string') {
-      return NextResponse.json({ error: 'Missing or invalid dramaSourceId' }, { status: 400 });
+    if (Array.isArray(body.heroDramaIds)) {
+      heroDramaIds = body.heroDramaIds.filter((id: unknown): id is string => typeof id === 'string' && id.trim().length > 0);
+    } else if (typeof body.dramaSourceId === 'string' && body.dramaSourceId.trim().length > 0) {
+      heroDramaIds = [body.dramaSourceId.trim()];
+    }
+
+    if (heroDramaIds.length === 0) {
+      return NextResponse.json({ error: 'At least one drama series ID is required' }, { status: 400 });
     }
 
     const client: any = createAdminClient(auth.token);
 
-    // 1. Verify that the drama exists
-    const { data: drama, error: dramaErr } = await client
-      .from('dramas')
-      .select('id, source_id, display_name')
-      .eq('source_id', dramaSourceId)
+    // 1. Fetch current settings to preserve existing feature_flags
+    const { data: currentSettings } = await client
+      .from('public_site_settings')
+      .select('*')
+      .eq('id', 'current')
       .single();
 
-    if (dramaErr || !drama) {
-      return NextResponse.json({ error: `Drama with source_id "${dramaSourceId}" not found` }, { status: 404 });
-    }
+    const existingFlags = (currentSettings?.feature_flags as Record<string, any>) || {};
+    const updatedFlags = {
+      ...existingFlags,
+      hero_drama_ids: heroDramaIds,
+    };
 
-    // 2. Update public_site_settings
+    // 2. Update public_site_settings (slot 1 sets pilot_drama_source_id)
     const { error: settingsErr } = await client
       .from('public_site_settings')
       .update({
-        pilot_drama_source_id: dramaSourceId,
+        pilot_drama_source_id: heroDramaIds[0],
+        feature_flags: updatedFlags,
         updated_at: new Date().toISOString(),
       })
       .eq('id', 'current');
@@ -49,12 +58,12 @@ export async function POST(request: Request) {
     await client
       .from('dramas')
       .update({ is_pilot: false })
-      .neq('source_id', dramaSourceId);
+      .neq('source_id', heroDramaIds[0]);
 
     await client
       .from('dramas')
       .update({ is_pilot: true })
-      .eq('source_id', dramaSourceId);
+      .eq('source_id', heroDramaIds[0]);
 
     // 4. Revalidate homepage and admin routes immediately
     try {
@@ -66,10 +75,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      heroDrama: {
-        source_id: drama.source_id,
-        display_name: drama.display_name,
-      },
+      heroDramaIds,
     });
   } catch (error) {
     console.error('[AdminHeroRoute] Unexpected error:', error);
