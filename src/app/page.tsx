@@ -12,6 +12,9 @@ import { siteConfig } from '@/config/site';
 import { isDramaPlayable, isReleasePublished, seasonPosterOf, groupSeasons, editionName, pluralSeasons, dramaSeasonCount } from '@/types/catalog';
 import { episodePath, episodeSlugs, seasonPath } from '@/lib/routes';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function HomePage() {
   const [latestEpisodes, allDramas, siteSettings] = await Promise.all([
     supabaseCatalog.getLatestEpisodePerDrama(),
