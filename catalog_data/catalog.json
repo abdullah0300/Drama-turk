@@ -171,13 +171,14 @@
         "Mehmed: Fetihler Sultani"
       ],
       "collection_ids": [
+        "collection-62",
         "collection-72",
         "collection-68",
         "collection-76",
         "collection-82",
         "collection-88"
       ],
-      "video_records": 149
+      "video_records": 179
     },
     {
       "id": "mendirman-jaloliddin",
@@ -4134,6 +4135,35 @@
       ],
       "extra_video_ids": [],
       "video_records": 8
+    },
+    {
+      "id": "collection-62",
+      "source_catalog_id": "62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "source_heading": "Mehmed: Fetihler Sultani - Urdu & English Subtitles",
+      "source_url": "https://play.niazitv.pk/drama/62/mehmed-fetihler-sultani",
+      "reported_seasons": [
+        1
+      ],
+      "episode_group_ids": [
+        "collection-62-episode-1",
+        "collection-62-episode-2",
+        "collection-62-episode-3",
+        "collection-62-episode-4",
+        "collection-62-episode-5",
+        "collection-62-episode-6",
+        "collection-62-episode-7",
+        "collection-62-episode-8",
+        "collection-62-episode-9",
+        "collection-62-episode-10",
+        "collection-62-episode-11",
+        "collection-62-episode-12",
+        "collection-62-episode-13",
+        "collection-62-episode-14",
+        "collection-62-episode-15"
+      ],
+      "extra_video_ids": [],
+      "video_records": 30
     }
   ],
   "episode_groups": [
@@ -45182,6 +45212,231 @@
       "video_ids": [
         "video-40924",
         "video-40925"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-1",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 1",
+      "episode_number": 1,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2745",
+        "video-2768"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-2",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 2",
+      "episode_number": 2,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2769",
+        "video-2770"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-3",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 3",
+      "episode_number": 3,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2785",
+        "video-2787"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-4",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 4",
+      "episode_number": 4,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2802",
+        "video-2803"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-5",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 5",
+      "episode_number": 5,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2818",
+        "video-2819"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-6",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 6",
+      "episode_number": 6,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2834",
+        "video-2835"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-7",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 7",
+      "episode_number": 7,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2851",
+        "video-2852"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-8",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 8",
+      "episode_number": 8,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2891",
+        "video-2892"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-9",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 9",
+      "episode_number": 9,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2908",
+        "video-2909"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-10",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 10",
+      "episode_number": 10,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2925",
+        "video-2926"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-11",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 11",
+      "episode_number": 11,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2943",
+        "video-2944"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-12",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 12",
+      "episode_number": 12,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2969",
+        "video-2970"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-13",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 13",
+      "episode_number": 13,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-2985",
+        "video-2986"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-14",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 14",
+      "episode_number": 14,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-3001",
+        "video-3002"
+      ],
+      "numbering_basis": "source_episode_number",
+      "reported_season": 1
+    },
+    {
+      "id": "collection-62-episode-15",
+      "collection_id": "collection-62",
+      "drama_id": "mehmed-fetihler-sultani",
+      "display_label": "Episode 15",
+      "episode_number": 15,
+      "bolum": null,
+      "part": null,
+      "video_ids": [
+        "video-3018",
+        "video-3019"
       ],
       "numbering_basis": "source_episode_number",
       "reported_season": 1
