@@ -1,45 +1,41 @@
 import { MetadataRoute } from 'next';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { siteConfig } from '@/config/site';
-import { loadDrama, episodeHref } from '@/lib/catalog-nav';
+import { loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
+import { isEligibleEpisode } from '@/lib/seo/catalog-seo';
 import { isReleasePublished } from '@/types/catalog';
-import { dramaPath, seasonPath, episodeSlugs } from '@/lib/routes';
+import { dramaPath, seasonPath } from '@/lib/routes';
 
-export const revalidate = 86400; // 24 hours ISR
+export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = siteConfig.domain;
-  const staticLastMod = new Date('2026-09-30T12:00:00Z');
 
   // Static published pages (canonical only)
   const routes: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}`,
-      lastModified: staticLastMod,
       changeFrequency: 'daily',
       priority: 1.0,
     },
     {
       url: `${baseUrl}/browse`,
-      lastModified: staticLastMod,
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/about`,
-      lastModified: staticLastMod,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${baseUrl}/privacy`,
-      lastModified: staticLastMod,
       changeFrequency: 'monthly',
       priority: 0.4,
     },
     {
       url: `${baseUrl}/contact`,
-      lastModified: staticLastMod,
       changeFrequency: 'monthly',
       priority: 0.4,
     },
@@ -49,14 +45,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Dramas, every season release and every episode, all on clean URLs
     const dramas = await supabaseCatalog.getAllDramas();
     const dramaRouteBatches = await Promise.all(
-      dramas.map(async (d) => {
+      dramas.filter(d => d.status === 'published').map(async (d) => {
         const loaded = await loadDrama(d.id);
         if (!loaded) return [];
 
         const dramaEntries: MetadataRoute.Sitemap = [
           {
             url: `${baseUrl}${dramaPath(d.id)}`,
-            lastModified: staticLastMod,
+            lastModified: loaded.drama.updated_at,
             changeFrequency: d.isPilot ? 'daily' : 'weekly',
             priority: d.isPilot ? 0.9 : 0.7,
           },
@@ -65,22 +61,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         for (const season of loaded.seasons) {
           for (const edition of season.editions) {
             if (!isReleasePublished(edition)) continue;
+            const data = await loadEditionEpisodes(edition.id);
+            const groups = data.groups.filter(g => isEligibleEpisode(loaded.drama, edition, g, data.videosByGroup.get(g.id) || []));
+            if (!groups.length) continue;
             dramaEntries.push({
               url: `${baseUrl}${seasonPath(d.id, season, edition)}`,
-              lastModified: staticLastMod,
+              lastModified: edition.editorial?.updated_at || edition.updated_at,
               changeFrequency: 'weekly',
               priority: 0.6,
             });
 
-            // Fetch only episode groups — video stream payloads are not needed for URL generation
-            const groups = await supabaseCatalog.getCollectionEpisodeGroups(edition.id);
-            const slugs = episodeSlugs(groups);
+            // Reuse the full inventory so sitemap inclusion agrees with watch-page eligibility.
+            const slugs = data.slugs;
             for (const g of groups) {
               const slug = slugs.get(g.id);
               if (!slug) continue;
               dramaEntries.push({
                 url: `${baseUrl}${episodeHref(d.id, season, edition, slug)}`,
-                lastModified: staticLastMod,
+                lastModified: g.editorial?.updated_at || g.updated_at,
                 changeFrequency: 'monthly',
                 priority: 0.5,
               });

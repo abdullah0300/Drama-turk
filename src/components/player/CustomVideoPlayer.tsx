@@ -124,6 +124,9 @@ export function CustomVideoPlayer({
     }
     setQualityLevels([]);
     setCurrentQualityIndex(-1);
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
     setIsLoading(true);
     setErrorState(null);
     setCountdown(null);
@@ -144,6 +147,10 @@ export function CustomVideoPlayer({
 
     if (streamUrl.includes('.m3u8')) {
       if (Hls.isSupported()) {
+        // The server exposes the real source for discovery. Hand playback over
+        // to MediaSource before hls.js attaches its object URL in this browser.
+        videoElement.removeAttribute('src');
+        videoElement.load();
         hls = new Hls({
           enableWorker: true,
           lowLatencyMode: false,
@@ -650,6 +657,8 @@ export function CustomVideoPlayer({
     >
       <video
         ref={videoRef}
+        src={streamUrl}
+        poster={currentVideo.thumbnail_urls?.[0]}
         playsInline
         preload="metadata"
         onTimeUpdate={handleTimeUpdate}

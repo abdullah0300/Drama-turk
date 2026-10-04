@@ -785,7 +785,11 @@ a.w-ep{display:grid}
 .pill-link{display:inline-flex}
 .pill:disabled{opacity:.4;cursor:not-allowed}
 .w-sum .spoiler{margin-top:14px;padding:14px 16px;border-radius:12px;background:rgba(242,179,61,.06);border:1px solid rgba(242,179,61,.25)}
-.w-sum .spoiler h4,.w-sum h4.ed{margin:0 0 6px;font-size:14px}
+.w-sum .spoiler h2,.w-sum h2.ed{margin:0 0 6px;font-size:14px}
+.viewing-table-wrap{overflow-x:auto;margin-top:16px}
+.viewing-table{width:100%;border-collapse:collapse;text-align:left;font-size:14px}
+.viewing-table th,.viewing-table td{padding:14px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.viewing-table a{color:var(--gold)}
 .w-sum .ed-block{margin-top:14px}
 .w-sum .ed-block p{margin:4px 0 0}
 .rend-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:16px;font-size:12px;font-weight:700;color:var(--muted)}

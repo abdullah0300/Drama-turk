@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${siteConfig.domain}/search`,
   },
-  // Staging environment strictly noindex
+  // Search results are navigational; canonical series pages own the search intent.
   robots: {
     index: false,
-    follow: false,
+    follow: true,
   },
 };
 

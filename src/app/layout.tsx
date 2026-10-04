@@ -7,7 +7,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { PageShell } from '@/components/layout/PageShell';
 import { Footer } from '@/components/layout/Footer';
-import { siteConfig } from '@/config/site';
+import { siteConfig, publicIndexingEnabled } from '@/config/site';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { isDramaPlayable } from '@/types/catalog';
 
@@ -32,8 +32,8 @@ export const metadata: Metadata = {
     description: 'An ad-free, uninterrupted streaming platform for historical and cultural drama series.',
   },
   robots: {
-    index: false,
-    follow: false,
+    index: publicIndexingEnabled,
+    follow: publicIndexingEnabled,
   },
 };
 

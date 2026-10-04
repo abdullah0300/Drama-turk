@@ -1,0 +1,5123 @@
+{
+  "audited_at": "2026-10-03",
+  "project_ref": "zvwltfqhbpqtnjbsflvk",
+  "scope": "read-only database snapshot; stream verification states are stored observations, not new playback tests",
+  "drama": {
+    "id": "1c5a90f7-cced-5b88-af7e-b8ad27e7e691",
+    "slug": "mehmed-fetihler-sultani",
+    "genres": [
+      "Drama",
+      "Historical",
+      "Action"
+    ],
+    "status": "published",
+    "is_pilot": true,
+    "languages": [
+      "Urdu",
+      "English"
+    ],
+    "source_id": "mehmed-fetihler-sultani",
+    "created_at": "2026-09-30T14:57:38.904693+00:00",
+    "poster_url": "https://image.tmdb.org/t/p/w780/A8fHgHmcEQU1UcOcXhW3NXtwwcZ.jpg",
+    "updated_at": "2026-10-02T12:48:18.428995+00:00",
+    "backdrop_url": "https://image.tmdb.org/t/p/w1280/bJxf4Y8UKOBsWoE3gB6N0hfB04G.jpg",
+    "display_name": "Mehmed: Fetihler Sultani",
+    "short_overview": "Preserved catalog records for Mehmed: Fetihler Sultani, containing 149 video entries.",
+    "revision_number": 1,
+    "video_records_count": 180
+  },
+  "groups": [
+    {
+      "id": "a40494fd-4735-5a3b-aa13-e64a4e77ef6f",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 1",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3207",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 1,
+      "source_id": "collection-68-episode-1",
+      "still_url": "https://play.niazitv.pk/images/episode_1725767445.webp",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-10-01T01:53:07.967247+00:00",
+      "content_type": "episode",
+      "still_source": "catalog",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 1
+    },
+    {
+      "id": "d2ccfc55-f976-5cfe-8937-ec3ecc576e9b",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 16",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3220",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 16,
+      "source_id": "collection-68-episode-16",
+      "still_url": "https://image.tmdb.org/t/p/w780/bMyqhURstevjYYAjyeF80ERwkwG.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 16
+    },
+    {
+      "id": "5e2a4b8e-61ad-5c64-a214-313ce727559c",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 17",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3222",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3226",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 17,
+      "source_id": "collection-68-episode-17",
+      "still_url": "https://image.tmdb.org/t/p/w780/4i9YgjkTJKumMzad042qIy47tBB.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 17
+    },
+    {
+      "id": "450754d9-cb49-5c67-a422-421d01de4109",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 18",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3231",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3232",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 18,
+      "source_id": "collection-68-episode-18",
+      "still_url": "https://image.tmdb.org/t/p/w780/WbbJciBM3M7VUYb3vYbiRXuq9C.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 18
+    },
+    {
+      "id": "cd0364ae-958a-5090-b76f-d3963e3443da",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 19",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3238",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3241",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 19,
+      "source_id": "collection-68-episode-19",
+      "still_url": "https://image.tmdb.org/t/p/w780/g2MKaZlZvv6zupvyU5ywJbuvWc7.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 19
+    },
+    {
+      "id": "9422b7ee-9833-5b5f-a50a-d60ee2b6fc43",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 20",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3247",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3248",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 20,
+      "source_id": "collection-68-episode-20",
+      "still_url": "https://image.tmdb.org/t/p/w780/bbuwhjkkKu8XOC0oYvru0SXUBMf.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 20
+    },
+    {
+      "id": "e27880a0-b2ea-56ca-b867-3d410a87b179",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 21",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3259",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3260",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 21,
+      "source_id": "collection-68-episode-21",
+      "still_url": "https://image.tmdb.org/t/p/w780/W2XiL8Hy9FOzQuKUmI1Y8Zehfz.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 21
+    },
+    {
+      "id": "61c99268-763c-5661-a6e6-4f3f8d4436f6",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 22",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3271",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3272",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 22,
+      "source_id": "collection-68-episode-22",
+      "still_url": "https://image.tmdb.org/t/p/w780/13kkoTAgj64JwKhzTiHFOXYje5F.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 22
+    },
+    {
+      "id": "cac7a4e4-3e20-539b-91c1-b0a327ed39d6",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 23",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3279",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3280",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 23,
+      "source_id": "collection-68-episode-23",
+      "still_url": "https://image.tmdb.org/t/p/w780/n0oy3ahlWFJvjdfk0etCKzqMLp2.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 23
+    },
+    {
+      "id": "7c6805f5-2650-568a-bdf6-91852f745cc5",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 24",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3289",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3290",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 24,
+      "source_id": "collection-68-episode-24",
+      "still_url": "https://image.tmdb.org/t/p/w780/gYjdSRViV0d5eu50P8yxVZ2oWQx.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 24
+    },
+    {
+      "id": "100f5313-a217-5095-9856-123e63f6e456",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 25",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3296",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3297",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 25,
+      "source_id": "collection-68-episode-25",
+      "still_url": "https://image.tmdb.org/t/p/w780/zljberya384CxTdoRTAUWgoqtSK.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 25
+    },
+    {
+      "id": "2047f4c0-b312-5097-b523-43720ecbae70",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 26",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3303",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3304",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 26,
+      "source_id": "collection-68-episode-26",
+      "still_url": "https://image.tmdb.org/t/p/w780/jEdTH31EdOwJbFCE0Wo0EuoPrGZ.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 26
+    },
+    {
+      "id": "17d9ce58-3122-542e-8ceb-c810faa3133d",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 27",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3388",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3389",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 27,
+      "source_id": "collection-68-episode-27",
+      "still_url": "https://image.tmdb.org/t/p/w780/pZObvKwQhv40oiGmUaPJkL6FDRw.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 27
+    },
+    {
+      "id": "63edc517-7de8-5e7e-bdcd-91e45c1edc7c",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 28",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3414",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3415",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 28,
+      "source_id": "collection-68-episode-28",
+      "still_url": "https://image.tmdb.org/t/p/w780/xSLgTUQG1jxvMjGTq4KbDTbGLaL.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 28
+    },
+    {
+      "id": "411571f0-9f7e-5fa6-a17e-3836b566fe92",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 29",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3421",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3422",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 29,
+      "source_id": "collection-68-episode-29",
+      "still_url": "https://image.tmdb.org/t/p/w780/hDtcS8baNOwIIc4TyLMkN6VIKIR.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 29
+    },
+    {
+      "id": "b82d53cb-5c30-5381-8216-b0201657583e",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 30",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3428",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3429",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 30,
+      "source_id": "collection-68-episode-30",
+      "still_url": "https://image.tmdb.org/t/p/w780/uWVGD8g9wnYryb85I6ikUcjfYiE.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 30
+    },
+    {
+      "id": "e174eed6-9969-5f19-a239-d66575b03618",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 31",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3435",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3436",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 31,
+      "source_id": "collection-68-episode-31",
+      "still_url": "https://image.tmdb.org/t/p/w780/xr73AiTBF8vY7v5Spp80EjSVC1Q.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 31
+    },
+    {
+      "id": "9a3311ef-2166-511d-b711-c2edd290e260",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 32",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3476",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3477",
+          "created_at": "2026-09-30T16:27:00.689758+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 32,
+      "source_id": "collection-68-episode-32",
+      "still_url": "https://image.tmdb.org/t/p/w780/6Q4Xn4bERqvnQAZ8231v3cLn9l8.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 32
+    },
+    {
+      "id": "736640f2-ac08-57ae-9328-5d5711b48e38",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 33",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3486",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3487",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 34,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 33,
+      "source_id": "collection-68-episode-33",
+      "still_url": "https://image.tmdb.org/t/p/w780/lUUZXEUVVBBikiq8aIpIiH4HX4J.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 33
+    },
+    {
+      "id": "320023e0-b0a5-5804-8cdb-3826d937e466",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 34",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3493",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3494",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 78,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 34,
+      "source_id": "collection-68-episode-34",
+      "still_url": "https://image.tmdb.org/t/p/w780/8peZzK3kQ9KzJfbcIOrNuWK70g3.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 34
+    },
+    {
+      "id": "c6a35e71-9e08-5331-9b86-52d96dcf3f7e",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 35",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3500",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3501",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 122,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 35,
+      "source_id": "collection-68-episode-35",
+      "still_url": "https://image.tmdb.org/t/p/w780/ohABvBwWsHYippVlI51tyLk6L3y.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 35
+    },
+    {
+      "id": "9c4d9149-90c0-5e3e-80f2-f04e04e02ac6",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 36",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3507",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3508",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 166,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 36,
+      "source_id": "collection-68-episode-36",
+      "still_url": "https://image.tmdb.org/t/p/w780/t5F17kb8rt1VE3xkmQImdTToc81.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 36
+    },
+    {
+      "id": "45201f80-71f1-571f-a636-f043975b3a97",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 37",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3556",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3557",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 210,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 37,
+      "source_id": "collection-68-episode-37",
+      "still_url": "https://image.tmdb.org/t/p/w780/xE4eF1fEe5lpu64Bu0CzAGlRnUm.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 37
+    },
+    {
+      "id": "8e443652-c4d2-500d-aa05-e91e8f3e629f",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 38",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3563",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3564",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 254,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 38,
+      "source_id": "collection-68-episode-38",
+      "still_url": "https://image.tmdb.org/t/p/w780/bAZa4DOZU1AGFMjArGZLTBPvIMY.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 38
+    },
+    {
+      "id": "7a31ddfd-b928-5d2a-bd3d-3a7158b9e36b",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 39",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3570",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3572",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 298,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 39,
+      "source_id": "collection-68-episode-39",
+      "still_url": "https://image.tmdb.org/t/p/w780/kQUn6JlxaEErFXGf1WRYLIIBVyz.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 39
+    },
+    {
+      "id": "48b94626-9223-54e4-b927-25da561698bc",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 40",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3578",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3579",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 342,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 40,
+      "source_id": "collection-68-episode-40",
+      "still_url": "https://image.tmdb.org/t/p/w780/qWa8bobgleJDnvPSp8c4ngpSfCG.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 40
+    },
+    {
+      "id": "de76a5b9-f768-54da-a496-bbea6134816b",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 41",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3612",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3613",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 386,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 41,
+      "source_id": "collection-68-episode-41",
+      "still_url": "https://image.tmdb.org/t/p/w780/eCs3agUz5nbMyxAH5XYMhP4ETZN.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 41
+    },
+    {
+      "id": "3a4e7040-8016-5777-ade0-9843aeb2296b",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 42",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3619",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3620",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 430,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 42,
+      "source_id": "collection-68-episode-42",
+      "still_url": "https://image.tmdb.org/t/p/w780/pSo27WOkV1VvqPGFpBGqoAcllXH.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 42
+    },
+    {
+      "id": "32c07d2d-0219-5d63-bc5a-424f1358c1a2",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 43",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3656",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3657",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 474,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 43,
+      "source_id": "collection-68-episode-43",
+      "still_url": "https://image.tmdb.org/t/p/w780/qcfV42dv1Ukk9qP6vCvIVyYeZFS.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 43
+    },
+    {
+      "id": "c539c21f-5308-599d-9123-f28672252e2c",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 44",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3663",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3664",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 518,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 44,
+      "source_id": "collection-68-episode-44",
+      "still_url": "https://image.tmdb.org/t/p/w780/vDxkwPiI2fGFMvDRaWeAhsOmKuT.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 44
+    },
+    {
+      "id": "cf813843-a176-59f4-b73b-7d4078048ca8",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 45",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3670",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3671",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 562,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 45,
+      "source_id": "collection-68-episode-45",
+      "still_url": "https://image.tmdb.org/t/p/w780/8QDzLKLI8EEgU3kcTYp5gXxnqGI.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 45
+    },
+    {
+      "id": "e6b89baa-b63d-5ab7-80f9-c3e698580c65",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 46",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3682",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3683",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 606,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 46,
+      "source_id": "collection-68-episode-46",
+      "still_url": "https://image.tmdb.org/t/p/w780/iLL7JmgJIFbDPo5lSD0LRiRKNJ0.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 46
+    },
+    {
+      "id": "fc652c14-3ba9-53d0-8cf3-d5de3a8548b3",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 47",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3687",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3688",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 650,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 47,
+      "source_id": "collection-68-episode-47",
+      "still_url": "https://image.tmdb.org/t/p/w780/foeL4rjhSuVUnw86EJ4MAqpUGDt.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 47
+    },
+    {
+      "id": "c4c0d7a8-ee12-5e67-b2eb-95a363a4684b",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 48",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3692",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3693",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 694,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 48,
+      "source_id": "collection-68-episode-48",
+      "still_url": "https://image.tmdb.org/t/p/w780/lgnVDDyezfhiHaUCqB93R02zdn6.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 48
+    },
+    {
+      "id": "5e37d3ff-ea0d-593c-aea3-639a30f8d8aa",
+      "part": null,
+      "bolum": 149,
+      "label": "Episode 49 · Bolum 149",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3696",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 49,
+      "source_id": "collection-68-bolum-149",
+      "still_url": "https://image.tmdb.org/t/p/w780/5t3UoMfMiP44PeBPl01IGUbY0Z5.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 49
+    },
+    {
+      "id": "b1f0763d-6465-588e-8153-b86406aa54bc",
+      "part": null,
+      "bolum": 49,
+      "label": "Episode 49 · Bolum 49",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3697",
+          "created_at": "2026-09-30T16:27:40.267442+00:00",
+          "duration_seconds": 738,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 49,
+      "source_id": "collection-68-bolum-49",
+      "still_url": "https://image.tmdb.org/t/p/w780/5t3UoMfMiP44PeBPl01IGUbY0Z5.jpg",
+      "created_at": "2026-09-30T16:26:02.555517+00:00",
+      "updated_at": "2026-09-30T16:26:02.555517+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "collection_source_id": "collection-68",
+      "reported_episode_number": 49
+    },
+    {
+      "id": "d59681c7-05ff-581e-90ab-28cefc9f6840",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 1",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3245",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3645",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 1,
+      "source_id": "collection-72-episode-1",
+      "still_url": "https://play.niazitv.pk/images/episode_1729356394.webp",
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": "catalog",
+      "collection_id": "6fe5ee34-7944-58d1-b606-7b72315f7268",
+      "collection_source_id": "collection-72",
+      "reported_episode_number": 1
+    },
+    {
+      "id": "0773d8b7-812c-5032-ac0e-660fa0e0dcae",
+      "part": null,
+      "bolum": 84,
+      "label": "Episode 1 · Bolum 84",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4103",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 1,
+      "source_id": "collection-88-bolum-84",
+      "still_url": "https://play.niazitv.pk/images/episode_1790678305.png",
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": "catalog",
+      "collection_id": "f3bafe15-25c7-5cd9-8beb-ebb74633e62b",
+      "collection_source_id": "collection-88",
+      "reported_episode_number": 1
+    },
+    {
+      "id": "0ffef73f-de0c-53dc-9030-3d50fc1b5b6e",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 1",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2745",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2768",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 1,
+      "source_id": "collection-62-episode-1",
+      "still_url": "https://play.niazitv.pk/images/episode_1708797371.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 1
+    },
+    {
+      "id": "62326a29-7688-5b80-8217-83865a48c76b",
+      "part": null,
+      "bolum": 84,
+      "label": "Episode 1 · Bolum 84",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4082",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4083",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 1,
+      "source_id": "collection-82-bolum-84",
+      "still_url": "https://image.tmdb.org/t/p/w780/wBjHP9LvTpnmMkn6pX9Pp14qvtY.jpg",
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:53:17.2651+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "181838a5-5aa9-5378-860d-dcd229c5cc3e",
+      "collection_source_id": "collection-82",
+      "reported_episode_number": 1
+    },
+    {
+      "id": "1f89a611-7da4-5326-b37c-70b8cd4a00bf",
+      "part": null,
+      "bolum": 85,
+      "label": "Episode 2 · Bolum 85",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4092",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4093",
+          "created_at": "2026-10-01T01:43:40.934977+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 2,
+      "source_id": "collection-82-bolum-85",
+      "still_url": "https://image.tmdb.org/t/p/w780/x1PCWYOuDWN8SNHZEOQwBPBnOcJ.jpg",
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "181838a5-5aa9-5378-860d-dcd229c5cc3e",
+      "collection_source_id": "collection-82",
+      "reported_episode_number": 2
+    },
+    {
+      "id": "a490716f-e936-4985-8ba5-69128046577f",
+      "part": null,
+      "bolum": 85,
+      "label": "Episode 2 · Bolum 85",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-40927",
+          "created_at": "2026-10-02T12:48:16.455034+00:00",
+          "duration_seconds": 6697,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 2,
+      "source_id": "collection-88-bolum-85",
+      "still_url": null,
+      "created_at": "2026-10-02T12:48:15.711947+00:00",
+      "updated_at": "2026-10-02T12:48:15.711947+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "f3bafe15-25c7-5cd9-8beb-ebb74633e62b",
+      "collection_source_id": "collection-88",
+      "reported_episode_number": 2
+    },
+    {
+      "id": "8e0852e2-5fd4-53f8-b0f0-a754c7722290",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 2",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2769",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2770",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 2,
+      "source_id": "collection-62-episode-2",
+      "still_url": "https://play.niazitv.pk/images/episode_1709690106.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 2
+    },
+    {
+      "id": "45290bc8-8789-52d1-ab9a-54f876dfa26f",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 2",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3646",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 2,
+      "source_id": "collection-72-episode-2",
+      "still_url": null,
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6fe5ee34-7944-58d1-b606-7b72315f7268",
+      "collection_source_id": "collection-72",
+      "reported_episode_number": 2
+    },
+    {
+      "id": "42653dc6-4b54-57ae-a9a8-9e9ce96a795a",
+      "part": null,
+      "bolum": 86,
+      "label": "Episode 3 · Bolum 86",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            },
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-40922",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-40923",
+          "created_at": "2026-10-01T01:43:40.934977+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 3,
+      "source_id": "collection-82-bolum-86",
+      "still_url": "https://image.tmdb.org/t/p/w780/pRqng91nDxxHok0NH03o6aUsCEe.jpg",
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "181838a5-5aa9-5378-860d-dcd229c5cc3e",
+      "collection_source_id": "collection-82",
+      "reported_episode_number": 3
+    },
+    {
+      "id": "987bd430-ece4-5ea5-b3e0-c7881cae0c7f",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 3",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3647",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 3,
+      "source_id": "collection-72-episode-3",
+      "still_url": null,
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6fe5ee34-7944-58d1-b606-7b72315f7268",
+      "collection_source_id": "collection-72",
+      "reported_episode_number": 3
+    },
+    {
+      "id": "9c5a8358-9dcc-597c-a651-ef90f710ae17",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 3",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2785",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2787",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 3,
+      "source_id": "collection-62-episode-3",
+      "still_url": "https://play.niazitv.pk/images/episode_1710295171.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 3
+    },
+    {
+      "id": "59bb3ef7-8580-5d05-82bd-3587bac847fa",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 4",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3648",
+          "created_at": "2026-10-01T01:43:40.934977+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 4,
+      "source_id": "collection-72-episode-4",
+      "still_url": null,
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6fe5ee34-7944-58d1-b606-7b72315f7268",
+      "collection_source_id": "collection-72",
+      "reported_episode_number": 4
+    },
+    {
+      "id": "8e5c83c4-cf00-5a83-a39a-6c2448ee732e",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 4",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2802",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2803",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 4,
+      "source_id": "collection-62-episode-4",
+      "still_url": "https://play.niazitv.pk/images/episode_1710898518.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 4
+    },
+    {
+      "id": "83223a59-54f3-5727-9c30-80a43a180242",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 5",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3649",
+          "created_at": "2026-10-01T01:43:40.934977+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 5,
+      "source_id": "collection-72-episode-5",
+      "still_url": null,
+      "created_at": "2026-10-01T01:43:20.84412+00:00",
+      "updated_at": "2026-10-01T01:43:20.84412+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6fe5ee34-7944-58d1-b606-7b72315f7268",
+      "collection_source_id": "collection-72",
+      "reported_episode_number": 5
+    },
+    {
+      "id": "1ff9eb7d-cb75-555b-8eed-97f84482331b",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 5",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2818",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2819",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 5,
+      "source_id": "collection-62-episode-5",
+      "still_url": "https://play.niazitv.pk/images/episode_1711499848.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 5
+    },
+    {
+      "id": "7d0742ae-6710-51b8-87ed-afa082089ee9",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 6",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3650",
+          "created_at": "2026-10-01T01:43:40.934977+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 6,
+      "source_id": "collection-72-episode-6",
+      "still_url": null,
+      "created_at": "2026-10-01T01:43:20.84412+00:00",
+      "updated_at": "2026-10-01T01:43:20.84412+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6fe5ee34-7944-58d1-b606-7b72315f7268",
+      "collection_source_id": "collection-72",
+      "reported_episode_number": 6
+    },
+    {
+      "id": "14827cc3-a024-557e-9bd4-169eaee37049",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 6",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2834",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2835",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 6,
+      "source_id": "collection-62-episode-6",
+      "still_url": "https://play.niazitv.pk/images/episode_1712077876.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 6
+    },
+    {
+      "id": "7b30ba9a-0836-5e7a-84c8-fa2572367676",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 7",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2851",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2852",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 7,
+      "source_id": "collection-62-episode-7",
+      "still_url": "https://play.niazitv.pk/images/episode_1712686804.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 7
+    },
+    {
+      "id": "d065f868-c150-5858-b14c-6eef07954a95",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 7",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3651",
+          "created_at": "2026-10-01T01:43:42.87534+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 7,
+      "source_id": "collection-72-episode-7",
+      "still_url": null,
+      "created_at": "2026-10-01T01:43:20.84412+00:00",
+      "updated_at": "2026-10-01T01:43:20.84412+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6fe5ee34-7944-58d1-b606-7b72315f7268",
+      "collection_source_id": "collection-72",
+      "reported_episode_number": 7
+    },
+    {
+      "id": "0be443fa-8d25-5780-985e-6b45e3bf0942",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 8",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2891",
+          "created_at": "2026-10-02T05:19:16.019198+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2892",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 8,
+      "source_id": "collection-62-episode-8",
+      "still_url": "https://play.niazitv.pk/images/episode_1713896370.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 8
+    },
+    {
+      "id": "5cadc0d5-1552-5452-bc35-f92423bc6520",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 8",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3652",
+          "created_at": "2026-10-01T01:43:42.87534+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 8,
+      "source_id": "collection-72-episode-8",
+      "still_url": null,
+      "created_at": "2026-10-01T01:43:20.84412+00:00",
+      "updated_at": "2026-10-01T01:43:20.84412+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6fe5ee34-7944-58d1-b606-7b72315f7268",
+      "collection_source_id": "collection-72",
+      "reported_episode_number": 8
+    },
+    {
+      "id": "daddb6b7-6c55-510e-86e7-63896ef4e3db",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 9",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2908",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2909",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 9,
+      "source_id": "collection-62-episode-9",
+      "still_url": "https://play.niazitv.pk/images/episode_1714531504.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 9
+    },
+    {
+      "id": "f3748a01-9413-5554-8d19-300ab7cbbe12",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 10",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2925",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2926",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 10,
+      "source_id": "collection-62-episode-10",
+      "still_url": "https://play.niazitv.pk/images/episode_1715104956.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 10
+    },
+    {
+      "id": "51a2f0fc-8bec-56b7-959d-a607d0126393",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 11",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2943",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2944",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 11,
+      "source_id": "collection-62-episode-11",
+      "still_url": "https://play.niazitv.pk/images/episode_1715706201.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 11
+    },
+    {
+      "id": "2001e23d-48d5-510f-83de-e15bed08db61",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 12",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2969",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2970",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 12,
+      "source_id": "collection-62-episode-12",
+      "still_url": "https://play.niazitv.pk/images/episode_1716318060.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 12
+    },
+    {
+      "id": "afece5f5-b087-533a-81a7-9b780ea49a22",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 13",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-2985",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-2986",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 13,
+      "source_id": "collection-62-episode-13",
+      "still_url": "https://play.niazitv.pk/images/episode_1716918726.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 13
+    },
+    {
+      "id": "f1ed9223-544f-59e1-b71e-d36f1074cb06",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 14",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3001",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3002",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 14,
+      "source_id": "collection-62-episode-14",
+      "still_url": "https://play.niazitv.pk/images/episode_1717554505.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 14
+    },
+    {
+      "id": "8bec6015-77c9-58dd-b112-42db56bb6864",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 15",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3018",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3019",
+          "created_at": "2026-10-02T05:19:32.886459+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 15,
+      "source_id": "collection-62-episode-15",
+      "still_url": "https://play.niazitv.pk/images/episode_1718124343.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "collection_source_id": "collection-62",
+      "reported_episode_number": 15
+    },
+    {
+      "id": "06569e9f-f9ff-5688-9666-17c30d86d91d",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 50",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3884",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 50,
+      "source_id": "collection-76-episode-50",
+      "still_url": "https://image.tmdb.org/t/p/w780/ukrNxpf4kn0Fsvxg96zPy6sCM63.jpg",
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 50
+    },
+    {
+      "id": "f024a84b-56b2-5ac2-8817-d2ef1c3903c1",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 51",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3885",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 51,
+      "source_id": "collection-76-episode-51",
+      "still_url": "https://image.tmdb.org/t/p/w780/kaXu29Fd6BucRZUpv6USCBmpDYg.jpg",
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 51
+    },
+    {
+      "id": "72b930a3-87b0-5ea1-b9bf-baf1fcf37b1f",
+      "part": null,
+      "bolum": 52,
+      "label": "Episode 52 · Bolum 52",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3888",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 52,
+      "source_id": "collection-76-bolum-52",
+      "still_url": "https://image.tmdb.org/t/p/w780/AmAGkoVjJRl0LWU1kYycFVNc3Wx.jpg",
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 52
+    },
+    {
+      "id": "f2a45b02-ecdd-50fa-b065-7891fb06fe24",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 52",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3889",
+          "created_at": "2026-10-01T01:43:39.471395+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 52,
+      "source_id": "collection-76-episode-52",
+      "still_url": "https://image.tmdb.org/t/p/w780/AmAGkoVjJRl0LWU1kYycFVNc3Wx.jpg",
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 52
+    },
+    {
+      "id": "3412650e-6ac6-54f2-9d09-159d60683d5b",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 53",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3891",
+          "created_at": "2026-10-01T01:43:40.934977+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3892",
+          "created_at": "2026-10-01T01:43:40.934977+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 53,
+      "source_id": "collection-76-episode-53",
+      "still_url": "https://image.tmdb.org/t/p/w780/9KTzrGv794cZenRX74BtSkSIXwr.jpg",
+      "created_at": "2026-10-01T01:43:19.271935+00:00",
+      "updated_at": "2026-10-01T01:46:22.340911+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 53
+    },
+    {
+      "id": "87492a46-d79a-582a-9f08-a52564fa191a",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 54",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3894",
+          "created_at": "2026-10-01T01:43:40.934977+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3895",
+          "created_at": "2026-10-01T01:43:42.87534+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 54,
+      "source_id": "collection-76-episode-54",
+      "still_url": "https://image.tmdb.org/t/p/w780/fi4tx9ZQM3rTjjJCy6T9waFHTyy.jpg",
+      "created_at": "2026-10-01T01:43:20.84412+00:00",
+      "updated_at": "2026-10-01T01:43:20.84412+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 54
+    },
+    {
+      "id": "880afb36-eaf5-51bc-bd1d-2f715c666351",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 55",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3899",
+          "created_at": "2026-10-01T01:43:42.87534+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3900",
+          "created_at": "2026-10-01T01:43:42.87534+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 55,
+      "source_id": "collection-76-episode-55",
+      "still_url": "https://image.tmdb.org/t/p/w780/rcEgxNkoUttKQ2eb0Qj4RrOZWGf.jpg",
+      "created_at": "2026-10-01T01:43:20.84412+00:00",
+      "updated_at": "2026-10-01T01:43:20.84412+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 55
+    },
+    {
+      "id": "389802f6-1775-5997-b5c1-f972212921c4",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 56",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3902",
+          "created_at": "2026-10-01T01:43:42.87534+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3903",
+          "created_at": "2026-10-01T01:43:44.36278+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 56,
+      "source_id": "collection-76-episode-56",
+      "still_url": "https://image.tmdb.org/t/p/w780/nSWNkDBGOLTWkza33dGPV2t6gwa.jpg",
+      "created_at": "2026-10-01T01:43:22.542614+00:00",
+      "updated_at": "2026-10-01T01:43:22.542614+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 56
+    },
+    {
+      "id": "67e417b4-2591-52c2-a993-575bfc7940ba",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 57",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3905",
+          "created_at": "2026-10-01T01:43:44.36278+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3906",
+          "created_at": "2026-10-01T01:43:44.36278+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 57,
+      "source_id": "collection-76-episode-57",
+      "still_url": "https://image.tmdb.org/t/p/w780/u9xNpp4KaSfCoQQ03ymlIGeN8xd.jpg",
+      "created_at": "2026-10-01T01:43:22.542614+00:00",
+      "updated_at": "2026-10-01T01:43:22.542614+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 57
+    },
+    {
+      "id": "9a124c51-7686-57dc-a9c7-e3709df05d1d",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 58",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3910",
+          "created_at": "2026-10-01T01:43:44.36278+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3911",
+          "created_at": "2026-10-01T01:43:45.854181+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 58,
+      "source_id": "collection-76-episode-58",
+      "still_url": "https://image.tmdb.org/t/p/w780/cVPQUkFpuBpoRYJt3eiaVvAMzHj.jpg",
+      "created_at": "2026-10-01T01:43:22.542614+00:00",
+      "updated_at": "2026-10-01T01:43:22.542614+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 58
+    },
+    {
+      "id": "9f8d33c3-aeb2-551b-b90d-e5da066d2dff",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 59",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3916",
+          "created_at": "2026-10-01T01:43:45.854181+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3917",
+          "created_at": "2026-10-01T01:43:45.854181+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 59,
+      "source_id": "collection-76-episode-59",
+      "still_url": "https://image.tmdb.org/t/p/w780/7C4RXamWuwqJZsLpV0NUqdYHSDU.jpg",
+      "created_at": "2026-10-01T01:43:24.858027+00:00",
+      "updated_at": "2026-10-01T01:43:24.858027+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 59
+    },
+    {
+      "id": "9a1946dc-86ea-515a-ace3-81df6c76c62e",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 60",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3924",
+          "created_at": "2026-10-01T01:43:45.854181+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3925",
+          "created_at": "2026-10-01T01:43:47.357877+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 60,
+      "source_id": "collection-76-episode-60",
+      "still_url": "https://image.tmdb.org/t/p/w780/mkHoAp1snTiUyT8mNJmQGDq16pT.jpg",
+      "created_at": "2026-10-01T01:43:24.858027+00:00",
+      "updated_at": "2026-10-01T01:43:24.858027+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 60
+    },
+    {
+      "id": "4d275c80-9323-5bce-8d85-c16d8bd24a2c",
+      "part": null,
+      "bolum": 61,
+      "label": "Episode 61 · Bolum 61",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3930",
+          "created_at": "2026-10-01T01:43:47.357877+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 61,
+      "source_id": "collection-76-bolum-61",
+      "still_url": "https://image.tmdb.org/t/p/w780/csEXpWkRELpT48hA2ZsLFDej7T4.jpg",
+      "created_at": "2026-10-01T01:43:24.858027+00:00",
+      "updated_at": "2026-10-01T01:43:24.858027+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 61
+    },
+    {
+      "id": "9c0140a7-10d4-5aa7-a750-a939dfe807c5",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 61",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3929",
+          "created_at": "2026-10-01T01:43:47.357877+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 61,
+      "source_id": "collection-76-episode-61",
+      "still_url": "https://image.tmdb.org/t/p/w780/csEXpWkRELpT48hA2ZsLFDej7T4.jpg",
+      "created_at": "2026-10-01T01:43:24.858027+00:00",
+      "updated_at": "2026-10-01T01:43:24.858027+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 61
+    },
+    {
+      "id": "d30ca4b9-568b-525d-a143-fc78ba9e7f20",
+      "part": null,
+      "bolum": 62,
+      "label": "Episode 62 · Bolum 62",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3934",
+          "created_at": "2026-10-01T01:43:47.357877+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3935",
+          "created_at": "2026-10-01T01:43:47.357877+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 62,
+      "source_id": "collection-76-bolum-62",
+      "still_url": "https://image.tmdb.org/t/p/w780/c7kOTSd4gwR6HURBUmqEpVSOr5g.jpg",
+      "created_at": "2026-10-01T01:43:26.360341+00:00",
+      "updated_at": "2026-10-01T01:43:26.360341+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 62
+    },
+    {
+      "id": "4eed3d78-4b6d-5190-a19c-7d0c2f2b5cfd",
+      "part": null,
+      "bolum": 63,
+      "label": "Episode 63 · Bolum 63",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3939",
+          "created_at": "2026-10-01T01:43:48.858027+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3940",
+          "created_at": "2026-10-01T01:43:48.858027+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 63,
+      "source_id": "collection-76-bolum-63",
+      "still_url": "https://image.tmdb.org/t/p/w780/nx1Qpg0rYFqmvY3mYwaZ2mRoiEe.jpg",
+      "created_at": "2026-10-01T01:43:26.360341+00:00",
+      "updated_at": "2026-10-01T01:43:26.360341+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 63
+    },
+    {
+      "id": "995184a4-ddfb-5d29-96b4-5ffa950ad3a3",
+      "part": null,
+      "bolum": 64,
+      "label": "Episode 64 · Bolum 64",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "unavailable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3946",
+          "created_at": "2026-10-01T01:43:48.858027+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 64,
+      "source_id": "collection-76-bolum-64",
+      "still_url": "https://image.tmdb.org/t/p/w780/lGZCmabWTaWAvPzGoo5RDBINM3R.jpg",
+      "created_at": "2026-10-01T01:43:26.360341+00:00",
+      "updated_at": "2026-10-01T01:43:26.360341+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 64
+    },
+    {
+      "id": "f38bd26d-1d61-5472-90f3-118f8f9743bc",
+      "part": null,
+      "bolum": 65,
+      "label": "Episode 65 · Bolum 65",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3948",
+          "created_at": "2026-10-01T01:43:48.858027+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "unavailable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3949",
+          "created_at": "2026-10-01T01:43:50.205597+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 65,
+      "source_id": "collection-76-bolum-65",
+      "still_url": "https://image.tmdb.org/t/p/w780/pQDnszNkDoq5vSdUeRSlRtcjcyN.jpg",
+      "created_at": "2026-10-01T01:43:26.360341+00:00",
+      "updated_at": "2026-10-01T01:43:26.360341+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 65
+    },
+    {
+      "id": "2837e0d0-52d2-5e76-9d8f-d73d043df22f",
+      "part": null,
+      "bolum": 66,
+      "label": "Episode 66 · Bolum 66",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3951",
+          "created_at": "2026-10-01T01:43:50.205597+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3952",
+          "created_at": "2026-10-01T01:43:50.205597+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 66,
+      "source_id": "collection-76-bolum-66",
+      "still_url": "https://image.tmdb.org/t/p/w780/w1QmoFaIcF9lMuHOzjaE219LEAU.jpg",
+      "created_at": "2026-10-01T01:43:27.832339+00:00",
+      "updated_at": "2026-10-01T01:43:27.832339+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 66
+    },
+    {
+      "id": "e8560925-6d30-562b-a6e7-f78c60423503",
+      "part": null,
+      "bolum": 67,
+      "label": "Episode 67 · Bolum 67",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3956",
+          "created_at": "2026-10-01T01:43:50.205597+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3957",
+          "created_at": "2026-10-01T01:43:50.205597+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 67,
+      "source_id": "collection-76-bolum-67",
+      "still_url": "https://image.tmdb.org/t/p/w780/e2NnScLGvUnFdaGaLsFavBYlMcy.jpg",
+      "created_at": "2026-10-01T01:43:27.832339+00:00",
+      "updated_at": "2026-10-01T01:43:27.832339+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 67
+    },
+    {
+      "id": "6dc07d01-436a-520b-8af2-f8bf4756ebfb",
+      "part": null,
+      "bolum": 68,
+      "label": "Episode 68 · Bolum 68",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3961",
+          "created_at": "2026-10-01T01:43:50.205597+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3962",
+          "created_at": "2026-10-01T01:43:51.739453+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 68,
+      "source_id": "collection-76-bolum-68",
+      "still_url": "https://image.tmdb.org/t/p/w780/ewXkIhysvwYyq7CxV4nH4QlwMsu.jpg",
+      "created_at": "2026-10-01T01:43:27.832339+00:00",
+      "updated_at": "2026-10-01T01:43:27.832339+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 68
+    },
+    {
+      "id": "c62a5ddd-b176-5a39-a396-6784c305f8a0",
+      "part": null,
+      "bolum": 69,
+      "label": "Episode 69 · Bolum 69",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3967",
+          "created_at": "2026-10-01T01:43:51.739453+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "unavailable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3968",
+          "created_at": "2026-10-01T01:43:51.739453+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 69,
+      "source_id": "collection-76-bolum-69",
+      "still_url": "https://image.tmdb.org/t/p/w780/1ugDQvayeQWt9jugNFSc3SqQvQJ.jpg",
+      "created_at": "2026-10-01T01:43:27.832339+00:00",
+      "updated_at": "2026-10-01T01:43:27.832339+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 69
+    },
+    {
+      "id": "c766f2fe-e5b7-5edd-871d-d06abc5121dc",
+      "part": null,
+      "bolum": 70,
+      "label": "Episode 70 · Bolum 70",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3974",
+          "created_at": "2026-10-01T01:43:51.739453+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3975",
+          "created_at": "2026-10-01T01:43:51.739453+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 70,
+      "source_id": "collection-76-bolum-70",
+      "still_url": "https://image.tmdb.org/t/p/w780/nklVHXXFeHdISoNwMeURaXfZ36K.jpg",
+      "created_at": "2026-10-01T01:43:29.284626+00:00",
+      "updated_at": "2026-10-01T01:43:29.284626+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 70
+    },
+    {
+      "id": "13041497-a0e4-5364-8c97-011d293bb35b",
+      "part": null,
+      "bolum": 71,
+      "label": "Episode 71 · Bolum 71",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3987",
+          "created_at": "2026-10-01T01:43:51.739453+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3988",
+          "created_at": "2026-10-01T01:43:53.282219+00:00",
+          "duration_seconds": null,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 71,
+      "source_id": "collection-76-bolum-71",
+      "still_url": "https://image.tmdb.org/t/p/w780/gYq4OfITdgTc1Rrlxg1IzzpTsTL.jpg",
+      "created_at": "2026-10-01T01:43:29.284626+00:00",
+      "updated_at": "2026-10-01T01:43:29.284626+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 71
+    },
+    {
+      "id": "729ee75a-e083-5473-a91f-0b6e4d8cea56",
+      "part": null,
+      "bolum": 72,
+      "label": "Episode 72 · Bolum 72",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3992",
+          "created_at": "2026-10-01T01:43:53.282219+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3993",
+          "created_at": "2026-10-01T01:43:53.282219+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 72,
+      "source_id": "collection-76-bolum-72",
+      "still_url": "https://image.tmdb.org/t/p/w780/1l95K9I8AaHi1HLgWUAIOEXk0vj.jpg",
+      "created_at": "2026-10-01T01:43:29.284626+00:00",
+      "updated_at": "2026-10-01T01:43:29.284626+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 72
+    },
+    {
+      "id": "bf8cf619-df34-5726-a5b2-7eccbf9ebcb2",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 73",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-3998",
+          "created_at": "2026-10-01T01:43:53.282219+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-3999",
+          "created_at": "2026-10-01T01:43:53.282219+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 73,
+      "source_id": "collection-76-episode-73",
+      "still_url": "https://image.tmdb.org/t/p/w780/pVOqUuLPsckK3ODn8m982b5Anpc.jpg",
+      "created_at": "2026-10-01T01:43:29.284626+00:00",
+      "updated_at": "2026-10-01T01:43:29.284626+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 73
+    },
+    {
+      "id": "2f4a7aad-823a-50c7-a3c5-a4d566f5f44a",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 74",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4003",
+          "created_at": "2026-10-01T01:43:53.282219+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4004",
+          "created_at": "2026-10-01T01:43:53.282219+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 74,
+      "source_id": "collection-76-episode-74",
+      "still_url": "https://image.tmdb.org/t/p/w780/bEUAEhqwcIZEmlNiEbPjEaOXpaR.jpg",
+      "created_at": "2026-10-01T01:43:29.284626+00:00",
+      "updated_at": "2026-10-01T01:43:29.284626+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 74
+    },
+    {
+      "id": "88cffa47-281f-5245-ac34-3c05748bfb34",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 75",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4008",
+          "created_at": "2026-10-01T01:43:53.282219+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4009",
+          "created_at": "2026-10-01T01:43:53.282219+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 75,
+      "source_id": "collection-76-episode-75",
+      "still_url": "https://image.tmdb.org/t/p/w780/76J2gN5TdBZQ0ZSm1tz3WsDvi2e.jpg",
+      "created_at": "2026-10-01T01:43:29.284626+00:00",
+      "updated_at": "2026-10-01T01:43:29.284626+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 75
+    },
+    {
+      "id": "a5b5717a-ad49-5250-9ee6-02e9a995e666",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 76",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4013",
+          "created_at": "2026-10-01T01:43:55.895599+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4014",
+          "created_at": "2026-10-01T01:43:55.895599+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 76,
+      "source_id": "collection-76-episode-76",
+      "still_url": "https://image.tmdb.org/t/p/w780/yHyFsaRfuWQmVh4HQid9IUbtl6R.jpg",
+      "created_at": "2026-10-01T01:43:30.92143+00:00",
+      "updated_at": "2026-10-01T01:43:30.92143+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 76
+    },
+    {
+      "id": "f2c1bfbe-64f2-51b5-a3b5-ce4cac4496b2",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 77",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4018",
+          "created_at": "2026-10-01T01:43:55.895599+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4019",
+          "created_at": "2026-10-01T01:43:55.895599+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 77,
+      "source_id": "collection-76-episode-77",
+      "still_url": "https://image.tmdb.org/t/p/w780/edCoMAREcRoz2fza31mPwmvOS4I.jpg",
+      "created_at": "2026-10-01T01:43:30.92143+00:00",
+      "updated_at": "2026-10-01T01:43:30.92143+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 77
+    },
+    {
+      "id": "5fb205fd-d26e-5a8a-b59e-de67bb9f50d7",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 78",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4020",
+          "created_at": "2026-10-01T01:43:55.895599+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4021",
+          "created_at": "2026-10-01T01:43:55.895599+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 78,
+      "source_id": "collection-76-episode-78",
+      "still_url": "https://image.tmdb.org/t/p/w780/pk4h8umxP8DgxcPbf4jI7bjGpR0.jpg",
+      "created_at": "2026-10-01T01:43:30.92143+00:00",
+      "updated_at": "2026-10-01T01:43:30.92143+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 78
+    },
+    {
+      "id": "64768f34-4730-5db4-9034-5dd04ba4fa26",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 79",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4023",
+          "created_at": "2026-10-01T01:43:55.895599+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4024",
+          "created_at": "2026-10-01T01:43:55.895599+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4029",
+          "created_at": "2026-10-01T01:43:57.253126+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 79,
+      "source_id": "collection-76-episode-79",
+      "still_url": "https://image.tmdb.org/t/p/w780/xzEdJLDgoSaKYo4Kekqkb0J0Z8H.jpg",
+      "created_at": "2026-10-01T01:43:30.92143+00:00",
+      "updated_at": "2026-10-01T01:43:30.92143+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 79
+    },
+    {
+      "id": "7ebe6627-5972-57c8-a97e-a2ab0a051b32",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 80",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4028",
+          "created_at": "2026-10-01T01:43:55.895599+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 80,
+      "source_id": "collection-76-episode-80",
+      "still_url": "https://image.tmdb.org/t/p/w780/26WgXIF8LT0GC83l0DIdsTjCKAc.jpg",
+      "created_at": "2026-10-01T01:43:30.92143+00:00",
+      "updated_at": "2026-10-01T01:43:30.92143+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 80
+    },
+    {
+      "id": "fdccdeb6-188e-5f03-9373-08f4d9f999b4",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 81",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4033",
+          "created_at": "2026-10-01T01:43:57.253126+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4034",
+          "created_at": "2026-10-01T01:43:57.253126+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 81,
+      "source_id": "collection-76-episode-81",
+      "still_url": "https://image.tmdb.org/t/p/w780/fNZLZlzXCoUB4zTH66V19TC4taF.jpg",
+      "created_at": "2026-10-01T01:43:30.92143+00:00",
+      "updated_at": "2026-10-01T01:43:30.92143+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 81
+    },
+    {
+      "id": "2853ed76-cb85-54ce-818d-c126e8997112",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 82",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4036",
+          "created_at": "2026-10-01T01:43:57.253126+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4037",
+          "created_at": "2026-10-01T01:43:57.253126+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 82,
+      "source_id": "collection-76-episode-82",
+      "still_url": "https://image.tmdb.org/t/p/w780/bJ9G1Ee4YkeWgzPXPbKDyzGfiSG.jpg",
+      "created_at": "2026-10-01T01:43:30.92143+00:00",
+      "updated_at": "2026-10-01T01:43:30.92143+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 82
+    },
+    {
+      "id": "65605bd5-d4c3-5077-abce-a9d0f4bc6ae1",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 83",
+      "status": "published",
+      "variants": [
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "Urdu"
+          ],
+          "source_id": "video-4042",
+          "created_at": "2026-10-01T01:43:57.253126+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        },
+        {
+          "streams": [
+            {
+              "active": true,
+              "format": "hls",
+              "verification": "reachable"
+            }
+          ],
+          "languages": [
+            "English"
+          ],
+          "source_id": "video-4043",
+          "created_at": "2026-10-01T01:43:57.253126+00:00",
+          "duration_seconds": 2700,
+          "publication_state": "published",
+          "thumbnail_present": true
+        }
+      ],
+      "order_key": 83,
+      "source_id": "collection-76-episode-83",
+      "still_url": "https://image.tmdb.org/t/p/w780/ktVsUxaTIz9VdvuWNeKWWOSPgZJ.jpg",
+      "created_at": "2026-10-01T01:43:30.92143+00:00",
+      "updated_at": "2026-10-01T01:43:30.92143+00:00",
+      "content_type": "episode",
+      "still_source": "tmdb",
+      "collection_id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "collection_source_id": "collection-76",
+      "reported_episode_number": 83
+    }
+  ],
+  "editorial": null,
+  "collections": [
+    {
+      "id": "adf3a6df-177b-5f9f-8aa1-2353e72605a4",
+      "slug": "collection-68",
+      "label": "Season 2 (Subtitled)",
+      "status": "published",
+      "drama_id": "1c5a90f7-cced-5b88-af7e-b8ad27e7e691",
+      "languages": [
+        "Urdu",
+        "English"
+      ],
+      "source_id": "collection-68",
+      "created_at": "2026-09-30T16:07:46.948339+00:00",
+      "poster_url": "https://image.tmdb.org/t/p/w780/lCiVWEXvhjLklWsa88yYjsjyF1u.jpg",
+      "sort_order": -100,
+      "updated_at": "2026-09-30T16:07:46.948339+00:00",
+      "version_label": "Subtitled (Urdu & English)",
+      "collection_type": "subtitled",
+      "reported_seasons": [
+        2
+      ]
+    },
+    {
+      "id": "f3bafe15-25c7-5cd9-8beb-ebb74633e62b",
+      "slug": "collection-88",
+      "label": "Mehmed Fetihler Sultani Season 4 Urdu Dubbed",
+      "status": "published",
+      "drama_id": "1c5a90f7-cced-5b88-af7e-b8ad27e7e691",
+      "languages": [
+        "Urdu"
+      ],
+      "source_id": "collection-88",
+      "created_at": "2026-09-30T16:07:46.948339+00:00",
+      "poster_url": "https://image.tmdb.org/t/p/w780/bV2llX6JqcPQtTpvTYWU1IdSUNd.jpg",
+      "sort_order": 0,
+      "updated_at": "2026-09-30T16:07:46.948339+00:00",
+      "version_label": "Urdu Dubbed Edition",
+      "collection_type": "dubbed",
+      "reported_seasons": [
+        4
+      ]
+    },
+    {
+      "id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "slug": "collection-62",
+      "label": "Season 1 — Urdu & English Subtitles",
+      "status": "published",
+      "drama_id": "1c5a90f7-cced-5b88-af7e-b8ad27e7e691",
+      "languages": [
+        "Urdu",
+        "English"
+      ],
+      "source_id": "collection-62",
+      "created_at": "2026-10-02T05:16:50.632771+00:00",
+      "poster_url": "https://image.tmdb.org/t/p/w780/7NVE1GLgOh5VxRiu0EcwEAzRgYW.jpg",
+      "sort_order": 0,
+      "updated_at": "2026-10-02T05:16:50.632771+00:00",
+      "version_label": "Urdu & English Subtitles",
+      "collection_type": "subtitled",
+      "reported_seasons": [
+        1
+      ]
+    },
+    {
+      "id": "2a307c9c-0985-50f0-9291-e4d04e4a3f94",
+      "slug": "collection-76",
+      "label": "Mehmed: Fetihler Sultani Season 3 - Urdu & English Subtitles",
+      "status": "published",
+      "drama_id": "1c5a90f7-cced-5b88-af7e-b8ad27e7e691",
+      "languages": [
+        "Urdu",
+        "English"
+      ],
+      "source_id": "collection-76",
+      "created_at": "2026-09-30T16:07:46.948339+00:00",
+      "poster_url": "https://image.tmdb.org/t/p/w780/6pwPvDCXO71UKA2tVtG8rYPwyOy.jpg",
+      "sort_order": 0,
+      "updated_at": "2026-09-30T16:07:46.948339+00:00",
+      "version_label": "Urdu & English Subtitles",
+      "collection_type": "subtitled",
+      "reported_seasons": [
+        3
+      ]
+    },
+    {
+      "id": "6fe5ee34-7944-58d1-b606-7b72315f7268",
+      "slug": "collection-72",
+      "label": "Mehmed Fetihler Sultani Season 1 Urdu Dubbed",
+      "status": "published",
+      "drama_id": "1c5a90f7-cced-5b88-af7e-b8ad27e7e691",
+      "languages": [
+        "Urdu"
+      ],
+      "source_id": "collection-72",
+      "created_at": "2026-09-30T16:07:46.948339+00:00",
+      "poster_url": "https://image.tmdb.org/t/p/w780/7NVE1GLgOh5VxRiu0EcwEAzRgYW.jpg",
+      "sort_order": 0,
+      "updated_at": "2026-09-30T16:07:46.948339+00:00",
+      "version_label": "Urdu Dubbed Edition",
+      "collection_type": "dubbed",
+      "reported_seasons": [
+        1
+      ]
+    },
+    {
+      "id": "181838a5-5aa9-5378-860d-dcd229c5cc3e",
+      "slug": "collection-82",
+      "label": "Mehmed: Fetihler Sultani Season 4 - Urdu & English Subtitles",
+      "status": "published",
+      "drama_id": "1c5a90f7-cced-5b88-af7e-b8ad27e7e691",
+      "languages": [
+        "Urdu",
+        "English"
+      ],
+      "source_id": "collection-82",
+      "created_at": "2026-09-30T16:07:46.948339+00:00",
+      "poster_url": "https://image.tmdb.org/t/p/w780/bV2llX6JqcPQtTpvTYWU1IdSUNd.jpg",
+      "sort_order": 0,
+      "updated_at": "2026-09-30T16:07:46.948339+00:00",
+      "version_label": "Urdu & English Subtitles",
+      "collection_type": "subtitled",
+      "reported_seasons": [
+        4
+      ]
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { PublishedEditorialInput } from '@/lib/seo/editorial-validation';
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { verifyAdminAccess, createAdminClient } from '@/lib/auth/admin-auth';
@@ -20,73 +21,42 @@ export async function POST(req: NextRequest) {
     const now = new Date().toISOString();
 
     if (action === 'update_metadata') {
-      if (targetType === 'episode_group') {
-        const { label, short_description } = payload || {};
-        if (!label) return NextResponse.json({ error: 'Missing label in payload' }, { status: 400 });
-
-        const { data: group } = await client
-          .from('episode_groups')
-          .select('id')
-          .eq('source_id', targetId)
-          .single();
-
-        if (!group) return NextResponse.json({ error: `Episode group ${targetId} not found` }, { status: 404 });
-
-        const { data: updated, error } = await (client as any)
-          .from('published_editorial')
-          .upsert(
-            {
-              group_id: (group as any).id,
-              approved_display_title: label,
-              short_description: short_description || '',
-              updated_at: now,
-            },
-            { onConflict: 'group_id' }
-          )
-          .select('id, group_id, approved_display_title, short_description, updated_at');
-
-        if (error) {
-          return NextResponse.json({ error: error.message }, { status: 500 });
-        }
-
-        revalidatePath('/', 'layout');
-        return NextResponse.json({ success: true, updated, is_editorial_override: true });
+      const targets: Record<string, { table: string; key: string }> = {
+        episode_group: { table: 'episode_groups', key: 'group_id' },
+        drama: { table: 'dramas', key: 'drama_id' },
+        collection: { table: 'collections', key: 'collection_id' },
+      };
+      const target = targets[targetType];
+      if (!target) return NextResponse.json({ error: 'Invalid editorial target type' }, { status: 400 });
+      const parsed = PublishedEditorialInput.safeParse(payload || {});
+      if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+      const displayTitle = payload?.display_name || payload?.label;
+      if (typeof displayTitle !== 'string' || !displayTitle.trim() || displayTitle.length > 300) {
+        return NextResponse.json({ error: 'A display title of 1–300 characters is required' }, { status: 400 });
       }
-
-      if (targetType === 'drama') {
-        const { display_name, short_overview } = payload || {};
-        if (!display_name) return NextResponse.json({ error: 'Missing display_name in payload' }, { status: 400 });
-
-        const { data: drama } = await client
-          .from('dramas')
-          .select('id')
-          .eq('source_id', targetId)
-          .single();
-
-        if (!drama) return NextResponse.json({ error: `Drama ${targetId} not found` }, { status: 404 });
-
-        const { data: updated, error } = await (client as any)
-          .from('published_editorial')
-          .upsert(
-            {
-              drama_id: (drama as any).id,
-              approved_display_title: display_name,
-              short_description: short_overview || '',
-              updated_at: now,
-            },
-            { onConflict: 'drama_id' }
-          )
-          .select('id, drama_id, approved_display_title, short_description, updated_at');
-
-        if (error) {
-          return NextResponse.json({ error: error.message }, { status: 500 });
-        }
-
-        revalidatePath(`/drama/${targetId}`);
-        revalidatePath('/browse');
-        revalidatePath('/');
-        return NextResponse.json({ success: true, updated, is_editorial_override: true });
+      const description = payload?.short_description ?? payload?.short_overview;
+      if (description !== undefined && (typeof description !== 'string' || description.length > 10000)) {
+        return NextResponse.json({ error: 'Invalid short description' }, { status: 400 });
       }
+      const { data: record, error: targetError } = await client.from(target.table).select('id').eq('source_id', targetId).single();
+      if (targetError || !record) return NextResponse.json({ error: 'Editorial target not found' }, { status: 404 });
+      const { data: existing, error: existingError } = await client.from('published_editorial').select('id, short_description').eq(target.key, record.id).eq('locale', 'en').maybeSingle();
+      if (existingError) return NextResponse.json({ error: existingError.message }, { status: 500 });
+      const fields = {
+        [target.key]: record.id, locale: 'en', approved_display_title: displayTitle.trim(),
+        short_description: description === undefined ? existing?.short_description || '' : description.trim(),
+        ...parsed.data, updated_at: now,
+      };
+      // Existing target indexes are partial; PostgREST onConflict cannot infer them.
+      const mutation = existing
+        ? client.from('published_editorial').update(fields).eq('id', existing.id)
+        : client.from('published_editorial').insert({ ...fields, published_at: now });
+      const { data: updated, error } = await mutation.select().single();
+      if (error) return NextResponse.json({ error: error.message }, { status: error.code === '23505' ? 409 : 500 });
+      revalidatePath('/', 'layout');
+      revalidatePath('/sitemap.xml');
+      revalidatePath('/video-sitemap.xml');
+      return NextResponse.json({ success: true, updated, is_editorial_override: true });
     }
 
     if (action === 'set_publication_status') {
@@ -113,6 +83,8 @@ export async function POST(req: NextRequest) {
         }
 
         revalidatePath('/', 'layout');
+        revalidatePath('/sitemap.xml');
+        revalidatePath('/video-sitemap.xml');
         return NextResponse.json({ success: true, updated: group });
       }
 

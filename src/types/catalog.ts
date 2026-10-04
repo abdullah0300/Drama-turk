@@ -1,6 +1,9 @@
 export type ContentType = 'episode' | 'behind_the_scenes' | 'trailer' | 'unavailable_record';
 
 export interface Drama {
+  status?: string;
+  editorial?: PublishedEditorial;
+  updated_at?: string;
   id: string;
   name: string;
   source_names: string[];
@@ -19,6 +22,8 @@ export interface Drama {
 }
 
 export interface CatalogCollection {
+  editorial?: PublishedEditorial;
+  updated_at?: string;
   id: string;
   source_catalog_id: string;
   drama_id: string;
@@ -36,6 +41,8 @@ export interface CatalogCollection {
 }
 
 export interface EpisodeGroup {
+  editorial?: PublishedEditorial;
+  updated_at?: string;
   id: string;
   collection_id: string;
   drama_id: string;
@@ -87,6 +94,16 @@ export interface VideoRecord {
   playback_verified?: boolean;
   organization_review_flags?: string[];
   quality_flags?: string[];
+}
+
+export interface PublishedEditorial {
+  title: string;
+  description: string;
+  seo_title?: string;
+  seo_description?: string;
+  sections: Array<{ heading: string; content: string; is_spoiler?: boolean; sources?: Array<{ name: string; url: string }> }>;
+  published_at?: string;
+  updated_at?: string;
 }
 
 export interface OrganizationReviewRecord {

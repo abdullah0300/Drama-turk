@@ -184,7 +184,8 @@ export interface Database {
           languages: string[] | null;
           version: string;
           publication_state: 'draft' | 'preview' | 'published' | 'hidden' | 'archived';
-          duration_seconds: number | null;
+          source_uploaded_at: string | null;
+            duration_seconds: number | null;
           thumbnail_url: string | null;
           created_at: string;
           updated_at: string;
@@ -199,7 +200,8 @@ export interface Database {
           languages?: string[] | null;
           version?: string;
           publication_state?: 'draft' | 'preview' | 'published' | 'hidden' | 'archived';
-          duration_seconds?: number | null;
+          source_uploaded_at?: string | null;
+            duration_seconds?: number | null;
           thumbnail_url?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -214,7 +216,8 @@ export interface Database {
           languages?: string[] | null;
           version?: string;
           publication_state?: 'draft' | 'preview' | 'published' | 'hidden' | 'archived';
-          duration_seconds?: number | null;
+          source_uploaded_at?: string | null;
+            duration_seconds?: number | null;
           thumbnail_url?: string | null;
           created_at?: string;
           updated_at?: string;

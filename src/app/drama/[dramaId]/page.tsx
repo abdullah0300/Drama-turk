@@ -1,3 +1,6 @@
+import { EditorialSections } from '@/components/seo/EditorialSections';
+import { ViewingTable } from '@/components/seo/ViewingTable';
+import { dramaSeo, isEligibleEpisode, pageMetadata, serializeJsonLd, breadcrumbSchema } from '@/lib/seo/catalog-seo';
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -20,18 +23,8 @@ export async function generateMetadata({ params }: DramaPageProps): Promise<Meta
   const drama = await supabaseCatalog.getDrama(params.dramaId);
   if (!drama) return { title: 'Drama Not Found' };
 
-  return {
-    title: drama.name,
-    description: drama.synopsis || `Explore catalog records and verified episode collections for ${drama.name}.`,
-    alternates: {
-      canonical: `${siteConfig.domain}/drama/${drama.id}`,
-    },
-    openGraph: {
-      title: drama.name,
-      description: drama.synopsis || `Explore catalog records and verified episode collections for ${drama.name}.`,
-      images: drama.poster_url ? [{ url: drama.poster_url }] : [],
-    },
-  };
+  const seo = dramaSeo(drama);
+  return pageMetadata('/drama/' + drama.id, seo.title, seo.description, drama.status === 'published', drama.poster_url);
 }
 
 export const dynamic = 'force-dynamic';
@@ -42,6 +35,11 @@ export default async function DramaPage({ params }: DramaPageProps) {
   if (!loaded) notFound();
   const { drama, seasons } = loaded;
   const collections = seasons.flatMap((s) => s.editions);
+  const eligibleCounts = new Map<string, number>();
+  await Promise.all(collections.map(async c => {
+    const data = await loadEditionEpisodes(c.id);
+    eligibleCounts.set(c.id, data.groups.filter(g => isEligibleEpisode(drama, c, g, data.videosByGroup.get(g.id) || [])).length);
+  }));
   const playable = isDramaPlayable(drama) || collections.some(isReleasePublished);
 
   // "Start watching" opens the first episode of the first season
@@ -49,18 +47,18 @@ export default async function DramaPage({ params }: DramaPageProps) {
   const firstEdition = firstSeason?.editions[0];
   let startHref: string | undefined;
   if (playable && firstSeason && firstEdition) {
-    const { groups, slugs } = await loadEditionEpisodes(firstEdition.id);
-    if (groups[0]) startHref = episodeHref(drama.id, firstSeason, firstEdition, slugs.get(groups[0].id)!);
+    const data = await loadEditionEpisodes(firstEdition.id);
+    const first = data.groups.find(g => isEligibleEpisode(drama, firstEdition, g, data.videosByGroup.get(g.id) || []));
+    if (first) startHref = episodeHref(drama.id, firstSeason, firstEdition, data.slugs.get(first.id)!);
   }
 
   // Episode totals per version (subtitled and dubbed releases are numbered differently)
   const totalsByEdition = new Map<string, number>();
   collections.forEach((c) => {
     const name = editionName(c);
-    totalsByEdition.set(name, (totalsByEdition.get(name) ?? 0) + (c.episode_group_ids?.length ?? 0));
+    totalsByEdition.set(name, (totalsByEdition.get(name) ?? 0) + (eligibleCounts.get(c.id) ?? 0));
   });
   const editionNames = Array.from(totalsByEdition.keys());
-  const totalEpisodes = Math.max(0, ...Array.from(totalsByEdition.values()));
 
   // Related dramas
   const allDramas = await supabaseCatalog.getAllDramas();
@@ -71,10 +69,11 @@ export default async function DramaPage({ params }: DramaPageProps) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'TVSeries',
+    '@id': `${siteConfig.domain}/drama/${drama.id}#series`,
+    url: `${siteConfig.domain}/drama/${drama.id}`,
     name: drama.name,
     description: drama.synopsis,
     numberOfSeasons: seasons.length,
-    numberOfEpisodes: totalEpisodes,
     genre: drama.genres,
     image: drama.poster_url,
   };
@@ -83,7 +82,7 @@ export default async function DramaPage({ params }: DramaPageProps) {
 
   return (
     <div className="series">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd({ '@context': 'https://schema.org', '@graph': [jsonLd, breadcrumbSchema([{ name: 'Home', path: '/' }, { name: drama.name, path: '/drama/' + drama.id }])] }) }} />
 
       {/* Hero: series identity */}
       <header className="dw-hero">
@@ -134,10 +133,10 @@ export default async function DramaPage({ params }: DramaPageProps) {
               <Link key={s.key} href={seasonPath(drama.id, s)} className="sn">
                 {poster ? <img src={poster} alt={`${drama.name} ${s.label}`} loading="lazy" /> : <span className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
                 <span className="shade" />
-                <span className={`badge${i === seasons.length - 1 ? '' : ' dark'}`}>{i === seasons.length - 1 ? 'Latest' : 'Complete'}</span>
+                <span className={`badge${i === seasons.length - 1 ? '' : ' dark'}`}>{i === seasons.length - 1 ? 'Latest' : 'Available'}</span>
                 <span className="sn-n"><small>S</small>{s.key.includes('-') ? s.key.replace('-', '–') : s.number}</span>
                 <span className="sn-i">
-                  {pref.episode_group_ids?.length ?? 0} episodes
+                  {eligibleCounts.get(pref.id) ?? 0} available episodes
                   <span className="sn-ed">{s.editions.map(editionName).join(' · ')}</span>
                 </span>
               </Link>
@@ -146,6 +145,10 @@ export default async function DramaPage({ params }: DramaPageProps) {
         </div>
       </section>
 
+      {drama.id === 'mehmed-fetihler-sultani' && <ViewingTable heading="Choose a season and viewing edition"
+        rows={seasons.flatMap(s => s.editions.map(e => ({ label: `${s.label} — ${editionName(e)}`,
+          href: seasonPath(drama.id, s, e), detail: `${eligibleCounts.get(e.id) ?? 0} available episode pages`,
+          availability: e.version === 'dubbed' ? 'Urdu audio' : 'Original audio; subtitle choices vary by episode' })))} />}
       {/* Details */}
       <section className="dw-sec" id="details">
         <h3>Details</h3>
@@ -165,6 +168,7 @@ export default async function DramaPage({ params }: DramaPageProps) {
         )}
       </section>
 
+      <EditorialSections sections={drama.editorial?.sections || []} />
       {/* Related Dramas */}
       {relatedDramas.length > 0 && (
         <section className="dw-sec" id="more">

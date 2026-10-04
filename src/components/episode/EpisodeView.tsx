@@ -1,20 +1,14 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { notFound, permanentRedirect, redirect } from 'next/navigation';
-import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
-import { catalogRepository } from '@/lib/repository/catalog-repository';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { WatchClient } from './WatchClient';
 import { siteConfig } from '@/config/site';
-import { isReleasePublished, seasonLabel } from '@/types/catalog';
 import { findEdition, findSeason, loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
 import { isDefaultEdition, seasonPath } from '@/lib/routes';
+import { canonicalGroupId, episodeLabel, episodeSeo, episodeNumbers, languageLabel, isEligibleEpisode, isPlayableVideo,
+  pageMetadata, serializeJsonLd, videoSchema, breadcrumbSchema } from '@/lib/seo/catalog-seo';
 
-export interface EpisodeRouteParams {
-  dramaId: string;
-  season: string;
-  episode: string;
-}
-
+export interface EpisodeRouteParams { dramaId: string; season: string; episode: string }
 async function resolve(params: EpisodeRouteParams, segment?: string) {
   const loaded = await loadDrama(params.dramaId);
   if (!loaded) return null;
@@ -22,102 +16,73 @@ async function resolve(params: EpisodeRouteParams, segment?: string) {
   const edition = season ? findEdition(season, segment) : undefined;
   if (!season || !edition) return null;
   const episodes = await loadEditionEpisodes(edition.id);
-  const index = episodes.groups.findIndex((g) => episodes.slugs.get(g.id) === params.episode);
-  if (index === -1) return null;
-  return { ...loaded, season, edition, episodes, index, group: episodes.groups[index] };
+  const requestedId = Array.from(episodes.slugs).find(([, slug]) => slug === params.episode)?.[0];
+  if (!requestedId) return null;
+  const group = episodes.groups.find(g => g.id === canonicalGroupId(requestedId));
+  if (!group) return null;
+  const videos = (episodes.videosByGroup.get(group.id) || []).filter(isPlayableVideo);
+  return { ...loaded, season, edition, episodes, group, requestedId, videos };
 }
-
 export async function episodeMetadata(params: EpisodeRouteParams, segment?: string): Promise<Metadata> {
   const r = await resolve(params, segment);
-  if (!r) return { title: 'Episode Not Found' };
-  const title = `${r.drama.name} ${seasonLabel(r.edition)} ${r.group.display_label}`;
-  const video = r.episodes.videosByGroup.get(r.group.id)?.[0];
-  const url = episodeHref(r.drama.id, r.season, r.edition, r.episodes.slugs.get(r.group.id)!);
-  return {
-    title,
-    description: video?.title || `Watch ${title} ad-free.`,
-    alternates: { canonical: `${siteConfig.domain}${url}` },
-    // Native HLS (Safari) and the XHR fallback use the page policy; see CustomVideoPlayer.
-    referrer: 'no-referrer',
-    openGraph: {
-      title,
-      images: video?.thumbnail_urls?.[0] ? [{ url: video.thumbnail_urls[0] }] : [],
-    },
-  };
+  if (!r) return { title: 'Episode Not Found', robots: { index: false, follow: false } };
+  const seo = episodeSeo(r.drama, r.edition, r.group, r.videos);
+  const path = episodeHref(r.drama.id, r.season, r.edition, r.episodes.slugs.get(r.group.id)!);
+  return { ...pageMetadata(path, seo.title, seo.description,
+    isEligibleEpisode(r.drama, r.edition, r.group, r.videos), r.videos[0]?.thumbnail_urls[0]), referrer: 'no-referrer' };
 }
-
-/** Episode (watch) page addressed by drama / season / [urdu-dubbed] / episode slug. */
 export async function EpisodeView({ params, segment }: { params: EpisodeRouteParams; segment?: string }) {
   const r = await resolve(params, segment);
   if (!r) notFound();
-  const { drama, season, edition, episodes, index, group } = r;
+  const { drama, season, edition, episodes, group, requestedId, videos } = r;
+  const path = episodeHref(drama.id, season, edition, episodes.slugs.get(group.id)!);
+  if (requestedId !== group.id || (segment && isDefaultEdition(season, edition))) permanentRedirect(path);
   const seasonUrl = seasonPath(drama.id, season, edition);
-  // Episodes of a dubbed-only season live under the plain season URL
-  if (segment && isDefaultEdition(season, edition)) {
-    permanentRedirect(episodeHref(drama.id, season, edition, episodes.slugs.get(group.id)!));
+  if (!isEligibleEpisode(drama, edition, group, videos)) {
+    return <section className="dw-sec"><h1>{drama.name} — {episodeLabel(edition, group)}</h1>
+      <p>This episode is currently unavailable or its numbering is under review.</p>
+      <a href={seasonUrl}>Browse available episodes</a></section>;
   }
-
-  // Publication and playability enforcement: both the release and the episode must be published
-  const isPlayable =
-    isReleasePublished(edition) &&
-    (group.status === 'published' || group.status === undefined);
-  if (!isPlayable) redirect(seasonUrl);
-
-  const allRenditions = await supabaseCatalog.getVideosForGroup(group.id);
-  // Quarantine records with missing or zero streams
-  if (allRenditions.length === 0 || !allRenditions.some((v) => v.stream_present)) notFound();
-  const initialVideo = allRenditions.find((v) => v.stream_present) ?? allRenditions[0];
-
+  const initialVideo = videos[0];
+  const eligible = episodes.groups.filter(g => isEligibleEpisode(drama, edition, g, episodes.videosByGroup.get(g.id) || []));
+  const index = eligible.findIndex(g => g.id === group.id);
+  const prevGroup = eligible[index - 1];
+  const nextGroup = eligible[index + 1];
   const hrefOf = (id: string) => episodeHref(drama.id, season, edition, episodes.slugs.get(id)!);
-  const prevGroup = index > 0 ? episodes.groups[index - 1] : undefined;
-  const nextGroup = index < episodes.groups.length - 1 ? episodes.groups[index + 1] : undefined;
-
-  const sidebarEpisodes = episodes.groups.map((g) => ({
-    id: g.id,
-    href: hrefOf(g.id),
-    display_label: g.display_label,
-    bolum: g.bolum,
-    thumbnailUrl: episodes.videosByGroup.get(g.id)?.find((v) => v.thumbnail_urls?.[0])?.thumbnail_urls[0],
+  const sidebarEpisodes = eligible.map(g => ({ id: g.id, href: hrefOf(g.id), display_label: g.display_label,
+    bolum: g.bolum, thumbnailUrl: episodes.videosByGroup.get(g.id)?.find(isPlayableVideo)?.thumbnail_urls[0] }));
+  const seo = episodeSeo(drama, edition, group, videos);
+  const matchingEditions = await Promise.all(season.editions.filter(e => drama.id === 'mehmed-fetihler-sultani' &&
+    season.number === 4 && e.id !== edition.id).map(async e => {
+    const data = await loadEditionEpisodes(e.id);
+    const broadcast = episodeNumbers(edition, group).broadcast;
+    if (broadcast == null) return undefined;
+    const match = data.groups.find(g => episodeNumbers(e, g).broadcast === broadcast &&
+      isEligibleEpisode(drama, e, g, data.videosByGroup.get(g.id) || []));
+    if (!match) return undefined;
+    return { href: episodeHref(drama.id, season, e, data.slugs.get(match.id)!),
+      label: languageLabel(e, data.videosByGroup.get(match.id) || []) };
   }));
-
-  // Offline Gemma editorial drafts — unapproved drafts remain private
-  const rawDraft =
-    catalogRepository.getEditorialDraft(`draft-${drama.id}-${group.id}`) ||
-    catalogRepository.getAllEditorialDrafts().find((d) => d.episode_group_id === group.id);
-  const editorialDraft = rawDraft?.approval_status === 'approved' ? rawDraft : undefined;
-
-  // Schema.org VideoObject structured data
-  const jsonLd: Record<string, any> = {
-    '@context': 'https://schema.org',
-    '@type': 'VideoObject',
-    name: `${drama.name} - ${seasonLabel(edition)} - ${group.display_label}`,
-    description: initialVideo.title || `${group.display_label} of ${drama.name}`,
-    thumbnailUrl: initialVideo.thumbnail_urls?.[0] ? [initialVideo.thumbnail_urls[0]] : undefined,
-    uploadDate: initialVideo.upload_date && initialVideo.upload_date.length > 5 ? initialVideo.upload_date : undefined,
-    contentUrl: initialVideo.stream_urls?.[0],
-    embedUrl: `${siteConfig.domain}${hrefOf(group.id)}`,
-    partOfSeries: { '@type': 'TVSeries', name: drama.name },
-  };
-  Object.keys(jsonLd).forEach((key) => jsonLd[key] === undefined && delete jsonLd[key]);
-
-  return (
-    <div className="min-h-screen">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <WatchClient
-        drama={drama}
-        collection={edition}
-        episodeGroup={group}
-        initialVideo={initialVideo}
-        allRenditions={allRenditions}
-        sidebarEpisodes={sidebarEpisodes}
-        seasonHref={seasonUrl}
-        seasonName={seasonLabel(edition)}
-        prevHref={prevGroup ? hrefOf(prevGroup.id) : undefined}
-        nextHref={nextGroup ? hrefOf(nextGroup.id) : undefined}
-        prevGroup={prevGroup}
-        nextGroup={nextGroup}
-        editorialDraft={editorialDraft}
-      />
-    </div>
-  );
+  // Any visible, selectable rendition can provide the verified video facts.
+  // Keep the preferred playback rendition instead of switching its language.
+  const video = videos.map(v => videoSchema(drama, edition, group, v, path, seo.description)).find(Boolean);
+  const breadcrumbs = breadcrumbSchema([{ name: 'Home', path: '/' }, { name: drama.name, path: `/drama/${drama.id}` },
+    { name: season.label, path: seasonUrl }, { name: group.display_label, path }]);
+  const jsonLd = { '@context': 'https://schema.org', '@graph': [breadcrumbs, ...(video ? [video] : []), {
+    '@type': 'TVEpisode', '@id': `${siteConfig.domain}${path}#episode`, name: seo.heading,
+    episodeNumber: group.episode_number, url: `${siteConfig.domain}${path}`, description: seo.summary,
+    ...(edition.version === 'subtitled' ? { subtitleLanguage: Array.from(new Set(videos.flatMap(v => v.languages)))
+      .map(l => l === 'Urdu' ? 'ur' : l === 'English' ? 'en' : l) } : {}),
+    partOfSeason: { '@type': 'TVSeason', '@id': `${siteConfig.domain}${seasonUrl}#season`, seasonNumber: season.number },
+    partOfSeries: { '@type': 'TVSeries', '@id': `${siteConfig.domain}/drama/${drama.id}#series`, name: drama.name },
+  }] };
+  return <div className="min-h-screen">
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
+    <WatchClient drama={drama} collection={edition} episodeGroup={group} initialVideo={initialVideo}
+      allRenditions={videos} sidebarEpisodes={sidebarEpisodes} seasonHref={seasonUrl} seasonName={season.label}
+      prevHref={prevGroup ? hrefOf(prevGroup.id) : undefined} nextHref={nextGroup ? hrefOf(nextGroup.id) : undefined}
+      prevGroup={prevGroup} nextGroup={nextGroup} pageSummary={seo.summary} />
+    {matchingEditions.some(Boolean) && <section className="dw-sec"><h2>Other viewing editions of this broadcast</h2>
+      <p>{matchingEditions.filter(Boolean).map(e => <a key={e!.href} href={e!.href} style={{ marginRight: 16 }}>{e!.label}</a>)}</p></section>}
+  </div>;
 }

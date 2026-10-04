@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { BrowseClient } from './BrowseClient';
-import { siteConfig } from '@/config/site';
+import { siteConfig, publicIndexingEnabled } from '@/config/site';
 
 interface BrowsePageProps {
   searchParams: {
@@ -22,8 +22,7 @@ export async function generateMetadata({ searchParams }: BrowsePageProps): Promi
     alternates: {
       canonical: `${siteConfig.domain}/browse`,
     },
-    // Staging environment strictly noindex
-    robots: { index: false, follow: false },
+    robots: { index: publicIndexingEnabled && !hasFilters, follow: true },
   };
 }
 

@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { siteConfig } from '@/config/site';
+import { siteConfig, publicIndexingEnabled } from '@/config/site';
 
 export default function robots(): MetadataRoute.Robots {
   const baseUrl = siteConfig.domain;
@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        disallow: '/',
+        ...(publicIndexingEnabled ? { allow: '/', disallow: ['/admin', '/api/', '/preview'] } : { disallow: '/' }),
       },
     ],
     sitemap: [

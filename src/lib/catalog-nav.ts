@@ -3,6 +3,7 @@ import { cache } from 'react';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { groupSeasons, CatalogCollection, Drama, EpisodeGroup, SeasonGroup, VideoRecord } from '@/types/catalog';
 import { DUBBED_SEGMENT, episodePath, episodeSlugs, seasonPath, seasonSlugOf } from '@/lib/routes';
+import { canonicalGroupId, episodeLabel, episodeNumbers } from '@/lib/seo/catalog-seo';
 
 /** Drama with its seasons (releases grouped by season number). Cached per request. */
 export const loadDrama = cache(async (dramaId: string): Promise<{ drama: Drama; seasons: SeasonGroup[] } | null> => {
@@ -33,11 +34,21 @@ export interface EditionEpisodes {
 
 /** Episodes of one release, with their URL slugs and videos. Cached per request. */
 export const loadEditionEpisodes = cache(async (collectionId: string): Promise<EditionEpisodes> => {
-  const groups = await supabaseCatalog.getCollectionEpisodeGroups(collectionId);
+  const rawGroups = await supabaseCatalog.getCollectionEpisodeGroups(collectionId);
+  // Compute old slugs before deduplication so existing URLs remain stable.
+  const slugs = episodeSlugs(rawGroups);
+  const edition = await supabaseCatalog.getCollection(collectionId);
+  const groups = rawGroups.filter(g => canonicalGroupId(g.id) === g.id).map(g => {
+    if (!edition) return g;
+    return { ...g, bolum: episodeNumbers(edition, g).broadcast, display_label: episodeLabel(edition, g) };
+  });
   let videos = await supabaseCatalog.getCollectionVideos(collectionId);
   if (videos.length === 0 && groups.length > 0) {
     // Fall back to per-group lookups when the bulk collection query returns nothing
     videos = (await Promise.all(groups.map((g) => supabaseCatalog.getVideosForGroup(g.id)))).flat();
+  }
+  if (supabaseCatalog.isConfigured() && edition && videos.length < edition.video_records) {
+    throw new Error(`Incomplete public video inventory for ${collectionId}; refusing to publish a partial catalog`);
   }
   const videosByGroup = new Map<string, VideoRecord[]>();
   const extras: VideoRecord[] = [];
@@ -46,10 +57,13 @@ export const loadEditionEpisodes = cache(async (collectionId: string): Promise<E
       extras.push(v);
       return;
     }
-    if (!videosByGroup.has(v.episode_group_id)) videosByGroup.set(v.episode_group_id, []);
-    videosByGroup.get(v.episode_group_id)!.push(v);
+    const groupId = canonicalGroupId(v.episode_group_id);
+    if (!videosByGroup.has(groupId)) videosByGroup.set(groupId, []);
+    const displayGroup = groups.find(g => g.id === groupId);
+    videosByGroup.get(groupId)!.push(displayGroup ? { ...v, episode_group_id: groupId,
+      display_label: displayGroup.display_label, title: `${v.drama} ${displayGroup.display_label}` } : v);
   });
-  return { groups, slugs: episodeSlugs(groups), videosByGroup, extras };
+  return { groups, slugs, videosByGroup, extras };
 });
 
 /** Clean URL of an episode, given the drama and the season/release it belongs to. */
@@ -66,7 +80,7 @@ export async function episodeHrefForGroup(dramaId: string, groupId: string): Pro
     const edition = season.editions.find((e) => e.id === group.collection_id);
     if (!edition) continue;
     const { slugs } = await loadEditionEpisodes(edition.id);
-    const slug = slugs.get(group.id);
+    const slug = slugs.get(canonicalGroupId(group.id));
     return slug ? episodeHref(dramaId, season, edition, slug) : seasonPath(dramaId, season, edition);
   }
   return undefined;

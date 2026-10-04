@@ -20,6 +20,15 @@ export interface SiteConfig {
   };
 }
 
+const publicUrl = 'https://greatnation.webcraftio.com';
+const configuredDomain = process.env.NEXT_PUBLIC_SITE_DOMAIN?.replace(/\/$/, '');
+const configuredIsLocal = !configuredDomain || /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(configuredDomain);
+const domain = process.env.NODE_ENV === 'production' && configuredIsLocal
+  ? publicUrl : configuredDomain || 'http://localhost:3000';
+export const publicIndexingEnabled = process.env.NODE_ENV === 'production' &&
+  process.env.VERCEL_ENV !== 'preview' && process.env.CATALOG_RELEASE_MODE !== 'staging' &&
+  /^https:\/\//.test(domain);
+
 export const siteConfig: SiteConfig = {
   name: 'Great Nation',
   wordmark: 'Great Nation',
@@ -27,8 +36,8 @@ export const siteConfig: SiteConfig = {
   brandPromise: 'Your drama. Without interruptions.',
   supportingCopy: 'No ads. No pop-ups. Just watch.',
   accentColor: '#f2b33d', // Warm gold
-  domain: process.env.NEXT_PUBLIC_SITE_DOMAIN || 'http://localhost:3000',
-  publicUrl: 'https://greatnation.webcraftio.com',
+  domain,
+  publicUrl,
   contactEmail: 'contact@greatnation.webcraftio.com',
   pilotDramaId: process.env.NEXT_PUBLIC_PILOT_DRAMA_ID || 'mehmed-fetihler-sultani',
   // Collection 68 is confirmed in catalog data: Mehmed: Fetihler Sultani Season 2 - Urdu & English Subtitles

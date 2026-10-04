@@ -1,3 +1,4 @@
+import { selectEditorial } from '@/lib/seo/catalog-seo';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database.types';
 import { catalogRepository as localCatalog } from '@/lib/repository/catalog-repository';
@@ -77,29 +78,31 @@ export class SupabaseCatalogRepository {
 
   public async getAllDramas(): Promise<Drama[]> {
     const supabase = this.getClient();
-    if (!supabase) return localCatalog.getAllDramas();
+    if (!supabase) return this.isConfigured() ? [] : localCatalog.getAllDramas();
 
     try {
       const { data, error } = await supabase
         .from('dramas')
-        .select('*, collections(source_id, status, reported_seasons, collection_type, label)')
+        .select('*, published_editorial(*), collections(source_id, status, reported_seasons, collection_type, label)')
         .in('status', ['published', 'preview'])
         .order('is_pilot', { ascending: false })
         .order('display_name', { ascending: true });
 
       if (error || !data || (data as any[]).length === 0) {
-        return localCatalog.getAllDramas();
+        return this.isConfigured() ? [] : localCatalog.getAllDramas();
       }
 
       return (data as any[]).map(d => ({
         id: d.source_id,
-        name: d.display_name,
-        source_names: [d.display_name],
+        status: d.status, updated_at: d.updated_at,
+        name: selectEditorial(d.published_editorial)?.title || d.display_name,
+        editorial: selectEditorial(d.published_editorial),
+        source_names: d.source_id === 'mehmed-fetihler-sultani' ? [d.display_name, 'Sultan Muhammad Fateh', 'Sultan Muhammad Fatih'] : [d.display_name],
         collection_ids: publishedCollectionIds(d.collections),
         playable: publishedCollectionIds(d.collections).length > 0,
         season_count: publishedSeasonCount(d.collections),
         video_records: d.video_records_count,
-        synopsis: d.short_overview || undefined,
+        synopsis: selectEditorial(d.published_editorial)?.description || d.short_overview || undefined,
         poster_url: d.poster_url || undefined,
         backdrop_url: d.backdrop_url || undefined,
         genres: d.genres || [],
@@ -108,13 +111,13 @@ export class SupabaseCatalogRepository {
       }));
     } catch (e) {
       console.warn('[SupabaseCatalogRepository] Falling back to local catalog for getAllDramas:', e);
-      return localCatalog.getAllDramas();
+      return this.isConfigured() ? [] : localCatalog.getAllDramas();
     }
   }
 
   public async getDrama(idOrSlug: string): Promise<Drama | undefined> {
     const supabase = this.getClient();
-    if (!supabase) return localCatalog.getDrama(idOrSlug);
+    if (!supabase) return this.isConfigured() ? undefined : localCatalog.getDrama(idOrSlug);
 
     try {
       const { data, error } = await supabase
@@ -124,18 +127,19 @@ export class SupabaseCatalogRepository {
         .single();
 
       if (error || !data) {
-        return localCatalog.getDrama(idOrSlug);
+        return this.isConfigured() ? undefined : localCatalog.getDrama(idOrSlug);
       }
 
       const row = data as any;
-      const editorial = Array.isArray(row.published_editorial) && row.published_editorial[0];
-      const displayName = editorial?.approved_display_title || row.display_name;
-      const synopsis = editorial?.short_description || row.short_overview || undefined;
+      const editorial = selectEditorial(row.published_editorial);
+      const displayName = editorial?.title || row.display_name;
+      const synopsis = editorial?.description || row.short_overview || undefined;
 
       return {
         id: row.source_id,
         name: displayName,
-        source_names: [row.display_name],
+        status: row.status, editorial, updated_at: editorial?.updated_at || row.updated_at,
+        source_names: row.source_id === 'mehmed-fetihler-sultani' ? [row.display_name, 'Sultan Muhammad Fateh', 'Sultan Muhammad Fatih'] : [row.display_name],
         collection_ids: publishedCollectionIds(row.collections),
         playable: publishedCollectionIds(row.collections).length > 0,
         season_count: publishedSeasonCount(row.collections),
@@ -148,7 +152,7 @@ export class SupabaseCatalogRepository {
         isPilot: row.is_pilot,
       };
     } catch (e) {
-      return localCatalog.getDrama(idOrSlug);
+      return this.isConfigured() ? undefined : localCatalog.getDrama(idOrSlug);
     }
   }
 
@@ -160,7 +164,7 @@ export class SupabaseCatalogRepository {
 
   public async getDramaCollections(dramaSourceId: string): Promise<CatalogCollection[]> {
     const supabase = this.getClient();
-    if (!supabase) return localCatalog.getDramaCollections(dramaSourceId);
+    if (!supabase) return this.isConfigured() ? [] : localCatalog.getDramaCollections(dramaSourceId);
 
     try {
       const { data: drama } = await supabase
@@ -169,17 +173,17 @@ export class SupabaseCatalogRepository {
         .eq('source_id', dramaSourceId)
         .single();
 
-      if (!drama) return localCatalog.getDramaCollections(dramaSourceId);
+      if (!drama) return this.isConfigured() ? [] : localCatalog.getDramaCollections(dramaSourceId);
 
       const { data: collections, error } = await supabase
         .from('collections')
-        .select('*, episode_groups(count), video_variants(count)')
+        .select('*, published_editorial(*), episode_groups(count), video_variants(count)')
         .eq('drama_id', (drama as any).id)
         .in('status', ['published', 'preview'])
         .order('sort_order', { ascending: true });
 
       if (error || !collections || (collections as any[]).length === 0) {
-        return localCatalog.getDramaCollections(dramaSourceId);
+        return this.isConfigured() ? [] : localCatalog.getDramaCollections(dramaSourceId);
       }
 
       for (const c of collections as any[]) {
@@ -194,6 +198,7 @@ export class SupabaseCatalogRepository {
         source_catalog_id: c.source_id.replace('collection-', ''),
         drama_id: dramaSourceId,
         source_heading: c.label,
+        editorial: selectEditorial(c.published_editorial), updated_at: c.updated_at,
         source_url: '',
         reported_seasons: c.reported_seasons || [],
         episode_group_ids: new Array(c.episode_groups?.[0]?.count || 0).fill(''),
@@ -205,24 +210,24 @@ export class SupabaseCatalogRepository {
         poster_url: c.poster_url || undefined,
       } as CatalogCollection)).sort(compareCollections);
     } catch (e) {
-      return localCatalog.getDramaCollections(dramaSourceId);
+      return this.isConfigured() ? [] : localCatalog.getDramaCollections(dramaSourceId);
     }
   }
 
   public async getCollection(collectionSourceId: string): Promise<CatalogCollection | undefined> {
     const supabase = this.getClient();
-    if (!supabase) return localCatalog.getCollection(collectionSourceId);
+    if (!supabase) return this.isConfigured() ? undefined : localCatalog.getCollection(collectionSourceId);
 
     try {
       const { data: col, error } = await supabase
         .from('collections')
-        .select('*, dramas(source_id), episode_groups(count), video_variants(count)')
+        .select('*, published_editorial(*), dramas(source_id), episode_groups(count), video_variants(count)')
         .eq('source_id', collectionSourceId)
         .in('status', ['published', 'preview'])
         .single();
 
       if (error || !col) {
-        return localCatalog.getCollection(collectionSourceId);
+        return this.isConfigured() ? undefined : localCatalog.getCollection(collectionSourceId);
       }
 
       const row = col as any;
@@ -233,6 +238,7 @@ export class SupabaseCatalogRepository {
         source_catalog_id: row.source_id.replace('collection-', ''),
         drama_id: dramaSourceId,
         source_heading: row.label,
+        editorial: selectEditorial(row.published_editorial), updated_at: row.updated_at,
         source_url: '',
         reported_seasons: row.reported_seasons || [],
         episode_group_ids: new Array(row.episode_groups?.[0]?.count || 0).fill(''),
@@ -244,7 +250,7 @@ export class SupabaseCatalogRepository {
         poster_url: row.poster_url || undefined,
       };
     } catch (e) {
-      return localCatalog.getCollection(collectionSourceId);
+      return this.isConfigured() ? undefined : localCatalog.getCollection(collectionSourceId);
     }
   }
 
@@ -260,7 +266,7 @@ export class SupabaseCatalogRepository {
 
   public async getCollectionEpisodeGroups(collectionSourceId: string): Promise<EpisodeGroup[]> {
     const supabase = this.getClient();
-    if (!supabase) return localCatalog.getCollectionEpisodeGroups(collectionSourceId);
+    if (!supabase) return this.isConfigured() ? [] : localCatalog.getCollectionEpisodeGroups(collectionSourceId);
 
     try {
       let col = this.collectionMetaCache.get(collectionSourceId);
@@ -277,7 +283,7 @@ export class SupabaseCatalogRepository {
         }
       }
 
-      if (!col) return localCatalog.getCollectionEpisodeGroups(collectionSourceId);
+      if (!col) return this.isConfigured() ? [] : localCatalog.getCollectionEpisodeGroups(collectionSourceId);
 
       const dramaSourceId = col.dramaSourceId;
 
@@ -291,16 +297,17 @@ export class SupabaseCatalogRepository {
         .order('source_id', { ascending: true });
 
       if (error || !groups || (groups as any[]).length === 0) {
-        return localCatalog.getCollectionEpisodeGroups(collectionSourceId);
+        return this.isConfigured() ? [] : localCatalog.getCollectionEpisodeGroups(collectionSourceId);
       }
 
       return (groups as any[]).map(g => {
-        const editorial = Array.isArray(g.published_editorial) && g.published_editorial[0];
+        const editorial = selectEditorial(g.published_editorial);
         return {
           id: g.source_id,
           collection_id: collectionSourceId,
           drama_id: dramaSourceId,
-          display_label: editorial?.approved_display_title || g.label,
+          display_label: editorial?.title || g.label,
+          editorial, updated_at: editorial?.updated_at || g.updated_at,
           episode_number: g.reported_episode_number,
           bolum: g.bolum,
           part: g.part,
@@ -312,13 +319,13 @@ export class SupabaseCatalogRepository {
         };
       });
     } catch (e) {
-      return localCatalog.getCollectionEpisodeGroups(collectionSourceId);
+      return this.isConfigured() ? [] : localCatalog.getCollectionEpisodeGroups(collectionSourceId);
     }
   }
 
   public async getEpisodeGroup(groupSourceId: string): Promise<EpisodeGroup | undefined> {
     const supabase = this.getClient();
-    if (!supabase) return localCatalog.getEpisodeGroup(groupSourceId);
+    if (!supabase) return this.isConfigured() ? undefined : localCatalog.getEpisodeGroup(groupSourceId);
 
     try {
       const { data: group, error } = await supabase
@@ -329,19 +336,20 @@ export class SupabaseCatalogRepository {
         .single();
 
       if (error || !group) {
-        return localCatalog.getEpisodeGroup(groupSourceId);
+        return this.isConfigured() ? undefined : localCatalog.getEpisodeGroup(groupSourceId);
       }
 
       const row = group as any;
       const collectionSourceId = row.collections?.source_id || siteConfig.pilotCollectionId;
       const dramaSourceId = row.collections?.dramas?.source_id || siteConfig.pilotDramaId;
-      const editorial = Array.isArray(row.published_editorial) && row.published_editorial[0];
+      const editorial = selectEditorial(row.published_editorial);
 
       return {
         id: row.source_id,
         collection_id: collectionSourceId,
         drama_id: dramaSourceId,
-        display_label: editorial?.approved_display_title || row.label,
+        display_label: editorial?.title || row.label,
+        editorial, updated_at: editorial?.updated_at || row.updated_at,
         episode_number: row.reported_episode_number,
         bolum: row.bolum,
         part: row.part,
@@ -352,13 +360,13 @@ export class SupabaseCatalogRepository {
         still_url: row.still_url || undefined,
       };
     } catch (e) {
-      return localCatalog.getEpisodeGroup(groupSourceId);
+      return this.isConfigured() ? undefined : localCatalog.getEpisodeGroup(groupSourceId);
     }
   }
 
   public async getVideosForGroup(groupSourceId: string): Promise<VideoRecord[]> {
     const supabase = this.getClient();
-    if (!supabase) return localCatalog.getVideosForGroup(groupSourceId);
+    if (!supabase) return this.isConfigured() ? [] : localCatalog.getVideosForGroup(groupSourceId);
 
     try {
       const { data: group } = await supabase
@@ -367,7 +375,7 @@ export class SupabaseCatalogRepository {
         .eq('source_id', groupSourceId)
         .single();
 
-      if (!group) return localCatalog.getVideosForGroup(groupSourceId);
+      if (!group) return this.isConfigured() ? [] : localCatalog.getVideosForGroup(groupSourceId);
 
       const { data: variants, error } = await supabase
         .from('video_variants')
@@ -376,7 +384,7 @@ export class SupabaseCatalogRepository {
         .eq('publication_state', 'published');
 
       if (error || !variants || (variants as any[]).length === 0) {
-        return localCatalog.getVideosForGroup(groupSourceId);
+        return this.isConfigured() ? [] : localCatalog.getVideosForGroup(groupSourceId);
       }
 
       const grpRow = group as any;
@@ -386,11 +394,11 @@ export class SupabaseCatalogRepository {
 
       return (variants as any[]).map(v => {
         const activeStreams = (v.stream_sources || [])
-          .filter((s: any) => s.is_active)
+          .filter((s: any) => s.is_active && ['reachable', 'browser_tested'].includes(s.verification_state))
           .sort((a: any, b: any) => (a.priority || 1) - (b.priority || 1));
 
         const streams = activeStreams.map((s: any) => s.delivery_url);
-        const isVerified = activeStreams.some((s: any) => s.verification_state === 'reachable');
+        const isVerified = activeStreams.some((s: any) => s.verification_state === 'browser_tested');
 
         return {
           id: v.source_id,
@@ -410,6 +418,7 @@ export class SupabaseCatalogRepository {
           part: null,
           languages: v.languages || [],
           version: v.version || 'subtitled',
+          upload_date: v.source_uploaded_at || undefined,
           stream_urls: streams,
           stream_present: streams.length > 0,
           thumbnail_urls: grpRow.still_url ? [grpRow.still_url] : v.thumbnail_url ? [v.thumbnail_url] : [],
@@ -417,7 +426,7 @@ export class SupabaseCatalogRepository {
         };
       });
     } catch (e) {
-      return localCatalog.getVideosForGroup(groupSourceId);
+      return this.isConfigured() ? [] : localCatalog.getVideosForGroup(groupSourceId);
     }
   }
 
@@ -425,7 +434,7 @@ export class SupabaseCatalogRepository {
     const supabase = this.getClient();
     if (!supabase) {
       const groups = localCatalog.getCollectionEpisodeGroups(collectionSourceId);
-      return groups.flatMap(g => localCatalog.getVideosForGroup(g.id));
+      return this.isConfigured() ? [] : groups.flatMap(g => localCatalog.getVideosForGroup(g.id));
     }
 
     try {
@@ -433,7 +442,7 @@ export class SupabaseCatalogRepository {
       let dramaName = col?.dramaName || 'Drama';
       let dramaSourceId = col?.dramaSourceId || siteConfig.pilotDramaId;
 
-      if (!col) {
+      if (!col || !col.dramaName) {
         const { data: colData } = await supabase
           .from('collections')
           .select('id, source_id, dramas(source_id, display_name)')
@@ -458,16 +467,16 @@ export class SupabaseCatalogRepository {
 
       if (error || !variants || (variants as any[]).length === 0) {
         const groups = localCatalog.getCollectionEpisodeGroups(collectionSourceId);
-        return groups.flatMap(g => localCatalog.getVideosForGroup(g.id));
+        return this.isConfigured() ? [] : groups.flatMap(g => localCatalog.getVideosForGroup(g.id));
       }
 
       return (variants as any[]).map(v => {
         const activeStreams = (v.stream_sources || [])
-          .filter((s: any) => s.is_active)
+          .filter((s: any) => s.is_active && ['reachable', 'browser_tested'].includes(s.verification_state))
           .sort((a: any, b: any) => (a.priority || 1) - (b.priority || 1));
 
         const streams = activeStreams.map((s: any) => s.delivery_url);
-        const isVerified = activeStreams.some((s: any) => s.verification_state === 'reachable');
+        const isVerified = activeStreams.some((s: any) => s.verification_state === 'browser_tested');
         const groupSourceId = v.episode_groups?.source_id || null;
 
         return {
@@ -488,6 +497,7 @@ export class SupabaseCatalogRepository {
           part: null,
           languages: v.languages || [],
           version: v.version || 'subtitled',
+          upload_date: v.source_uploaded_at || undefined,
           stream_urls: streams,
           stream_present: streams.length > 0,
           thumbnail_urls: v.episode_groups?.still_url ? [v.episode_groups.still_url] : v.thumbnail_url ? [v.thumbnail_url] : [],
@@ -496,7 +506,7 @@ export class SupabaseCatalogRepository {
       });
     } catch (e) {
       const groups = localCatalog.getCollectionEpisodeGroups(collectionSourceId);
-      return groups.flatMap(g => localCatalog.getVideosForGroup(g.id));
+      return this.isConfigured() ? [] : groups.flatMap(g => localCatalog.getVideosForGroup(g.id));
     }
   }
 

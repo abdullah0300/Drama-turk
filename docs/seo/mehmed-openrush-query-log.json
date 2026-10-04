@@ -1,0 +1,453 @@
+{
+  "researched_on": "2026-10-03",
+  "notes": "Reported volume is an estimate, not October traffic. Latest returned trends are generally August 2026. Null is unknown; zero is a provider estimate, not proof of no demand. Seed expansions include unrelated season tokens. LOW competition is not an organic keyword-difficulty score. US and UK samples are not worldwide English demand.",
+  "runs": [
+    {
+      "args": {
+        "seed": "sultan muhammad fateh season 1",
+        "location": "Pakistan",
+        "language": "English",
+        "mode": "suggestions",
+        "limit": 100
+      },
+      "coverage": {
+        "returned": 19,
+        "total_available": 19,
+        "truncated": false,
+        "as_of": "2026-10-03T14:00:45.135524Z",
+        "scope_note": null
+      },
+      "keywords_returned": 19
+    },
+    {
+      "args": {
+        "seed": "sultan muhammad fateh season 2",
+        "location": "Pakistan",
+        "language": "English",
+        "mode": "suggestions",
+        "limit": 100
+      },
+      "coverage": {
+        "returned": 68,
+        "total_available": 68,
+        "truncated": false,
+        "as_of": "2026-10-03T14:00:44.587945Z",
+        "scope_note": null
+      },
+      "keywords_returned": 68
+    },
+    {
+      "args": {
+        "seed": "sultan muhammad fateh season 3",
+        "location": "Pakistan",
+        "language": "English",
+        "mode": "suggestions",
+        "limit": 100
+      },
+      "coverage": {
+        "returned": 84,
+        "total_available": 84,
+        "truncated": false,
+        "as_of": "2026-10-03T14:00:44.693294Z",
+        "scope_note": null
+      },
+      "keywords_returned": 84
+    },
+    {
+      "args": {
+        "seed": "sultan muhammad fateh season 4",
+        "location": "Pakistan",
+        "language": "English",
+        "mode": "suggestions",
+        "limit": 100
+      },
+      "coverage": {
+        "returned": 3,
+        "total_available": 3,
+        "truncated": false,
+        "as_of": "2026-10-03T14:00:44.521181Z",
+        "scope_note": null
+      },
+      "keywords_returned": 3
+    },
+    {
+      "args": {
+        "seed": "mehmed fetihler sultani season 1",
+        "location": "United States",
+        "language": "English",
+        "limit": 100,
+        "mode": "suggestions"
+      },
+      "coverage": {
+        "returned": 5,
+        "total_available": 5,
+        "truncated": false,
+        "as_of": "2026-10-03T14:01:00.263844Z",
+        "scope_note": null
+      },
+      "keywords_returned": 5
+    },
+    {
+      "args": {
+        "seed": "mehmed fetihler sultani season 2",
+        "location": "United States",
+        "language": "English",
+        "limit": 100,
+        "mode": "suggestions"
+      },
+      "coverage": {
+        "returned": 8,
+        "total_available": 8,
+        "truncated": false,
+        "as_of": "2026-10-03T14:01:00.081560Z",
+        "scope_note": null
+      },
+      "keywords_returned": 8
+    },
+    {
+      "args": {
+        "seed": "mehmed fetihler sultani season 3",
+        "location": "United States",
+        "language": "English",
+        "limit": 100,
+        "mode": "suggestions"
+      },
+      "coverage": {
+        "returned": 3,
+        "total_available": 3,
+        "truncated": false,
+        "as_of": "2026-10-03T14:01:00.167872Z",
+        "scope_note": null
+      },
+      "keywords_returned": 3
+    },
+    {
+      "args": {
+        "seed": "mehmed fetihler sultani season 4",
+        "location": "United States",
+        "language": "English",
+        "limit": 100,
+        "mode": "suggestions"
+      },
+      "coverage": {
+        "returned": 1,
+        "total_available": 1,
+        "truncated": false,
+        "as_of": "2026-10-03T14:01:00.660943Z",
+        "scope_note": null
+      },
+      "keywords_returned": 1
+    },
+    {
+      "args": {
+        "seed": "sultan muhammad fateh episode",
+        "location": "Pakistan",
+        "language": "English",
+        "limit": 100,
+        "mode": "suggestions"
+      },
+      "coverage": {
+        "returned": 100,
+        "total_available": 236,
+        "truncated": true,
+        "as_of": "2026-10-03T14:01:00.408999Z",
+        "scope_note": null
+      },
+      "keywords_returned": 100
+    },
+    {
+      "args": {
+        "seed": "mehmed urdu dubbed",
+        "location": "Pakistan",
+        "language": "English",
+        "limit": 50,
+        "mode": "suggestions"
+      },
+      "coverage": {
+        "returned": 39,
+        "total_available": 39,
+        "truncated": false,
+        "as_of": "2026-10-03T14:01:00.267081Z",
+        "scope_note": null
+      },
+      "keywords_returned": 39
+    },
+    {
+      "args": {
+        "seed": "mehmed english subtitles",
+        "location": "United States",
+        "language": "English",
+        "limit": 100,
+        "mode": "suggestions"
+      },
+      "coverage": {
+        "returned": 16,
+        "total_available": 16,
+        "truncated": false,
+        "as_of": "2026-10-03T14:01:00.790099Z",
+        "scope_note": null
+      },
+      "keywords_returned": 16
+    },
+    {
+      "args": {
+        "seed": "mehmed fetihler sultanı",
+        "location": "United Kingdom",
+        "language": "English",
+        "mode": "suggestions",
+        "limit": 100
+      },
+      "coverage": {
+        "returned": 71,
+        "total_available": 71,
+        "truncated": false,
+        "as_of": "2026-10-03T14:01:41.946163Z",
+        "scope_note": null
+      },
+      "keywords_returned": 71
+    },
+    {
+      "args": {
+        "seed": "mehmed fetihler sultanı english subtitles",
+        "location": "United States",
+        "language": "English",
+        "mode": "suggestions",
+        "limit": 100
+      },
+      "error": "INVALID_ARGUMENT"
+    },
+    {
+      "args": {
+        "seed": "sultan muhammad fateh episode 1",
+        "location": "Pakistan",
+        "language": "English",
+        "mode": "suggestions",
+        "limit": 50
+      },
+      "error": "INVALID_ARGUMENT"
+    },
+    {
+      "args": {
+        "seed": "mehmed fetihler sultani",
+        "location": "Pakistan",
+        "language": "English",
+        "mode": "suggestions",
+        "limit": 100
+      },
+      "error": "INVALID_ARGUMENT"
+    },
+    {
+      "args": {
+        "seed": "mehmed english subtitles",
+        "location": "United Kingdom",
+        "language": "English",
+        "mode": "suggestions",
+        "limit": 50
+      },
+      "error": "INVALID_ARGUMENT"
+    },
+    {
+      "args": {
+        "query": "sultan muhammad fateh season 3 episode 1",
+        "location": "Pakistan",
+        "language": "English",
+        "depth": 10
+      },
+      "error": "INVALID_ARGUMENT"
+    },
+    {
+      "args": {
+        "query": "sultan muhammad fateh season 2 episode 16",
+        "location": "Pakistan",
+        "language": "English",
+        "depth": 10
+      },
+      "error": "INVALID_ARGUMENT"
+    },
+    {
+      "args": {
+        "query": "mehmed fetihler sultani episode 84 english subtitles",
+        "location": "United States",
+        "language": "English",
+        "depth": 10
+      },
+      "error": "INVALID_ARGUMENT"
+    },
+    {
+      "args": {
+        "query": "sultan muhammad fateh season 1 episode 1 urdu subtitles",
+        "location": "Pakistan",
+        "language": "English",
+        "depth": 10
+      },
+      "error": "INVALID_ARGUMENT"
+    },
+    {
+      "args": {
+        "keyword": "sultan muhammad fateh season 1",
+        "location": "Pakistan",
+        "language": "English"
+      },
+      "error": "INVALID_ARGUMENT"
+    },
+    {
+      "args": {
+        "keyword": "sultan muhammad fateh season 2",
+        "location": "Pakistan",
+        "language": "English"
+      },
+      "coverage": {
+        "returned": 8,
+        "total_available": null,
+        "truncated": false,
+        "as_of": "2026-10-03T14:01:26.740253Z",
+        "scope_note": null
+      },
+      "serp": [
+        {
+          "position": 1,
+          "url": "https://www.facebook.com/61588395905224/videos/sultan-muhammad-fateh-season-2-episode-41-in-urdu-subtitles-sultan-mehmet-fatih-/1305521645125503/",
+          "domain": "www.facebook.com",
+          "title": "Sultan Muhammad Fateh Season 2 Episode 41 In Urdu subtitles",
+          "description": "This video is an Islamic devotional that provides English translations for the first 43 verses of the Quran recitation by the scholar Sultan ..."
+        },
+        {
+          "position": 2,
+          "url": "https://www.youtube.com/watch?v=866ysKpRSX8",
+          "domain": "www.youtube.com",
+          "title": "Mehmed Fetihler Sultanı Season 2 Episode 35 Trailer 2 scenes",
+          "description": "This epic historical drama follows the legendary Mehmed The Conqueror (Sultan Muhammad Fateh ) and his journey to greatness. Stay tuned for the ..."
+        },
+        {
+          "position": 3,
+          "url": "https://www.facebook.com/61575529724202/videos/sultan-muhammad-fateh-season-2/2354282631722486/",
+          "domain": "www.facebook.com",
+          "title": "Sultan Muhammad Fateh season 2 | Farhan Play",
+          "description": "This is a clip from the Turkish drama series \" Sultan Muhammad Fateh,\" specifically season 2. The scene depicts the return of the protagonist ..."
+        },
+        {
+          "position": 4,
+          "url": "https://www.instagram.com/popular/sultan-muhammad-fateh-season-2-episode-60/",
+          "domain": "www.instagram.com",
+          "title": "Sultan Muhammad Fateh Season 2 Episode 60",
+          "description": "Watch short videos about sultan muhammad fateh season 2 episode 60 from people around the world."
+        },
+        {
+          "position": 5,
+          "url": "https://www.youtube.com/watch?v=WOOfYVNfR8w",
+          "domain": "www.youtube.com",
+          "title": "Urdu Subtitle|Sultan Muhammad Fateh Season 2 Episode 35",
+          "description": "Sultan Muhammad fateh episode 35 Mehmed 35 Trailer |Urdu Subtitle|Sultan Muhammad Fateh Season 2 Episode 35 1K views · 1 year ago"
+        },
+        {
+          "position": 6,
+          "url": "https://www.facebook.com/groups/380531421368147/posts/844033091684642/",
+          "domain": "www.facebook.com",
+          "title": "کیا سے کیا ھو گیا دےکھتے دیکھتے🤣🤣🤣 بوزداغ چاچا نے ...",
+          "description": "Arafta Season 2 Episode 13 Urdu. Sultan Muhammad Fateh Season. Muhammad Fateh Episode 85 Urdu subtitles"
+        },
+        {
+          "position": 7,
+          "url": "https://www.instagram.com/popular/sultan-muhammad-fateh-season-2-episode-72/",
+          "domain": "www.instagram.com",
+          "title": "Sultan Muhammad Fateh Season 2 Episode 72",
+          "description": "sultan muhammad fateh season 2 episode 72. This episode promises high-stakes drama, 🤍 unexpected twists, and legendary battles! Dive into the full analysis in ..."
+        },
+        {
+          "position": 8,
+          "url": "https://www.youtube.com/watch?v=75CsYh66_DM",
+          "domain": "www.youtube.com",
+          "title": "sultan Muhammad Fateh season 2 episode 9 trailer Urdu ...",
+          "description": "Sultan Muhammad Fateh season 2 episode 9 trailer Urdu subtitle|. Season 2 Episode 32 - 24 September 25 - HUM TV"
+        }
+      ]
+    },
+    {
+      "args": {
+        "keyword": "sultan muhammad fateh season 3",
+        "location": "Pakistan",
+        "language": "English"
+      },
+      "error": "INVALID_ARGUMENT"
+    },
+    {
+      "args": {
+        "keyword": "sultan muhammad fateh season 4",
+        "location": "Pakistan",
+        "language": "English"
+      },
+      "coverage": {
+        "returned": 9,
+        "total_available": null,
+        "truncated": false,
+        "as_of": "2026-10-03T14:01:20.247125Z",
+        "scope_note": null
+      },
+      "serp": [
+        {
+          "position": 1,
+          "url": "https://www.facebook.com/noorinfostudio/videos/sultan-muhammad-fateh-season-4-episode-84-1-urdu-subtitles-ultra-hd-2k-bluray-pa/969917162817751/",
+          "domain": "www.facebook.com",
+          "title": "Sultan Muhammad Fateh Season 4 Episode 84 (1) Urdu ...",
+          "description": "Sultan Muhammad Fateh Season 4 Episode 84 (1) Urdu Subtitles Ultra HD (2k) Bluray Part 173. Video Noor Info Studio 3d·"
+        },
+        {
+          "position": 2,
+          "url": "https://www.facebook.com/noorinfostudio/videos/sultan-muhammad-fateh-season-4-episode-84-1-urdu-subtitles-ultra-hd-2k-bluray-pa/2626526914526743/",
+          "domain": "www.facebook.com",
+          "title": "Sultan Muhammad Fateh Season 4 Episode 84 (1) Urdu ...",
+          "description": "Sultan Muhammad Fateh Season 4 Episode 84 (1) Urdu Subtitles Ultra HD (2k) Bluray Part 200. Jazib Raja."
+        },
+        {
+          "position": 3,
+          "url": "https://www.facebook.com/noorinfostudio/videos/sultan-muhammad-fateh-season-4-episode-84-1-urdu-subtitles-ultra-hd-2k-bluray-pa/1610311923913747/",
+          "domain": "www.facebook.com",
+          "title": "Sultan Muhammad Fateh Season 4 Episode 84 Urdu Subtitles ...",
+          "description": "Sultan Muhammad Fateh Season 4 Episode 84 (1) Urdu Subtitles Ultra HD (2k) Bluray Part 19. Adeal Hussain and Rana Hussain."
+        },
+        {
+          "position": 4,
+          "url": "https://www.instagram.com/reel/DdonfxWCNvj/",
+          "domain": "www.instagram.com",
+          "title": "Sultan Muhammad fateh season 4 EPISODE 86 with Urdu ...",
+          "description": "This face-off between Fatih Sultan Mehmed and Uzun Hasan is shaping up to be one of the most exciting and intense parts of the story! Two ..."
+        },
+        {
+          "position": 5,
+          "url": "https://www.facebook.com/hadafplay786/posts/sultan-mehmed-fateh-episode-85-in-urdu-subtitles-season-4-episode-2/1082516531175998/",
+          "domain": "www.facebook.com",
+          "title": "Sultan Mehmed Fateh Episode 85 in Urdu Subtitles ...",
+          "description": "Sultan Mehmed Fateh Episode 85 in Urdu Subtitles (Season 4 Episode 2) season 4 with Urdu subtitles 41w"
+        },
+        {
+          "position": 6,
+          "url": "https://www.youtube.com/watch?v=CGMzX1xh2Ik&xstg=CAMSBhUD-7L2Hw%3D%3D",
+          "domain": "www.youtube.com",
+          "title": "Sultan Muhammad Fateh Season 4 Episode 1 Part-1 in Urdu ...",
+          "description": "Sultan Muhammad Fateh Season 4 Episode 1 Part-1 in Urdu Review Mehmed Fetihler Sultanı"
+        },
+        {
+          "position": 7,
+          "url": "https://www.tiktok.com/discover/sultan-muhammad-fateh-season-4",
+          "domain": "www.tiktok.com",
+          "title": "Sultan Muhammad Fateh Season 4",
+          "description": "22-Sept-2026 — Sultan Muhammad Fateh Season 4: Episode 1 & Trailer. Watch clips and the trailer for the highly anticipated Season 4 of the historical ..."
+        },
+        {
+          "position": 8,
+          "url": "https://www.facebook.com/groups/343765068159173/posts/707547261780950/",
+          "domain": "www.facebook.com",
+          "title": "Sultan Muhammad fatih season 4 with Urdu subtitles",
+          "description": "This content isn't available right now · Other posts · Sultan Muhammad Fateh Season 4 Episode 84 (1) Urdu Subtitles Ultra HD (2k) Bluray · Arafta ..."
+        },
+        {
+          "position": 9,
+          "url": "https://www.facebook.com/61591471995090/videos/sultan-muhammad-fateh-season-4-%DA%A9%DB%8C-%D8%B4%D9%88%D9%B9%D9%86%DA%AF-%D8%AC%D9%84%D8%AF-%D8%B4%D8%B1%D9%88%D8%B9-%DB%81%D9%88%D9%86%DB%92-%D9%88%D8%A7%D9%84%DB%8C-%DB%81%DB%92-%D9%85%D9%85%DA%A9%D9%86%DB%81-%D8%A7%D8%B3%D9%B9%D8%A7%D8%B1-%DA%A9%D8%A7%D8%B3%D9%B9%D9%85%D8%B2/1307467671586430/",
+          "domain": "www.facebook.com",
+          "title": "Sultan Muhammad Fateh Season 4 کی شوٹنگ جلد شروع ہونے ...",
+          "description": "Sultan Muhammad Fateh Season 4 کی شوٹنگ جلد شروع ہونے والی ہے۔ ممکنہ اسٹار کاسٹ: مزید نئے اداکاروں کے نام جلد سامنے آئیں گے۔"
+        }
+      ]
+    }
+  ]
+}

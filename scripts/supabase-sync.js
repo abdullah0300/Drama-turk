@@ -170,7 +170,9 @@ ON CONFLICT (source_id) DO UPDATE SET
   sqlLines.push('\n-- 4. Video Variants & Stream Sources');
   videos.forEach(v => {
     const thumb = v.thumbnail_urls?.[0] || null;
-    const durSecs = v.duration && v.duration.includes('H') ? 2700 : null; // estimated if PT
+    const durationMatch = typeof v.duration === 'string' && v.duration.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+    const durationTotal = durationMatch ? Number(durationMatch[1] || 0) * 3600 + Number(durationMatch[2] || 0) * 60 + Number(durationMatch[3] || 0) : 0;
+    const durSecs = durationTotal > 0 ? durationTotal : null;
     const groupId = v.episode_group_id || null;
 
     sqlLines.push(`
@@ -192,7 +194,7 @@ ON CONFLICT (source_id) DO UPDATE SET
       v.stream_urls.forEach((url, sIdx) => {
         sqlLines.push(`
 INSERT INTO public.stream_sources (variant_id, delivery_url, format, is_active, priority, verification_state)
-SELECT id, ${sqlEscape(url)}, 'hls', true, ${sIdx + 1}, 'reachable'
+SELECT id, ${sqlEscape(url)}, 'hls', true, ${sIdx + 1}, 'untested'
 FROM public.video_variants WHERE source_id = ${sqlEscape(v.id)}
 ON CONFLICT DO NOTHING;
 `);

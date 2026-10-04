@@ -54,6 +54,7 @@ interface WatchClientProps {
   prevGroup?: EpisodeGroup;
   nextGroup?: EpisodeGroup;
   editorialDraft?: EditorialDraft;
+  pageSummary?: string;
 }
 
 export function WatchClient({
@@ -70,6 +71,7 @@ export function WatchClient({
   prevGroup,
   nextGroup,
   editorialDraft,
+  pageSummary,
 }: WatchClientProps) {
   const router = useRouter();
   const [currentVideo, setCurrentVideo] = useState<VideoRecord>(initialVideo);
@@ -203,8 +205,8 @@ export function WatchClient({
             </div>
 
             <p>
-              {editorialDraft?.short_description || drama.synopsis ||
-                `Watch ${drama.name} ${episodeGroup.display_label} in high definition. Complete ad-free broadcast rendition featuring authentic ${
+              {pageSummary || editorialDraft?.short_description || drama.synopsis ||
+                `Watch ${drama.name} ${episodeGroup.display_label} with ${
                   currentVideo.version === 'dubbed'
                     ? `${currentVideo.languages?.join(', ') || 'Urdu'} audio dubbing`
                     : `${currentVideo.languages?.join(' and ') || 'Urdu'} subtitles`
@@ -239,14 +241,15 @@ export function WatchClient({
             )}
 
             {/* Structured Editorial Sections (Gemma Draft Support) */}
-            {editorialDraft?.sections && editorialDraft.sections.filter((x) => !x.is_spoiler).map((sec, idx) => (
+            {(episodeGroup.editorial?.sections || editorialDraft?.sections || []).filter((x) => !x.is_spoiler).map((sec, idx) => (
               <div key={idx} className="ed-block">
-                <h4 className="ed">{sec.heading}</h4>
+                <h2 className="ed">{sec.heading}</h2>
                 <p>{sec.content}</p>
+                {'sources' in sec && Array.isArray(sec.sources) && <p>{sec.sources.map((source: { name: string; url: string }, i: number) => <span key={source.url}>{i > 0 ? ' · ' : ''}<a href={source.url} rel="noopener noreferrer">{source.name}</a></span>)}</p>}
               </div>
             ))}
 
-            {editorialDraft?.sections?.some((x) => x.is_spoiler) && (
+            {(episodeGroup.editorial?.sections || editorialDraft?.sections || []).some((x) => x.is_spoiler) && (
               <div className="spoiler">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: 'var(--gold)' }}>
@@ -260,10 +263,11 @@ export function WatchClient({
                     {showSpoilers ? 'Hide Spoilers' : 'Reveal Spoilers'}
                   </button>
                 </div>
-                {showSpoilers && editorialDraft.sections.filter((x) => x.is_spoiler).map((sec, idx) => (
+                {showSpoilers && (episodeGroup.editorial?.sections || editorialDraft?.sections || []).filter((x) => x.is_spoiler).map((sec, idx) => (
                   <div key={idx} className="ed-block">
-                    <h4 className="ed">{sec.heading}</h4>
+                    <h2 className="ed">{sec.heading}</h2>
                     <p>{sec.content}</p>
+                {'sources' in sec && Array.isArray(sec.sources) && <p>{sec.sources.map((source: { name: string; url: string }, i: number) => <span key={source.url}>{i > 0 ? ' · ' : ''}<a href={source.url} rel="noopener noreferrer">{source.name}</a></span>)}</p>}
                   </div>
                 ))}
               </div>

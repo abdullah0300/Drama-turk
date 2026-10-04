@@ -338,7 +338,7 @@ export function SeasonClient(props: SeasonClientProps) {
                   );
                 })}
               </div>
-              <div className="arc-axis"><span>Premiere</span><span>Midseason</span><span>Finale</span></div>
+              <div className="arc-axis"><span>First listed</span><span>Episode order</span><span>Last listed</span></div>
             </div>
           </section>
         )}
