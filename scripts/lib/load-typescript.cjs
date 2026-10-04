@@ -7,7 +7,7 @@ function loadTypescript(file) {
   const absolute = path.resolve(file);
   if (cache.has(absolute)) return cache.get(absolute).exports;
   const compiled = ts.transpileModule(fs.readFileSync(absolute, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX },
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
   }).outputText;
   const mod = new Module(absolute, module);
   mod.filename = absolute;

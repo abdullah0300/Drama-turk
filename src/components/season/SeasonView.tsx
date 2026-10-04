@@ -1,6 +1,8 @@
 import { EditorialSections } from '@/components/seo/EditorialSections';
 import { ComingSoon, getComingSoonDrama, comingSoonMetadata } from '@/components/dramas/ComingSoon';
 import { ViewingTable } from '@/components/seo/ViewingTable';
+import { getUpcomingEpisode } from '@/lib/releases/upcoming';
+import { UpcomingReleaseCard } from '@/components/releases/UpcomingEpisode';
 import { seasonSeo, episodeNumbers, episodeNumberGaps, isEligibleEpisode, isPlayableVideo, pageMetadata, serializeJsonLd, breadcrumbSchema } from '@/lib/seo/catalog-seo';
 import React from 'react';
 import type { Metadata } from 'next';
@@ -96,6 +98,7 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
   const isCombined = (edition.reported_seasons?.length ?? 0) > 1;
 
   const seasonUrl = seasonPath(drama.id, season, edition);
+  const upcoming = await getUpcomingEpisode(drama.id);
   const graph = { '@context': 'https://schema.org', '@graph': [breadcrumbSchema([
     { name: 'Home', path: '/' }, { name: drama.name, path: '/drama/' + drama.id },
     { name: season.label, path: seasonUrl },
@@ -105,6 +108,7 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
   return (<>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(graph) }} />
     <SeasonClient
+      upcoming={upcoming?.collectionId === edition.id ? <UpcomingReleaseCard episode={upcoming} /> : undefined}
       dramaId={drama.id}
       dramaName={drama.name}
       dramaPoster={drama.poster_url}

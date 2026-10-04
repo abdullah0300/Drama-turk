@@ -54,6 +54,7 @@ interface SeasonClientProps {
   extras: SeasonExtra[];
   others: OtherSeason[];
   more: React.ReactNode;
+  upcoming?: React.ReactNode;
 }
 
 type Filter = 'all' | 'unwatched' | 'watched' | 'preview';
@@ -226,6 +227,7 @@ export function SeasonClient(props: SeasonClientProps) {
       </div>
 
       <div className="sv-body" ref={bodyRef}>
+        {props.upcoming}
         <div className="sv-stats">
           <div className="st"><small>Episodes</small><b>{episodes.length}</b><span>{playable.length ? `${playable.length} playable` : 'Preview records'}</span></div>
           <div className="st"><small>Video records</small><b>{videoCount}</b><span>Verified renditions kept separate</span></div>

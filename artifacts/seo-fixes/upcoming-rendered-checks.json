@@ -1,0 +1,20 @@
+[
+  {
+    "path": "/drama/mehmed-fetihler-sultani/season-4/episode-4",
+    "status": 200,
+    "canonical": "https://greatnation.webcraftio.com/drama/mehmed-fetihler-sultani/season-4/episode-4",
+    "h1_count": 1,
+    "indexable": true,
+    "in_regular_sitemap": true,
+    "in_video_sitemap": false
+  },
+  {
+    "path": "/drama/ask-ve-taht/season-1/episode-5",
+    "status": 200,
+    "canonical": "https://greatnation.webcraftio.com/drama/ask-ve-taht/season-1/episode-5",
+    "h1_count": 1,
+    "indexable": true,
+    "in_regular_sitemap": true,
+    "in_video_sitemap": false
+  }
+]

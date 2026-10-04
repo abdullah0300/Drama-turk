@@ -3,6 +3,7 @@ import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { siteConfig } from '@/config/site';
 import { loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
 import { isEligibleEpisode } from '@/lib/seo/catalog-seo';
+import { getUpcomingEpisode } from '@/lib/releases/upcoming';
 import { isReleasePublished } from '@/types/catalog';
 import { dramaPath, seasonPath } from '@/lib/routes';
 
@@ -86,6 +87,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           }
         }
 
+        const upcoming = await getUpcomingEpisode(d.id);
+        if (upcoming && !dramaEntries.some(e=>e.url===baseUrl+upcoming.href)) {
+          dramaEntries.push({url:baseUrl+upcoming.href,changeFrequency:'daily',priority:0.6});
+        }
         return dramaEntries;
       })
     );

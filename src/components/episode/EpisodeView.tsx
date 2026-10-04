@@ -3,6 +3,8 @@ import { ComingSoon, getComingSoonDrama, comingSoonMetadata } from '@/components
 import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { WatchClient } from './WatchClient';
+import { upcomingForRoute } from '@/lib/releases/upcoming';
+import { UpcomingEpisodePage, upcomingMetadata } from '@/components/releases/UpcomingEpisode';
 import { siteConfig } from '@/config/site';
 import { findEdition, findSeason, loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
 import { isDefaultEdition, seasonPath } from '@/lib/routes';
@@ -26,7 +28,15 @@ async function resolve(params: EpisodeRouteParams, segment?: string) {
 }
 export async function episodeMetadata(params: EpisodeRouteParams, segment?: string): Promise<Metadata> {
   const r = await resolve(params, segment);
-  if (!r) return await getComingSoonDrama(params.dramaId) ? comingSoonMetadata : { title: 'Episode Not Found', robots: { index: false, follow: false } };
+  if (!r) {
+    const upcoming = await upcomingForRoute(params.dramaId,params.season,params.episode,segment);
+    if (upcoming) return upcomingMetadata(upcoming);
+    return await getComingSoonDrama(params.dramaId) ? comingSoonMetadata : { title: 'Episode Not Found', robots: { index: false, follow: false } };
+  }
+  if (!isEligibleEpisode(r.drama,r.edition,r.group,r.videos)) {
+    const upcoming = await upcomingForRoute(params.dramaId,params.season,params.episode,segment);
+    if (upcoming) return upcomingMetadata(upcoming);
+  }
   const seo = episodeSeo(r.drama, r.edition, r.group, r.videos);
   const path = episodeHref(r.drama.id, r.season, r.edition, r.episodes.slugs.get(r.group.id)!);
   return { ...pageMetadata(path, seo.title, seo.description,
@@ -35,6 +45,8 @@ export async function episodeMetadata(params: EpisodeRouteParams, segment?: stri
 export async function EpisodeView({ params, segment }: { params: EpisodeRouteParams; segment?: string }) {
   const r = await resolve(params, segment);
   if (!r) {
+    const upcoming = await upcomingForRoute(params.dramaId,params.season,params.episode,segment);
+    if (upcoming) return <UpcomingEpisodePage episode={upcoming} />;
     const name = await getComingSoonDrama(params.dramaId);
     if (name) return <ComingSoon name={name} />;
     notFound();
@@ -44,6 +56,8 @@ export async function EpisodeView({ params, segment }: { params: EpisodeRoutePar
   if (requestedId !== group.id || (segment && isDefaultEdition(season, edition))) permanentRedirect(path);
   const seasonUrl = seasonPath(drama.id, season, edition);
   if (!isEligibleEpisode(drama, edition, group, videos)) {
+    const upcoming = await upcomingForRoute(params.dramaId,params.season,params.episode,segment);
+    if (upcoming) return <UpcomingEpisodePage episode={upcoming} />;
     return <section className="dw-sec"><h1>{drama.name} — {episodeLabel(edition, group)}</h1>
       <p>This episode is currently unavailable or its numbering is under review.</p>
       <a href={seasonUrl}>Browse available episodes</a></section>;
