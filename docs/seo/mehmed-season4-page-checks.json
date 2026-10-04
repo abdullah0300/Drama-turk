@@ -12,15 +12,15 @@
     "description": 123
   },
   {
-    "path": "/drama/mehmed-fetihler-sultani/season-4/urdu-dubbed/episode-2",
-    "passed": true,
-    "title": 54,
-    "description": 133
-  },
-  {
     "path": "/drama/mehmed-fetihler-sultani/season-4/episode-1",
     "passed": true,
     "title": 60,
+    "description": 133
+  },
+  {
+    "path": "/drama/mehmed-fetihler-sultani/season-4/urdu-dubbed/episode-2",
+    "passed": true,
+    "title": 54,
     "description": 133
   },
   {

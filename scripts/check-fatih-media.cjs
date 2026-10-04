@@ -25,6 +25,10 @@ async function check(item) {
       body = await response.text();
     }
     const segment = body.split(/\r?\n/).find(l => l.trim() && !l.startsWith('#'));
+    if (body.includes('#EXT-X-ENDLIST')) {
+      const seconds = [...body.matchAll(/#EXTINF:([\d.]+)/g)].reduce((sum,m) => sum+Number(m[1]),0);
+      if (seconds > 0 && seconds < 86400) out.duration_seconds = Math.round(seconds);
+    }
     if (!segment) return { ...out, result: 'inconclusive', reason: 'missing_segment' };
     const media = await get(new URL(segment, url).href, true);
     out.segment_http = media.status;

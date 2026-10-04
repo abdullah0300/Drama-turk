@@ -131,7 +131,8 @@ def check_stream(url):
             media = b2.decode('utf-8', 'replace')
             if not media.startswith('#EXTM3U'):
                 return False, s2, 'rendition playlist is not HLS', 0
-        duration = round(sum(float(x) for x in re.findall(r'#EXTINF:([\d.]+)', media)))
+        # A live/sliding playlist exposes only a partial runtime.
+        duration = round(sum(float(x) for x in re.findall(r'#EXTINF:([\d.]+)', media))) if '#EXT-X-ENDLIST' in media else 0
         return True, status, 'playlist and first rendition load without a Referer', duration
     except urllib.error.HTTPError as e:
         return False, e.code, f'HTTP {e.code}', 0
@@ -328,7 +329,7 @@ def run_links(db, rep, limit):
                                     'http_status': status, 'error_message': detail, 'origin_device': 'catalog-sync'}, returning=False)
         if ok:
             ok_n += 1
-            db.update('stream_sources', f"id=eq.{s['id']}", {'verification_state': 'reachable', 'last_verified_at': now()})
+            db.update('stream_sources', f"id=eq.{s['id']}", {'verification_state': 'browser_tested' if s['verification_state'] == 'browser_tested' else 'reachable', 'last_verified_at': now()})
             continue
         # Failed. Ask Niazi for the episode's current link before calling it broken.
         db.update('stream_sources', f"id=eq.{s['id']}", {'verification_state': 'unavailable', 'last_verified_at': now()})
@@ -354,7 +355,7 @@ def run_links(db, rep, limit):
             fixed += 1
             rep.add(f'{vid}: link failed ({detail}); Niazi has a new link, added it as primary and kept the old one')
             continue
-        others_ok = [o for o in by_variant.get(s['variant_id'], []) if o['id'] != s['id'] and o['verification_state'] == 'reachable']
+        others_ok = [o for o in by_variant.get(s['variant_id'], []) if o['id'] != s['id'] and o['verification_state'] in ('reachable', 'browser_tested')]
         if others_ok:
             # A working backup exists: stop offering the broken link first.
             db.update('stream_sources', f"id=eq.{s['id']}", {'priority': max(o['priority'] or 1 for o in by_variant[s['variant_id']]) + 1})

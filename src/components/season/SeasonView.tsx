@@ -1,6 +1,6 @@
 import { EditorialSections } from '@/components/seo/EditorialSections';
 import { ViewingTable } from '@/components/seo/ViewingTable';
-import { seasonSeo, isEligibleEpisode, isPlayableVideo, pageMetadata, serializeJsonLd, breadcrumbSchema } from '@/lib/seo/catalog-seo';
+import { seasonSeo, episodeNumbers, isEligibleEpisode, isPlayableVideo, pageMetadata, serializeJsonLd, breadcrumbSchema } from '@/lib/seo/catalog-seo';
 import React from 'react';
 import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
@@ -55,7 +55,7 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
       href: episodeHref(drama.id, season, edition, slugs.get(group.id)!),
       label: `Episode ${group.episode_number ?? i + 1}`,
       title: firstVideo?.title || group.display_label,
-      bolum: group.bolum,
+      bolum: episodeNumbers(edition, group).broadcast,
       number: group.episode_number ?? i + 1,
       thumb: firstVideo?.thumbnail_urls?.[0],
       playable: videos.some((v) => v.stream_present),
@@ -131,8 +131,8 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
         ) : null
       }
     />
-    {drama.id === 'mehmed-fetihler-sultani' && season.number === 4 && <ViewingTable heading="Season 4 episode and Bolum guide"
-      rows={episodes.map(e => ({ label: e.label, href: e.href, detail: `Bolum ${e.bolum}`, availability: e.languages }))} />}
+    {drama.id === 'mehmed-fetihler-sultani' && <ViewingTable heading={`Season ${season.number} episode and Bolum guide`}
+      rows={episodes.map(e => ({ label: e.label, href: e.href, detail: e.bolum == null ? 'Broadcast mapping unverified' : `Bolum ${e.bolum}`, availability: e.languages }))} />}
     <EditorialSections sections={edition.editorial?.sections || []} /></>
   );
 }

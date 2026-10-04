@@ -1,0 +1,28 @@
+[
+  {
+    "source_id": "video-3245",
+    "episode": "collection-72-episode-1",
+    "publisher_source": "https://play.niazitv.pk/drama/72/single-serie?watch=1&episode=3245",
+    "publisher_heading": "Episode 1 Trailer - Urdu Dubbed",
+    "measured_seconds": 40.134,
+    "complete_playlist": true,
+    "previous_publication_state": "published",
+    "publication_state": "hidden",
+    "reason": "Publisher confirms this is a trailer, previously grouped as a full episode rendition.",
+    "remaining_full_episode": "video-3645",
+    "checked_on": "2026-10-04"
+  },
+  {
+    "source_id": "video-3975",
+    "episode": "collection-76-bolum-70",
+    "publisher_source": "https://play.niazitv.pk/drama/76/single-serie?watch=1&episode=3975",
+    "publisher_duration": "PT0H0M9S",
+    "measured_seconds": 9.16,
+    "complete_playlist": true,
+    "previous_publication_state": "published",
+    "publication_state": "hidden",
+    "reason": "The advertised full English episode is a complete nine-second file. No full replacement was verified.",
+    "remaining_full_episode": "video-3974",
+    "checked_on": "2026-10-04"
+  }
+]

@@ -1,5 +1,6 @@
 // Produces a reviewable factual batch. Does not connect to or write the database.
 const fs = require('fs');
+if (fs.existsSync('docs/seo/mehmed-all-seasons-approved.json')) throw new Error('Reviewed all-season content exists. This initial-draft generator would overwrite it; use the reviewed refinement workflow.');
 const { loadTypescript } = require('./lib/load-typescript.cjs');
 const seo = loadTypescript('src/lib/seo/catalog-seo.ts');
 const snapshot = JSON.parse(fs.readFileSync('docs/seo/mehmed-before-update.json', 'utf8'));

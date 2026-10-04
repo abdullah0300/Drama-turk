@@ -1,0 +1,14 @@
+{
+  "route": "/drama/mehmed-fetihler-sultani/season-1/urdu-dubbed/episode-1",
+  "tested_origin": "http://localhost:3100",
+  "video_source_id": "video-3645",
+  "checked_on": "2026-10-04",
+  "initial_playback_seconds": 0.428277,
+  "later_playback_seconds": 43.845862,
+  "duration_seconds": 6254.640000000003,
+  "ready_state": 4,
+  "media_error": null,
+  "paused_during_playback": false,
+  "paused_after_verification": true,
+  "finding": "The complete dubbed rendition plays beyond the removed 40-second trailer, with a measured runtime of approximately 104 minutes."
+}

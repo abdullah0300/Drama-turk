@@ -1,5 +1,6 @@
 // Generate reviewed content only; this script does not write to Supabase.
 const fs = require('fs');
+if (fs.existsSync('docs/seo/mehmed-all-seasons-approved.json')) throw new Error('Season 4 is included in the reviewed all-season batch; use that workflow to preserve official episode previews.');
 const before = JSON.parse(fs.readFileSync('docs/seo/mehmed-season4-before.json'));
 const official = 'https://www.trt1.com.tr/diziler/mehmed-fetihler-sultani';
 const reference = n => ({name:`TRT 1: Bolum ${n}`,url:`${official}/bolum/${n}-bolum`});

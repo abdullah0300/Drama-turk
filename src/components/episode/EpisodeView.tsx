@@ -53,7 +53,7 @@ export async function EpisodeView({ params, segment }: { params: EpisodeRoutePar
     bolum: g.bolum, thumbnailUrl: episodes.videosByGroup.get(g.id)?.find(isPlayableVideo)?.thumbnail_urls[0] }));
   const seo = episodeSeo(drama, edition, group, videos);
   const matchingEditions = await Promise.all(season.editions.filter(e => drama.id === 'mehmed-fetihler-sultani' &&
-    season.number === 4 && e.id !== edition.id).map(async e => {
+    e.id !== edition.id).map(async e => {
     const data = await loadEditionEpisodes(e.id);
     const broadcast = episodeNumbers(edition, group).broadcast;
     if (broadcast == null) return undefined;

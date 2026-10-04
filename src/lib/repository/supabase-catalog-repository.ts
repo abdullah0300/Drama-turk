@@ -178,6 +178,7 @@ export class SupabaseCatalogRepository {
       const { data: collections, error } = await supabase
         .from('collections')
         .select('*, published_editorial(*), episode_groups(count), video_variants(count)')
+        .eq('video_variants.publication_state', 'published')
         .eq('drama_id', (drama as any).id)
         .in('status', ['published', 'preview'])
         .order('sort_order', { ascending: true });
@@ -222,6 +223,7 @@ export class SupabaseCatalogRepository {
       const { data: col, error } = await supabase
         .from('collections')
         .select('*, published_editorial(*), dramas(source_id), episode_groups(count), video_variants(count)')
+        .eq('video_variants.publication_state', 'published')
         .eq('source_id', collectionSourceId)
         .in('status', ['published', 'preview'])
         .single();
@@ -419,6 +421,7 @@ export class SupabaseCatalogRepository {
           languages: v.languages || [],
           version: v.version || 'subtitled',
           upload_date: v.source_uploaded_at || undefined,
+          duration: dramaSourceId === 'mehmed-fetihler-sultani' && v.duration_seconds > 0 ? `PT${v.duration_seconds}S` : undefined,
           stream_urls: streams,
           stream_present: streams.length > 0,
           thumbnail_urls: grpRow.still_url ? [grpRow.still_url] : v.thumbnail_url ? [v.thumbnail_url] : [],
@@ -498,6 +501,7 @@ export class SupabaseCatalogRepository {
           languages: v.languages || [],
           version: v.version || 'subtitled',
           upload_date: v.source_uploaded_at || undefined,
+          duration: dramaSourceId === 'mehmed-fetihler-sultani' && v.duration_seconds > 0 ? `PT${v.duration_seconds}S` : undefined,
           stream_urls: streams,
           stream_present: streams.length > 0,
           thumbnail_urls: v.episode_groups?.still_url ? [v.episode_groups.still_url] : v.thumbnail_url ? [v.thumbnail_url] : [],
