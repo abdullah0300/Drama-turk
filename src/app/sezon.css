@@ -439,6 +439,11 @@ body.watching .nav{background:rgba(9,9,11,.92);backdrop-filter:blur(16px);-webki
 .w-title{margin:0;font-family:var(--serif);font-weight:600;font-size:clamp(32px,3.6vw,50px);line-height:1;letter-spacing:-.03em}
 .w-title small{display:block;font-family:var(--sans);font-size:14px;font-weight:700;letter-spacing:0;color:var(--gold);margin-bottom:8px}
 .w-acts{display:flex;gap:8px;flex-wrap:wrap}
+.w-language{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.w-head>.w-acts{flex-basis:100%}
+.w-language .pill[aria-pressed="true"]{background:var(--gold);color:#16130d;border-color:var(--gold)}
+.w-language .pill:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+@media(max-width:600px){.w-language{margin-left:0;width:100%}.w-language .pill{flex:1;justify-content:center}}
 .pill{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:999px;background:var(--bg3);font-size:14px;font-weight:700;transition:background .25s,transform .2s}
 .pill:hover{background:#2a2a31}
 .pill:active{transform:scale(.96)}

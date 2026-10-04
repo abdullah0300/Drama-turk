@@ -162,6 +162,16 @@ export function WatchClient({
               <small>{drama.name} · {seasonLabel}</small>
               {episodeGroup.display_label}
             </h1>
+            <div className="w-language" role="group" aria-label="Episode language">
+              {allRenditions.map(rend => (
+                <button key={rend.id} type="button"
+                  className={`pill${rend.id === currentVideo.id ? ' on' : ''}`}
+                  aria-pressed={rend.id === currentVideo.id}
+                  onClick={() => setCurrentVideo(rend)}>
+                  {`${rend.languages.join(' & ') || 'Original'} ${rend.version === 'dubbed' ? 'Dubbed' : rend.version === 'original' ? 'Audio' : 'Subtitles'}`}
+                </button>
+              ))}
+            </div>
             <div className="w-acts">
               <button className="pill" onClick={handleNavigatePrev} disabled={!prevGroup}>
                 <ChevronLeft className="i" />Previous
@@ -213,29 +223,6 @@ export function WatchClient({
               {currentVideo.title || `${drama.name} - ${episodeGroup.display_label}`}
             </p>
 
-            {allRenditions.length > 1 && (
-              <div className="rend-bar" role="group" aria-label="Rendition">
-                <span>Rendition:</span>
-                <div className="tabs">
-                  {allRenditions.map((rend) => {
-                    const langStr = rend.languages && rend.languages.length > 0 ? rend.languages.join(' & ') : '';
-                    const isDubbed = rend.version === 'dubbed';
-                    const label = langStr
-                      ? `${langStr} ${isDubbed ? 'Dubbed' : 'Subtitles'}`
-                      : (isDubbed ? 'Dubbed' : 'Subtitled');
-                    return (
-                      <button
-                        key={rend.id}
-                        className={`tab${rend.id === currentVideo.id ? ' on' : ''}`}
-                        onClick={() => setCurrentVideo(rend)}
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
 
             {/* Structured Editorial Sections (Gemma Draft Support) */}
             {(episodeGroup.editorial?.sections || editorialDraft?.sections || []).filter((x) => !x.is_spoiler).map((sec, idx) => (

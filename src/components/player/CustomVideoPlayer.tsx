@@ -868,22 +868,6 @@ export function CustomVideoPlayer({
 
       {/* Settings menu */}
       <div className={`wp-menu gn-menu${showSettingsMenu ? ' open' : ''}`} role="dialog" aria-label="Player settings">
-        {allRenditions.length > 1 && onRenditionChange && (
-          <>
-            <h6>Version</h6>
-            <div className="seg2">
-              {allRenditions.map((rend) => (
-                <button
-                  key={rend.id}
-                  className={rend.id === currentVideo.id ? 'on' : ''}
-                  onClick={() => { onRenditionChange(rend); setShowSettingsMenu(false); }}
-                >
-                  {renditionLabel(rend)}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
         {qualityLevels.length > 0 && (
           <>
             <h6>Quality</h6>
