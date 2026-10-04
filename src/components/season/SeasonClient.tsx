@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowDown, Captions, Check, Film, Info, Mic, Play, Plus } from 'lucide-react';
+import { ArrowDown, Captions, Check, Clock3, Film, Info, Mic, Play, Plus } from 'lucide-react';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
 
 export interface SeasonEpisode {
@@ -55,6 +55,7 @@ interface SeasonClientProps {
   others: OtherSeason[];
   more: React.ReactNode;
   upcoming?: React.ReactNode;
+  upcomingEpisode?: {href:string;number:number;bolum:number;broadcastAt:string;confirmed:boolean};
 }
 
 type Filter = 'all' | 'unwatched' | 'watched' | 'preview';
@@ -74,6 +75,23 @@ export function SeasonClient(props: SeasonClientProps) {
   const bodyRef = useRef<HTMLDivElement>(null);
 
   const saved = isInMyList(dramaId);
+  const upcomingEpisode = props.upcomingEpisode;
+  const showUpcoming = !!upcomingEpisode && filter !== 'watched';
+  const upcomingCard = showUpcoming && upcomingEpisode ? (
+    <Link href={upcomingEpisode.href} className="se se-upcoming"
+      aria-label={`Episode ${upcomingEpisode.number} — release date and subtitle updates`}>
+      <div className="media">
+        {seasonPoster || heroImage ? <img src={seasonPoster || heroImage} alt="" loading="lazy" /> : <div className="thumb-fallback"><Clock3 size={26} /></div>}
+        <span className="shade" /><span className="badge dark">Upcoming</span>
+        <span className="se-num">{upcomingEpisode.number}</span>
+        <span className="se-release-icon"><Clock3 size={26} aria-hidden="true" /></span>
+      </div>
+      <div className="se-b"><b>Episode {upcomingEpisode.number}{upcomingEpisode.bolum!==upcomingEpisode.number && <span>Bölüm {upcomingEpisode.bolum}</span>}</b>
+        <p>{upcomingEpisode.confirmed?'Scheduled':'Expected'} · <time dateTime={upcomingEpisode.broadcastAt}>{new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Karachi',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(upcomingEpisode.broadcastAt))}</time> PKT</p>
+        <p className="se-release-link">Release date &amp; subtitle updates →</p>
+      </div>
+    </Link>
+  ) : null;
 
   const progressBy = useMemo(() => {
     const m = new Map<string, { pct: number; done: boolean }>();
@@ -238,7 +256,7 @@ export function SeasonClient(props: SeasonClientProps) {
 
         <section className="sv-sec" id="episodes">
           <div className="sv-sec-h">
-            <h2>Episodes<small>{episodes.length} episodes · {collectionHeading}</small></h2>
+            <h2>Episodes<small>{episodes.length} episodes{upcomingEpisode?' · 1 upcoming':''} · {collectionHeading}</small></h2>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               <div className="tabs">
                 {([['all', 'All'], ['unwatched', 'Unwatched'], ['watched', 'Watched'], ['preview', 'Preview']] as [Filter, string][]).map(([k, l]) => (
@@ -283,7 +301,8 @@ export function SeasonClient(props: SeasonClientProps) {
             <div className="dw-empty">No episode groups indexed in this collection.</div>
           ) : (
             <div className="sv-grid">
-              {visible.length === 0 && <div className="dw-empty" style={{ gridColumn: '1/-1' }}>Every episode here is in the other filters.</div>}
+              {visible.length === 0 && !showUpcoming && <div className="dw-empty" style={{ gridColumn: '1/-1' }}>Every episode here is in the other filters.</div>}
+              {desc && upcomingCard}
               {visible.map((e, i) => {
                 const st = stateOf(e);
                 const up = st === 'u';
@@ -313,6 +332,7 @@ export function SeasonClient(props: SeasonClientProps) {
                   <Link key={e.id} href={e.href} className="se" style={style}>{inner}</Link>
                 );
               })}
+              {!desc && upcomingCard}
             </div>
           )}
         </section>

@@ -96,7 +96,7 @@ export function languageLabel(edition: CatalogCollection, videos: VideoRecord[])
   return languages.length ? `${languages.join(' & ')} ${suffix}` : 'Availability under review';
 }
 
-function seriesName(drama: Drama): string {
+export function seriesName(drama: Pick<Drama, 'id' | 'name'>): string {
   return drama.id === FATIH_ID ? 'Mehmed Fetihler Sultani' : drama.name;
 }
 
@@ -106,8 +106,10 @@ export function episodeSeo(drama: Drama, edition: CatalogCollection, group: Epis
   const languages = languageLabel(edition, videos);
   const part = group.part == null ? '' : ` P${group.part}`;
   const identity = `S${season ?? '?'} E${episode ?? '?'}${part}${broadcast == null ? '' : ` | Bolum ${broadcast}`}`;
-  const shortName = drama.id === FATIH_ID ? 'Mehmed' : drama.id === 'alparslan-buyuk-selcuklu' ? 'Alparslan' : drama.name;
-  const candidates = [`${seriesName(drama)} ${identity} | ${languages}`, `${shortName} ${identity} | ${languages}`];
+  const shortName = drama.id === 'alparslan-buyuk-selcuklu' ? 'Alparslan' : seriesName(drama);
+  const compactIdentity = `S${season ?? '?'} E${episode ?? '?'}${part}${broadcast == null ? '' : ` B${broadcast}`}`;
+  const compactLanguages = languages.replace(' & ', '/').replace('Subtitles', 'Subs');
+  const candidates = [`${seriesName(drama)} ${identity} | ${languages}`, `${shortName} ${compactIdentity} | ${compactLanguages}`];
   const generatedTitle = candidates.find(t => t.length <= SEO_TITLE_MAX) || candidates[1];
   const viewingPhrase = edition.version === 'dubbed' ? `in ${languages.replace('Dubbed', 'dubbed audio')}` : `with ${languages.replace('Subtitles', 'subtitles')}`;
   const intro = `Watch ${seriesName(drama)} Season ${season} Episode ${episode}${broadcast == null ? '' : ` (Bolum ${broadcast})`} ${viewingPhrase}.`;
@@ -130,7 +132,7 @@ export function episodeSeo(drama: Drama, edition: CatalogCollection, group: Epis
 export function seasonSeo(drama: Drama, edition: CatalogCollection, videos: VideoRecord[]) {
   const languages = languageLabel(edition, videos);
   const title = `${seriesName(drama)} Season ${edition.reported_seasons.join(' & ')} | ${languages}`;
-  const short = `${drama.id === FATIH_ID ? 'Mehmed' : drama.name} Season ${edition.reported_seasons.join(' & ')} | ${languages}`;
+  const short = `${seriesName(drama)} Season ${edition.reported_seasons.join(' & ')} | ${languages.replace(' & ', '/').replace('Subtitles', 'Subs')}`;
   return {
     title: fitText(edition.editorial?.seo_title || (title.length <= SEO_TITLE_MAX ? title : short), SEO_TITLE_MAX),
     description: fitText(edition.editorial?.seo_description || `Explore ${seriesName(drama)} Season ${edition.reported_seasons.join(' & ')} with ${languages.toLowerCase()}. Browse available episodes, broadcast numbers and viewing choices.`, SEO_DESCRIPTION_MAX),

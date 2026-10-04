@@ -3,35 +3,39 @@ import type { Metadata } from 'next';
 import type { UpcomingEpisode } from '@/lib/releases/upcoming';
 import { ReleaseCountdown } from './ReleaseCountdown';
 import { ReleaseAvailabilityRefresh } from './ReleaseAvailabilityRefresh';
-import { pageMetadata, serializeJsonLd, breadcrumbSchema } from '@/lib/seo/catalog-seo';
+import { pageMetadata, serializeJsonLd, breadcrumbSchema, seriesName } from '@/lib/seo/catalog-seo';
 import { siteConfig } from '@/config/site';
 
 function dateLabel(at:string,timeZone:string) {
   return new Intl.DateTimeFormat('en-GB',{timeZone,dateStyle:'full',timeStyle:'short'}).format(new Date(at));
 }
 export function upcomingMetadata(episode:UpcomingEpisode):Metadata {
-  const name=episode.dramaId==='mehmed-fetihler-sultani'?'Mehmed':episode.dramaName;
+  const name=seriesName({id:episode.dramaId,name:episode.dramaName});
   return pageMetadata(episode.href,`${name} S${episode.season} E${episode.episode} | Release Date & Subtitles`,
     `Check ${name} Episode ${episode.episode}${episode.bolum!==episode.episode?` (Bolum ${episode.bolum})`:''} broadcast time, estimated Urdu/English subtitle availability and release updates.`,true,episode.image);
 }
 export function UpcomingReleaseCard({episode,full=false}:{episode:UpcomingEpisode;full?:boolean}) {
   return <section className="release-card" aria-label="Next episode release">
     <ReleaseAvailabilityRefresh broadcastAt={episode.broadcastAt} />
-    <div className="release-intro"><span className="gold">{episode.confirmed?'Scheduled broadcast':'Expected weekly broadcast'}</span>
-      <h2>{full?'Release schedule':`Next: Episode ${episode.episode}${episode.bolum!==episode.episode?` · Bölüm ${episode.bolum}`:''}`}</h2>
-      <p>{episode.channel} · <time dateTime={episode.broadcastAt}>{dateLabel(episode.broadcastAt,'Europe/Istanbul')}</time> Türkiye (UTC+3)</p>
-      <p>{dateLabel(episode.broadcastAt,'Asia/Karachi')} Pakistan (UTC+5)</p>
-      <p>{episode.confirmed?'The broadcaster lists this date and time.':'This date follows the broadcaster’s weekly slot and is an estimate; schedule changes or breaks can delay it.'} <a href={episode.scheduleSource} target="_blank" rel="noopener noreferrer">Official schedule</a></p>
+    <div className="release-intro"><div><span className="release-eyebrow">{episode.confirmed?'Next broadcast':'Expected next broadcast'} · {episode.channel}</span>
+      <h2>{full?'The next episode is on its way':`Episode ${episode.episode}${episode.bolum!==episode.episode?` · Bölüm ${episode.bolum}`:''}`}</h2>
+      <p><time dateTime={episode.broadcastAt}>{dateLabel(episode.broadcastAt,'Asia/Karachi')}</time> · Pakistan time</p></div>
+      <a className="release-source" href={episode.scheduleSource} target="_blank" rel="noopener noreferrer">Official schedule ↗</a>
     </div>
     <div className="release-timers">
-      <ReleaseCountdown at={episode.broadcastAt} label="Turkish broadcast" finished="Scheduled broadcast time reached" />
-      {episode.estimates.map(({language,at,sampleCount})=><div key={language} className="release-estimate">
+      <div className="release-panel release-panel-broadcast"><ReleaseCountdown at={episode.broadcastAt} label="Turkish broadcast" finished="Scheduled broadcast time reached" />
+        <p>{episode.channel} · 20:00 Türkiye / 22:00 Pakistan</p></div>
+      {episode.estimates.map(({language,at})=><div key={language} className="release-panel release-estimate">
         {at?<><ReleaseCountdown at={at} label={`${language} subtitles · estimated`} finished="Checking subtitle availability" />
-          <p><time dateTime={at}>{dateLabel(at,'Asia/Karachi')}</time> Pakistan. Estimate from {sampleCount} recent publisher timestamps.</p></>:<p>{language} subtitles: release time not confirmed.</p>}
+          <p><time dateTime={at}>{new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Karachi',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(at))}</time> · Pakistan time</p></>:<p>{language} subtitles: release time not confirmed.</p>}
       </div>)}
     </div>
-    <p>Subtitles are not available on this page yet. Urdu and English can arrive separately. We check NiaziTV every two hours and publish viewing options after the stream check passes. A countdown ending does not mean the video is ready.</p>
+    <div className="release-footer"><p>Subtitle times are estimates. We’ll show “Watch now” when a checked video is available.</p>
     {!full&&<Link href={episode.href} className="pill">Episode {episode.episode} release details</Link>}
+    </div>
+    <details className="release-notes"><summary>Release timing details</summary>
+      <p>{episode.confirmed?'The broadcaster lists this date and time.':'The broadcast date follows the weekly slot; breaks or schedule changes can delay it.'} <time dateTime={episode.broadcastAt}>{dateLabel(episode.broadcastAt,'Europe/Istanbul')}</time> Türkiye (UTC+3).</p>
+    </details>
   </section>;
 }
 export function UpcomingEpisodePage({episode}:{episode:UpcomingEpisode}) {

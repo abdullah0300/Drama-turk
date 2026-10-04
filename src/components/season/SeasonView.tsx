@@ -109,6 +109,10 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(graph) }} />
     <SeasonClient
       upcoming={upcoming?.collectionId === edition.id ? <UpcomingReleaseCard episode={upcoming} /> : undefined}
+      upcomingEpisode={upcoming?.collectionId === edition.id ? {
+        href:upcoming.href,number:upcoming.episode,bolum:upcoming.bolum,
+        broadcastAt:upcoming.broadcastAt,confirmed:upcoming.confirmed,
+      } : undefined}
       dramaId={drama.id}
       dramaName={drama.name}
       dramaPoster={drama.poster_url}
