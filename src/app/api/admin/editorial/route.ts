@@ -1,6 +1,6 @@
 import { PublishedEditorialInput } from '@/lib/seo/editorial-validation';
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { verifyAdminAccess, createAdminClient } from '@/lib/auth/admin-auth';
 
 export async function POST(req: NextRequest) {
@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
         : client.from('published_editorial').insert({ ...fields, published_at: now });
       const { data: updated, error } = await mutation.select().single();
       if (error) return NextResponse.json({ error: error.message }, { status: error.code === '23505' ? 409 : 500 });
+      revalidateTag('public-catalog');
       revalidatePath('/', 'layout');
       revalidatePath('/sitemap.xml');
       revalidatePath('/video-sitemap.xml');
@@ -61,8 +62,8 @@ export async function POST(req: NextRequest) {
 
     if (action === 'set_publication_status') {
       const { status } = payload || {};
-      if (!['published', 'draft', 'archived'].includes(status)) {
-        return NextResponse.json({ error: 'Invalid status. Must be published, draft, or archived' }, { status: 400 });
+      if (!['published', 'draft', 'archived', 'hidden'].includes(status)) {
+        return NextResponse.json({ error: 'Invalid status. Must be published, draft, archived, or hidden' }, { status: 400 });
       }
 
       if (targetType === 'episode_group') {
@@ -82,6 +83,7 @@ export async function POST(req: NextRequest) {
             .eq('group_id', (group as any).id);
         }
 
+        revalidateTag('public-catalog');
         revalidatePath('/', 'layout');
         revalidatePath('/sitemap.xml');
         revalidatePath('/video-sitemap.xml');
@@ -98,7 +100,10 @@ export async function POST(req: NextRequest) {
 
         if (drmErr) return NextResponse.json({ error: drmErr.message }, { status: 500 });
 
+        revalidateTag('public-catalog');
         revalidatePath(`/drama/${targetId}`);
+        revalidatePath('/sitemap.xml');
+        revalidatePath('/video-sitemap.xml');
         revalidatePath('/browse');
         revalidatePath('/');
         return NextResponse.json({ success: true, updated: drama });

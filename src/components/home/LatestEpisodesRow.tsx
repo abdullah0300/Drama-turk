@@ -27,8 +27,8 @@ export function LatestEpisodesRow({ episodes }: { episodes: PlayableEpisodeItem[
   return (
     <Rail
       id="new"
-      title="Latest Episodes"
-      sub={`The newest episode from each of ${episodes.length} ${episodes.length === 1 ? 'drama' : 'dramas'}`}
+      title="Recent Episodes by Drama"
+      sub="Latest available episode picks, ordered by known source publication date"
       headClassName="ne-head"
       aside={
         langs.length > 2 ? (
@@ -61,6 +61,7 @@ export function LatestEpisodesRow({ episodes }: { episodes: PlayableEpisodeItem[
               <div className="ne-sub">
                 {group.display_label} · <em>{video.languages?.[0] || 'Subtitled'}</em>
               </div>
+              {video.upload_date && <time className="ne-sub" dateTime={video.upload_date}>Source release: {video.upload_date.slice(0, 10)}</time>}
               <div className="ne-acts">
                 <Link href={watchUrl} className="btn btn-play" style={{ position: 'relative', zIndex: 2 }}>
                   <Play className="i f" />Watch

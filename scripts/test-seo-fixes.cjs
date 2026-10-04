@@ -1,0 +1,12 @@
+const assert = require('node:assert/strict');
+const {loadTypescript} = require('./lib/load-typescript.cjs');
+const seo = loadTypescript('src/lib/seo/catalog-seo.ts');
+const playable = {stream_present:true,stream_urls:['https://example.com/video.m3u8'],thumbnail_urls:['https://example.com/thumb.jpg']};
+const dated = {...playable,upload_date:'2026-09-01T12:00:00Z'};
+assert.equal(seo.selectVideoMetadata([playable,dated]),dated);
+assert.equal(seo.selectVideoMetadata([{...dated,stream_present:false},playable]),playable);
+assert.equal(seo.selectVideoMetadata([{...dated,thumbnail_urls:[]}]),undefined);
+assert.deepEqual(seo.episodeNumberGaps([1,2,4,8,8].map(episode_number=>({episode_number}))),['3','5–7']);
+assert.deepEqual(seo.episodeNumberGaps([28,29,30].map(episode_number=>({episode_number}))),[]);
+assert.deepEqual(seo.episodeNumberGaps([]),[]);
+console.log('SEO metadata selection and preserved episode numbering passed.');

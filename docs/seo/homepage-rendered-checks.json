@@ -1,0 +1,27 @@
+{
+  "checkedAt": "2026-10-04T09:09:49.905Z",
+  "title": "Turkish & Historical Dramas | Urdu & English Subtitles",
+  "titleLength": 54,
+  "descriptionLength": 152,
+  "dramaLinks": 25,
+  "choiceCounts": {
+    "urdu-subtitles": 23,
+    "english-subtitles": 7,
+    "urdu-dubbed": 4
+  },
+  "datedEpisodePicks": 1,
+  "samples": [
+    {
+      "headersMs": 7843,
+      "totalMs": 36977
+    },
+    {
+      "headersMs": 594,
+      "totalMs": 1054
+    },
+    {
+      "headersMs": 394,
+      "totalMs": 747
+    }
+  ]
+}

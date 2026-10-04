@@ -1,0 +1,358 @@
+{
+  "dramas": [
+    {
+      "id": "al-hashashin",
+      "historical": false
+    },
+    {
+      "id": "al-sancak",
+      "historical": false
+    },
+    {
+      "id": "mehmed-fetihler-sultani",
+      "historical": true
+    },
+    {
+      "id": "alparslan-buyuk-selcuklu",
+      "historical": true
+    },
+    {
+      "id": "ates-kuslari",
+      "historical": false
+    },
+    {
+      "id": "barbaroslar",
+      "historical": false
+    },
+    {
+      "id": "destan",
+      "historical": false
+    },
+    {
+      "id": "dokuz-oguz",
+      "historical": false
+    },
+    {
+      "id": "ertugrul-ghazi",
+      "historical": false
+    },
+    {
+      "id": "halka",
+      "historical": false
+    },
+    {
+      "id": "kosem-sultan",
+      "historical": false
+    },
+    {
+      "id": "kurulus-orhan",
+      "historical": false
+    },
+    {
+      "id": "kurulus-osman",
+      "historical": true
+    },
+    {
+      "id": "mendirman-jaloliddin",
+      "historical": false
+    },
+    {
+      "id": "mevlana-celaleddin-rumi",
+      "historical": false
+    },
+    {
+      "id": "salahuddin-ayyubi",
+      "historical": false
+    },
+    {
+      "id": "sevdan-bir-ates",
+      "historical": false
+    },
+    {
+      "id": "soz",
+      "historical": false
+    },
+    {
+      "id": "sultan-abdulhamid",
+      "historical": false
+    },
+    {
+      "id": "sumud",
+      "historical": false
+    },
+    {
+      "id": "tasacak-bu-deniz",
+      "historical": false
+    },
+    {
+      "id": "teskilat",
+      "historical": false
+    },
+    {
+      "id": "the-pit-cukur",
+      "historical": false
+    },
+    {
+      "id": "yunus-emre",
+      "historical": false
+    },
+    {
+      "id": "ask-ve-taht",
+      "historical": true
+    }
+  ],
+  "choices": [
+    {
+      "version": "subtitled",
+      "drama_id": "the-pit-cukur",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "al-hashashin",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "yunus-emre",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "mehmed-fetihler-sultani",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "dokuz-oguz",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "barbaroslar",
+      "languages": [
+        "English"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "alparslan-buyuk-selcuklu",
+      "languages": [
+        "Urdu",
+        "English"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "mehmed-fetihler-sultani",
+      "languages": [
+        "English"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "sevdan-bir-ates",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "kurulus-orhan",
+      "languages": [
+        "English"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "ask-ve-taht",
+      "languages": [
+        "English"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "ates-kuslari",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "mevlana-celaleddin-rumi",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "kurulus-orhan",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "dubbed",
+      "drama_id": "alparslan-buyuk-selcuklu",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "salahuddin-ayyubi",
+      "languages": [
+        "English"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "tasacak-bu-deniz",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "alparslan-buyuk-selcuklu",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "halka",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "sultan-abdulhamid",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "kurulus-osman",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "kosem-sultan",
+      "languages": []
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "kurulus-osman",
+      "languages": [
+        "English"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "alparslan-buyuk-selcuklu",
+      "languages": [
+        "English"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "sumud",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "mendirman-jaloliddin",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "al-sancak",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "soz",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "destan",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "barbaroslar",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "teskilat",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "dubbed",
+      "drama_id": "kurulus-osman",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "dubbed",
+      "drama_id": "ertugrul-ghazi",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "dubbed",
+      "drama_id": "mehmed-fetihler-sultani",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "ask-ve-taht",
+      "languages": [
+        "Urdu"
+      ]
+    },
+    {
+      "version": "subtitled",
+      "drama_id": "salahuddin-ayyubi",
+      "languages": [
+        "Urdu"
+      ]
+    }
+  ],
+  "editions": 65
+}

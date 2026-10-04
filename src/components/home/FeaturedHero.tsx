@@ -88,8 +88,9 @@ export function FeaturedHero({ items }: { items: HeroItem[] }) {
           <span className="pulse" />
           {item.kicker}
         </div>
-        <h1
+        <h2
           className="hero-title"
+          aria-label={item.title}
           style={{
             opacity: shown ? 1 : 0,
             transition: 'opacity .8s var(--ease)',
@@ -105,7 +106,7 @@ export function FeaturedHero({ items }: { items: HeroItem[] }) {
               </span>{' '}
             </React.Fragment>
           ))}
-        </h1>
+        </h2>
         <div className="meta rise" style={{ ['--d' as string]: '.35s' }}>
           {item.genres.length > 0 && <span className="gold">{item.genres[0]}</span>}
           {item.genres.length > 0 && <span className="sep" />}

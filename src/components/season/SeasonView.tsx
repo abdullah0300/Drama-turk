@@ -1,6 +1,7 @@
 import { EditorialSections } from '@/components/seo/EditorialSections';
+import { ComingSoon, getComingSoonDrama, comingSoonMetadata } from '@/components/dramas/ComingSoon';
 import { ViewingTable } from '@/components/seo/ViewingTable';
-import { seasonSeo, episodeNumbers, isEligibleEpisode, isPlayableVideo, pageMetadata, serializeJsonLd, breadcrumbSchema } from '@/lib/seo/catalog-seo';
+import { seasonSeo, episodeNumbers, episodeNumberGaps, isEligibleEpisode, isPlayableVideo, pageMetadata, serializeJsonLd, breadcrumbSchema } from '@/lib/seo/catalog-seo';
 import React from 'react';
 import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
@@ -28,7 +29,7 @@ async function resolve(params: SeasonRouteParams, segment?: string) {
 
 export async function seasonMetadata(params: SeasonRouteParams, segment?: string): Promise<Metadata> {
   const r = await resolve(params, segment);
-  if (!r) return { title: 'Season Not Found', robots: { index: false, follow: false } };
+  if (!r) return await getComingSoonDrama(params.dramaId) ? comingSoonMetadata : { title: 'Season Not Found', robots: { index: false, follow: false } };
   const loaded = await loadEditionEpisodes(r.edition.id);
   const videos = Array.from(loaded.videosByGroup.values()).flat().filter(isPlayableVideo);
   const seo = seasonSeo(r.drama, r.edition, videos);
@@ -39,7 +40,11 @@ export async function seasonMetadata(params: SeasonRouteParams, segment?: string
 /** Season page for one release (default or Urdu dubbed). */
 export async function SeasonView({ params, segment }: { params: SeasonRouteParams; segment?: string }) {
   const r = await resolve(params, segment);
-  if (!r) notFound();
+  if (!r) {
+    const name = await getComingSoonDrama(params.dramaId);
+    if (name) return <ComingSoon name={name} />;
+    notFound();
+  }
   const { drama, seasons, season, edition } = r;
   // A dubbed-only season lives at the plain season URL
   if (segment && isDefaultEdition(season, edition)) permanentRedirect(seasonPath(drama.id, season, edition));
@@ -63,6 +68,7 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
       languages: videos.map((v) => v.languages?.join(', ')).filter(Boolean).join(' / '),
     };
   });
+  const missingNumbers = episodeNumberGaps(episodes.map(e => ({ episode_number: e.number })));
 
   const editions = await Promise.all(season.editions.map(async (e) => { const data = await loadEditionEpisodes(e.id); return ({
     id: e.id,
@@ -94,7 +100,8 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
     { name: 'Home', path: '/' }, { name: drama.name, path: '/drama/' + drama.id },
     { name: season.label, path: seasonUrl },
   ]), { '@type': 'TVSeason', '@id': siteConfig.domain + seasonUrl + '#season', name: drama.name + ' ' + season.label,
-    seasonNumber: season.number, partOfSeries: { '@type': 'TVSeries', '@id': siteConfig.domain + '/drama/' + drama.id + '#series' } }] };
+    seasonNumber: season.number, numberOfEpisodes: episodes.length,
+    partOfSeries: { '@type': 'TVSeries', '@id': siteConfig.domain + '/drama/' + drama.id + '#series' } }] };
   return (<>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(graph) }} />
     <SeasonClient
@@ -131,7 +138,13 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
         ) : null
       }
     />
-    {drama.id === 'mehmed-fetihler-sultani' && <ViewingTable heading={`Season ${season.number} episode and Bolum guide`}
+    {missingNumbers.length > 0 && <section className="dw-sec" aria-label="Episode availability">
+      <h2>Why does the episode list skip numbers?</h2>
+      <p>Unavailable episode labels in this edition: {missingNumbers.join(', ')}. The original release labels are preserved, so Previous and Next follow the available list without renumbering chapters.</p>
+      {drama.id === 'mehmed-fetihler-sultani' && season.number === 3 && <p>Bölüm 64 has no usable media source in the current catalog. It will appear here when a suitable source is available.</p>}
+      <p>Dubbed chapters can divide the original broadcast differently. A missing chapter label does not establish a missing original Turkish broadcast.</p>
+    </section>}
+    {['mehmed-fetihler-sultani', 'alparslan-buyuk-selcuklu', 'ask-ve-taht'].includes(drama.id) && <ViewingTable heading={`Season ${season.number} episode and Bolum guide`}
       rows={episodes.map(e => ({ label: e.label, href: e.href, detail: e.bolum == null ? 'Broadcast mapping unverified' : `Bolum ${e.bolum}`, availability: e.languages }))} />}
     <EditorialSections sections={edition.editorial?.sections || []} /></>
   );

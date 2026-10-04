@@ -2,6 +2,8 @@
 
 Reviewed 4 October 2026. Code is ready for the user's own deployment. Reviewed editorial and media-publication changes have been saved in Supabase project `zvwltfqhbpqtnjbsflvk`.
 
+**Follow-up status:** the live deployment now matches the workspace and allows public crawling. An expanded external-asset/trust/performance audit found remaining issues beyond the route checks. See [the follow-up audit](mehmed-follow-up-audit.md), including two broken thumbnails, one broken cast citation, stale About-page claims and sampled response latency. The earlier route-test pass is not a claim that every SEO/GEO aspect is correct.
+
 ## Completed scope
 
 The main drama page, all six season-edition pages and all 100 imported episode-group editorial records have been reviewed: 107 editorial records. The public inventory contains 95 usable, identified episode pages. Together with the main page and six guides, these form 102 indexable Fatih pages. Three historical duplicate URLs redirect permanently; the ambiguous Season 2 record and wholly unavailable Season 3 Bolum 64 remain noindex.

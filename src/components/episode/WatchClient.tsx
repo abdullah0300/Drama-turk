@@ -20,8 +20,6 @@ import {
   Check, 
   ShieldCheck, 
   AlertTriangle, 
-  Eye, 
-  EyeOff, 
   List,
   Plus,
   Share2,
@@ -76,7 +74,6 @@ export function WatchClient({
   const router = useRouter();
   const [currentVideo, setCurrentVideo] = useState<VideoRecord>(initialVideo);
   const [copiedLink, setCopiedLink] = useState(false);
-  const [showSpoilers, setShowSpoilers] = useState(false);
   const [showDiagnosticsModal, setShowDiagnosticsModal] = useState(false);
   const [copiedDiag, setCopiedDiag] = useState(false);
   const { isInMyList, addToMyList, removeFromMyList, preferences, setAutoplayNext } = useUserPreferences();
@@ -250,27 +247,21 @@ export function WatchClient({
             ))}
 
             {(episodeGroup.editorial?.sections || editorialDraft?.sections || []).some((x) => x.is_spoiler) && (
-              <div className="spoiler">
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <details className="spoiler">
+                <summary style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, cursor: 'pointer' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: 'var(--gold)' }}>
                     <AlertTriangle size={14} />Plot Guide &amp; Tactical Spoilers
                   </div>
-                  <button
-                    onClick={() => setShowSpoilers(!showSpoilers)}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: 'var(--gold)' }}
-                  >
-                    {showSpoilers ? <EyeOff size={14} /> : <Eye size={14} />}
-                    {showSpoilers ? 'Hide Spoilers' : 'Reveal Spoilers'}
-                  </button>
-                </div>
-                {showSpoilers && (episodeGroup.editorial?.sections || editorialDraft?.sections || []).filter((x) => x.is_spoiler).map((sec, idx) => (
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--gold)' }}>Show or hide spoilers</span>
+                </summary>
+                {(episodeGroup.editorial?.sections || editorialDraft?.sections || []).filter((x) => x.is_spoiler).map((sec, idx) => (
                   <div key={idx} className="ed-block">
                     <h2 className="ed">{sec.heading}</h2>
                     <p>{sec.content}</p>
                 {'sources' in sec && Array.isArray(sec.sources) && <p>{sec.sources.map((source: { name: string; url: string }, i: number) => <span key={source.url}>{i > 0 ? ' · ' : ''}<a href={source.url} rel="noopener noreferrer">{source.name}</a></span>)}</p>}
                   </div>
                 ))}
-              </div>
+              </details>
             )}
           </div>
         </div>

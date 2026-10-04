@@ -35,6 +35,7 @@ const video = { stream_present:true, stream_urls:['https://example.com/video.m3u
 assert.deepEqual(seo.episodeNumbers(edition, group), { episode:2, broadcast:85 });
 assert.deepEqual(seo.episodeNumbers({reported_seasons:[1],version:'dubbed'}, {...group,episode_number:8,bolum:null}), {episode:8,broadcast:null});
 assert.ok(seo.episodeSeo(series,edition,group,[video]).title.includes('Bolum 85'));
+assert.ok(!seo.episodeSeo(series,{reported_seasons:[1],version:'dubbed'},{...group,episode_number:8,bolum:null},[video]).description.includes('both numbers'));
 assert.equal(seo.isEligibleEpisode(series,edition,{...group,status:'preview'},[video]),false);
 assert.equal(seo.isEligibleEpisode(series,edition,{...group,id:'collection-68-episode-1'},[video]),false);
 assert.equal(seo.isEligibleEpisode(series,edition,group,[{...video,stream_present:false,stream_urls:[]}]),false);

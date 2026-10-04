@@ -98,7 +98,7 @@ export function LatestSeasons({ items }: { items: LatestSeasonItem[] }) {
 
   return (
     <section ref={sectionRef} className="row reveal ls" id="seasons">
-      <div className="row-head"><h2>Latest Seasons</h2><small>Season collections you can open now</small></div>
+      <div className="row-head"><h2>Explore Seasons</h2><small>Season collections you can open now</small></div>
       <div
         ref={stageRef}
         className={`ls-stage${paused ? ' paused' : ''}`}

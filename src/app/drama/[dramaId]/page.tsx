@@ -1,4 +1,5 @@
 import { EditorialSections } from '@/components/seo/EditorialSections';
+import { ComingSoon, getComingSoonDrama, comingSoonMetadata } from '@/components/dramas/ComingSoon';
 import { ViewingTable } from '@/components/seo/ViewingTable';
 import { dramaSeo, isEligibleEpisode, pageMetadata, serializeJsonLd, breadcrumbSchema } from '@/lib/seo/catalog-seo';
 import React from 'react';
@@ -21,7 +22,7 @@ interface DramaPageProps {
 
 export async function generateMetadata({ params }: DramaPageProps): Promise<Metadata> {
   const drama = await supabaseCatalog.getDrama(params.dramaId);
-  if (!drama) return { title: 'Drama Not Found' };
+  if (!drama) return await getComingSoonDrama(params.dramaId) ? comingSoonMetadata : { title: 'Drama Not Found', robots: { index: false, follow: true } };
 
   const seo = dramaSeo(drama);
   return pageMetadata('/drama/' + drama.id, seo.title, seo.description, drama.status === 'published', drama.poster_url);
@@ -32,7 +33,11 @@ export const revalidate = 0;
 
 export default async function DramaPage({ params }: DramaPageProps) {
   const loaded = await loadDrama(params.dramaId);
-  if (!loaded) notFound();
+  if (!loaded) {
+    const name = await getComingSoonDrama(params.dramaId);
+    if (name) return <ComingSoon name={name} />;
+    notFound();
+  }
   const { drama, seasons } = loaded;
   const collections = seasons.flatMap((s) => s.editions);
   const eligibleCounts = new Map<string, number>();
@@ -74,6 +79,11 @@ export default async function DramaPage({ params }: DramaPageProps) {
     name: drama.name,
     description: drama.synopsis,
     numberOfSeasons: seasons.length,
+    ...(drama.id === 'alparslan-buyuk-selcuklu' ? {
+      alternateName: 'Alparslan: The Great Seljuks',
+      numberOfEpisodes: seasons.reduce((total, season) => total + (eligibleCounts.get(season.editions[0]?.id) ?? 0), 0),
+    } : {}),
+    ...(drama.id === 'ask-ve-taht' ? { alternateName: 'Ishq Aur Takht' } : {}),
     genre: drama.genres,
     image: drama.poster_url,
   };
@@ -145,10 +155,12 @@ export default async function DramaPage({ params }: DramaPageProps) {
         </div>
       </section>
 
-      {drama.id === 'mehmed-fetihler-sultani' && <ViewingTable heading="Choose a season and viewing edition"
+      {['mehmed-fetihler-sultani', 'alparslan-buyuk-selcuklu', 'ask-ve-taht'].includes(drama.id) && <ViewingTable heading="Choose a season and viewing edition"
         rows={seasons.flatMap(s => s.editions.map(e => ({ label: `${s.label} — ${editionName(e)}`,
           href: seasonPath(drama.id, s, e), detail: `${eligibleCounts.get(e.id) ?? 0} available episode pages`,
-          availability: e.version === 'dubbed' ? 'Urdu audio' : 'Original audio; subtitle choices vary by episode' })))} />}
+          availability: ['alparslan-buyuk-selcuklu', 'ask-ve-taht'].includes(drama.id)
+            ? e.version === 'dubbed' ? 'Catalogued Urdu dubbed edition; separate episode numbering' : 'Subtitle choices vary by episode'
+            : e.version === 'dubbed' ? 'Urdu audio' : 'Original audio; subtitle choices vary by episode' })))} />}
       {/* Details */}
       <section className="dw-sec" id="details">
         <h3>Details</h3>

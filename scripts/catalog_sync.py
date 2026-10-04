@@ -190,6 +190,19 @@ def load_catalog(db):
 
 # --------------------------------------------------------------------------- import one episode
 
+def reviewed_source_date(value):
+    """Retain an explicit publisher timestamp; ambiguous dates require review."""
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = dt.datetime.fromisoformat(value.replace('Z', '+00:00'))
+        if parsed.tzinfo is None or parsed.year < 2000 or parsed > dt.datetime.now(dt.timezone.utc):
+            return None
+        return parsed.isoformat()
+    except ValueError:
+        return None
+
+
 def import_episode(db, rep, coll, drama, rec, groups_by_coll):
     """Insert one scraped episode record into a known collection. Returns True if imported."""
     rid = rec['id']
@@ -213,7 +226,8 @@ def import_episode(db, rep, coll, drama, rec, groups_by_coll):
         return False
 
     ok, status, detail, measured = check_stream(rec['stream_urls'][0])
-    duration = iso_seconds(rec.get('duration')) or measured or None
+    # Publisher durations can be placeholders. Only advertise a measured complete playlist.
+    duration = measured or None
 
     # Reuse an existing group with the same numbering (a dubbed and a subtitled cut of the same
     # episode share one group); otherwise create one using the scraper's stable id.
@@ -237,6 +251,7 @@ def import_episode(db, rep, coll, drama, rec, groups_by_coll):
         'reported_season': rec['season'], 'languages': rec['languages'], 'version': rec['version'],
         'publication_state': 'published', 'duration_seconds': duration,
         'thumbnail_url': (rec['thumbnail_urls'] or [None])[0],
+        'source_uploaded_at': reviewed_source_date(rec.get('upload_date')),
     }, on_conflict='source_id')
     if not variant:
         return False  # already present (another run got there first)
@@ -334,6 +349,7 @@ def run_links(db, rep, limit):
         # Failed. Ask Niazi for the episode's current link before calling it broken.
         db.update('stream_sources', f"id=eq.{s['id']}", {'verification_state': 'unavailable', 'last_verified_at': now()})
         new_url = None
+        new_duration = None
         m = re.match(r'video-(\d+)$', vid or '')
         coll = colls.get(v['collection_id']) if v else None
         if m and coll:
@@ -342,11 +358,15 @@ def run_links(db, rep, limit):
                 time.sleep(POLITE_DELAY)
                 cand = (rec.get('stream_urls') or [None])[0]
                 known = {x['delivery_url'] for x in by_variant.get(s['variant_id'], [])}
-                if cand and cand not in known and check_stream(cand)[0]:
-                    new_url = cand
+                if cand and cand not in known:
+                    candidate_ok, _, _, candidate_duration = check_stream(cand)
+                    if candidate_ok:
+                        new_url = cand
+                        new_duration = candidate_duration or None
             except Exception as e:
                 detail += f'; re-scrape failed ({e})'
         if new_url:
+            db.update('video_variants', f"id=eq.{s['variant_id']}", {'duration_seconds': new_duration, 'updated_at': now()})
             # Keep every existing link (pushed down one place) and put the new one first.
             for other in by_variant.get(s['variant_id'], []):
                 db.update('stream_sources', f"id=eq.{other['id']}", {'priority': (other['priority'] or 1) + 1})

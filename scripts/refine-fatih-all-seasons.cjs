@@ -108,6 +108,7 @@ for(const row of batch) {
   const current=before.find(r=>r.source_id===row.source_id);
   if(!current) throw Error('Missing backup '+row.source_id);
   for(const k of ['approved_display_title','short_description','structured_article','seo_title','seo_description']) row[k]=current[k];
+  row.structured_article = JSON.parse(JSON.stringify(row.structured_article).replace(/\/oyuncular/g, '/oyuncu'));
   if(row.target==='collection' && !['collection-82','collection-88'].includes(row.source_id)) {
     const c=snapshot.collections.find(c=>c.source_id===row.source_id), season=c.reported_seasons[0],dub=c.collection_type==='dubbed';
     const ranges={1:[1,15],2:[16,49],3:[50,83]}, [start,end]=ranges[season];

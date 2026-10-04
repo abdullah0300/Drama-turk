@@ -8,8 +8,12 @@ import { MobileNav } from '@/components/layout/MobileNav';
 import { PageShell } from '@/components/layout/PageShell';
 import { Footer } from '@/components/layout/Footer';
 import { siteConfig, publicIndexingEnabled } from '@/config/site';
-import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { isDramaPlayable } from '@/types/catalog';
+import { getPublicDramas, getPublicNotifications } from '@/lib/public-catalog-cache';
+
+// The shared navigation must follow publication changes on every route, including
+// informational pages. Its anonymous catalog queries remain cached for 60 seconds.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.domain),
@@ -50,8 +54,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const [dramas, latest] = await Promise.all([
-    supabaseCatalog.getAllDramas().catch(() => []),
-    supabaseCatalog.getLatestEpisodePerDrama().then((l) => l.slice(0, 5)).catch(() => []),
+    getPublicDramas().catch(() => []),
+    getPublicNotifications().catch(() => []),
   ]);
   const searchDramas = dramas.map((d) => ({
     id: d.id,

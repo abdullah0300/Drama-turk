@@ -1061,3 +1061,20 @@ a.sn{display:block}
 }
 .ft-made a{color:var(--text);font-weight:700;text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px}
 .ft-made a:hover{color:var(--gold)}
+
+/* Homepage discovery text uses the existing gold, serif and spacing system. */
+.home-intro{padding:32px var(--pad) 22px;max-width:1100px}
+.home-intro--first{padding-top:88px}
+.home-intro + .rows{margin-top:0}
+.home-eyebrow{color:var(--gold);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.home-intro h1{font-family:var(--serif);font-size:clamp(28px,3.5vw,48px);font-weight:600;line-height:1.15;margin:10px 0}
+.home-intro p,.home-guide p{color:var(--muted);max-width:850px;line-height:1.7}
+.home-choices{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.home-choices a{border:1px solid var(--line);padding:8px 13px;border-radius:999px;font-size:13px}
+.home-choices a:hover,.home-series-links a:hover{color:var(--gold);border-color:var(--gold)}
+.home-guide{padding:32px var(--pad);border-top:1px solid var(--line);scroll-margin-top:100px}
+.home-guide h2{font-family:var(--serif);font-weight:600;font-size:28px;margin:0 0 10px}
+.home-guide h3{font-size:17px;margin:24px 0 8px}
+.home-guide p a{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+.home-series-links{display:flex;flex-wrap:wrap;gap:12px 22px;list-style:none;padding:0;margin:18px 0 0}
+.home-series-links a{color:var(--text);text-decoration:underline;text-underline-offset:4px}

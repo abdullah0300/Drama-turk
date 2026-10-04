@@ -6,16 +6,16 @@
     "verifiedVideoDuration": null
   },
   {
-    "source_id": "collection-72-episode-1",
-    "indexable": true,
-    "previewRendered": false,
-    "verifiedVideoDuration": "PT6255S"
-  },
-  {
     "source_id": "collection-72",
     "indexable": true,
     "previewRendered": false,
     "verifiedVideoDuration": null
+  },
+  {
+    "source_id": "collection-72-episode-1",
+    "indexable": true,
+    "previewRendered": false,
+    "verifiedVideoDuration": "PT6255S"
   },
   {
     "source_id": "collection-72-episode-2",
@@ -66,16 +66,16 @@
     "verifiedVideoDuration": null
   },
   {
-    "source_id": "collection-62-episode-2",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT8527S"
-  },
-  {
     "source_id": "collection-62-episode-1",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT8843S"
+  },
+  {
+    "source_id": "collection-62-episode-2",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT8527S"
   },
   {
     "source_id": "collection-62-episode-3",
@@ -84,16 +84,16 @@
     "verifiedVideoDuration": null
   },
   {
-    "source_id": "collection-62-episode-5",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT8072S"
-  },
-  {
     "source_id": "collection-62-episode-4",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT8253S"
+  },
+  {
+    "source_id": "collection-62-episode-5",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT8072S"
   },
   {
     "source_id": "collection-62-episode-6",
@@ -102,16 +102,16 @@
     "verifiedVideoDuration": "PT8523S"
   },
   {
-    "source_id": "collection-62-episode-8",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT9039S"
-  },
-  {
     "source_id": "collection-62-episode-7",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT8915S"
+  },
+  {
+    "source_id": "collection-62-episode-8",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT9039S"
   },
   {
     "source_id": "collection-62-episode-9",
@@ -132,16 +132,16 @@
     "verifiedVideoDuration": "PT8847S"
   },
   {
-    "source_id": "collection-62-episode-13",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT8276S"
-  },
-  {
     "source_id": "collection-62-episode-12",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT7974S"
+  },
+  {
+    "source_id": "collection-62-episode-13",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT8276S"
   },
   {
     "source_id": "collection-62-episode-14",
@@ -150,20 +150,14 @@
     "verifiedVideoDuration": "PT7952S"
   },
   {
-    "source_id": "collection-68-episode-1",
-    "indexable": false,
-    "previewRendered": false,
-    "verifiedVideoDuration": null
-  },
-  {
     "source_id": "collection-62-episode-15",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT8287S"
   },
   {
-    "source_id": "collection-68",
-    "indexable": true,
+    "source_id": "collection-68-episode-1",
+    "indexable": false,
     "previewRendered": false,
     "verifiedVideoDuration": null
   },
@@ -172,6 +166,12 @@
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT9838S"
+  },
+  {
+    "source_id": "collection-68",
+    "indexable": true,
+    "previewRendered": false,
+    "verifiedVideoDuration": null
   },
   {
     "source_id": "collection-68-episode-17",
@@ -240,28 +240,28 @@
     "verifiedVideoDuration": "PT8290S"
   },
   {
-    "source_id": "collection-68-episode-28",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT8626S"
-  },
-  {
     "source_id": "collection-68-episode-29",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT8391S"
   },
   {
-    "source_id": "collection-68-episode-31",
+    "source_id": "collection-68-episode-28",
     "indexable": true,
     "previewRendered": true,
-    "verifiedVideoDuration": "PT9013S"
+    "verifiedVideoDuration": "PT8626S"
   },
   {
     "source_id": "collection-68-episode-30",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT7615S"
+  },
+  {
+    "source_id": "collection-68-episode-31",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT9013S"
   },
   {
     "source_id": "collection-68-episode-32",
@@ -276,28 +276,28 @@
     "verifiedVideoDuration": "PT8863S"
   },
   {
-    "source_id": "collection-68-episode-35",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT7753S"
-  },
-  {
     "source_id": "collection-68-episode-34",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT8600S"
   },
   {
-    "source_id": "collection-68-episode-38",
+    "source_id": "collection-68-episode-35",
     "indexable": true,
     "previewRendered": true,
-    "verifiedVideoDuration": "PT7857S"
+    "verifiedVideoDuration": "PT7753S"
   },
   {
     "source_id": "collection-68-episode-36",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT7966S"
+  },
+  {
+    "source_id": "collection-68-episode-38",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT7857S"
   },
   {
     "source_id": "collection-68-episode-37",
@@ -312,16 +312,16 @@
     "verifiedVideoDuration": "PT7753S"
   },
   {
-    "source_id": "collection-68-episode-41",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT8263S"
-  },
-  {
     "source_id": "collection-68-episode-40",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT8674S"
+  },
+  {
+    "source_id": "collection-68-episode-41",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT8263S"
   },
   {
     "source_id": "collection-68-episode-42",
@@ -342,16 +342,16 @@
     "verifiedVideoDuration": "PT8142S"
   },
   {
-    "source_id": "collection-68-episode-46",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT8601S"
-  },
-  {
     "source_id": "collection-68-episode-45",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT8475S"
+  },
+  {
+    "source_id": "collection-68-episode-46",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT8601S"
   },
   {
     "source_id": "collection-68-episode-47",
@@ -372,10 +372,10 @@
     "verifiedVideoDuration": "PT9229S"
   },
   {
-    "source_id": "collection-76",
+    "source_id": "collection-76-episode-51",
     "indexable": true,
-    "previewRendered": false,
-    "verifiedVideoDuration": null
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT8579S"
   },
   {
     "source_id": "collection-76-episode-50",
@@ -384,10 +384,10 @@
     "verifiedVideoDuration": "PT7855S"
   },
   {
-    "source_id": "collection-76-episode-51",
+    "source_id": "collection-76",
     "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT8579S"
+    "previewRendered": false,
+    "verifiedVideoDuration": null
   },
   {
     "source_id": "collection-76-bolum-52",
@@ -426,16 +426,16 @@
     "verifiedVideoDuration": "PT8412S"
   },
   {
-    "source_id": "collection-76-episode-58",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT8049S"
-  },
-  {
     "source_id": "collection-76-episode-59",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT6683S"
+  },
+  {
+    "source_id": "collection-76-episode-58",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT8049S"
   },
   {
     "source_id": "collection-76-episode-60",
@@ -456,16 +456,16 @@
     "verifiedVideoDuration": "PT8927S"
   },
   {
-    "source_id": "collection-76-bolum-64",
-    "indexable": false,
-    "previewRendered": false,
-    "verifiedVideoDuration": null
-  },
-  {
     "source_id": "collection-76-bolum-63",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT8474S"
+  },
+  {
+    "source_id": "collection-76-bolum-64",
+    "indexable": false,
+    "previewRendered": false,
+    "verifiedVideoDuration": null
   },
   {
     "source_id": "collection-76-bolum-65",
@@ -492,28 +492,22 @@
     "verifiedVideoDuration": "PT8764S"
   },
   {
-    "source_id": "collection-76-bolum-70",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": null
-  },
-  {
     "source_id": "collection-76-bolum-69",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT8418S"
   },
   {
+    "source_id": "collection-76-bolum-70",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": null
+  },
+  {
     "source_id": "collection-76-bolum-71",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT8515S"
-  },
-  {
-    "source_id": "collection-76-episode-73",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT8463S"
   },
   {
     "source_id": "collection-76-bolum-72",
@@ -528,10 +522,10 @@
     "verifiedVideoDuration": "PT7564S"
   },
   {
-    "source_id": "collection-76-episode-76",
+    "source_id": "collection-76-episode-73",
     "indexable": true,
     "previewRendered": true,
-    "verifiedVideoDuration": "PT8911S"
+    "verifiedVideoDuration": "PT8463S"
   },
   {
     "source_id": "collection-76-episode-75",
@@ -540,22 +534,28 @@
     "verifiedVideoDuration": "PT8127S"
   },
   {
+    "source_id": "collection-76-episode-76",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT8911S"
+  },
+  {
     "source_id": "collection-76-episode-77",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT7473S"
   },
   {
-    "source_id": "collection-76-episode-79",
-    "indexable": true,
-    "previewRendered": true,
-    "verifiedVideoDuration": "PT8688S"
-  },
-  {
     "source_id": "collection-76-episode-78",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT6089S"
+  },
+  {
+    "source_id": "collection-76-episode-79",
+    "indexable": true,
+    "previewRendered": true,
+    "verifiedVideoDuration": "PT8688S"
   },
   {
     "source_id": "collection-76-episode-80",
@@ -588,16 +588,16 @@
     "verifiedVideoDuration": "PT9390S"
   },
   {
-    "source_id": "collection-88",
-    "indexable": true,
-    "previewRendered": false,
-    "verifiedVideoDuration": null
-  },
-  {
     "source_id": "collection-88-bolum-85",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT6697S"
+  },
+  {
+    "source_id": "collection-88",
+    "indexable": true,
+    "previewRendered": false,
+    "verifiedVideoDuration": null
   },
   {
     "source_id": "collection-82-bolum-84",
@@ -606,16 +606,16 @@
     "verifiedVideoDuration": null
   },
   {
-    "source_id": "collection-82",
-    "indexable": true,
-    "previewRendered": false,
-    "verifiedVideoDuration": null
-  },
-  {
     "source_id": "collection-82-bolum-85",
     "indexable": true,
     "previewRendered": true,
     "verifiedVideoDuration": "PT6697S"
+  },
+  {
+    "source_id": "collection-82",
+    "indexable": true,
+    "previewRendered": false,
+    "verifiedVideoDuration": null
   },
   {
     "source_id": "collection-82-bolum-86",

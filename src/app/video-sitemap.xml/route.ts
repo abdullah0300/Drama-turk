@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { siteConfig } from '@/config/site';
 import { loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
-import { isEligibleEpisode, isPlayableVideo, episodeSeo, xmlEscape } from '@/lib/seo/catalog-seo';
+import { isEligibleEpisode, selectVideoMetadata, episodeSeo, xmlEscape } from '@/lib/seo/catalog-seo';
 
 export const revalidate = 300;
 export const dynamic = 'force-dynamic';
@@ -14,7 +14,7 @@ export async function GET() {
     const batches = await Promise.all(loaded.seasons.flatMap(season => season.editions.map(async edition => {
       const data = await loadEditionEpisodes(edition.id);
       return data.groups.filter(group => isEligibleEpisode(loaded.drama, edition, group, data.videosByGroup.get(group.id) || [])).flatMap(group => {
-        const video = (data.videosByGroup.get(group.id) || []).find(v => isPlayableVideo(v) && v.thumbnail_urls[0]);
+        const video = selectVideoMetadata(data.videosByGroup.get(group.id) || []);
         if (!video) return [];
         const seo = episodeSeo(loaded.drama, edition, group, data.videosByGroup.get(group.id) || []);
         const page = siteConfig.domain + episodeHref(d.id, season, edition, data.slugs.get(group.id)!);

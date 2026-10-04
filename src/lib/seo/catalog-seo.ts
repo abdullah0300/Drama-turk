@@ -16,11 +16,29 @@ export const FATIH_GROUP_ALIASES: Record<string, string> = {
 const identityHolds = new Set(['collection-68-episode-1']);
 
 export function canonicalGroupId(id: string): string { return FATIH_GROUP_ALIASES[id] || id; }
-export function hasReviewedIdentity(group: EpisodeGroup): boolean {
+export function hasReviewedIdentity(group: Pick<EpisodeGroup, 'id'>): boolean {
   return !identityHolds.has(group.id);
 }
 export function isPlayableVideo(video: VideoRecord): boolean {
   return video.stream_present && video.stream_urls.length > 0;
+}
+
+/** Use the same selectable rendition's facts in JSON-LD and the video sitemap. */
+export function selectVideoMetadata(videos: VideoRecord[]): VideoRecord | undefined {
+  const candidates = videos.filter(v => isPlayableVideo(v) && v.thumbnail_urls[0]);
+  return candidates.find(v => v.upload_date && Number.isFinite(Date.parse(v.upload_date))) || candidates[0];
+}
+
+/** Missing source labels between listed episodes, without inventing or renumbering releases. */
+export function episodeNumberGaps(groups: Pick<EpisodeGroup, 'episode_number'>[]): string[] {
+  const numbers = Array.from(new Set(groups.map(g => g.episode_number).filter((n): n is number => n != null && Number.isSafeInteger(n) && n > 0))).sort((a, b) => a - b);
+  const gaps: string[] = [];
+  numbers.slice(1).forEach((n, i) => {
+    const first = numbers[i] + 1;
+    const last = n - 1;
+    if (first <= last) gaps.push(first === last ? String(first) : `${first}–${last}`);
+  });
+  return gaps;
 }
 export function isEligibleEpisode(drama: Drama, edition: CatalogCollection, group: EpisodeGroup, videos: VideoRecord[]): boolean {
   return (drama.status === 'published' || drama.status === undefined) &&
@@ -88,14 +106,14 @@ export function episodeSeo(drama: Drama, edition: CatalogCollection, group: Epis
   const languages = languageLabel(edition, videos);
   const part = group.part == null ? '' : ` P${group.part}`;
   const identity = `S${season ?? '?'} E${episode ?? '?'}${part}${broadcast == null ? '' : ` | Bolum ${broadcast}`}`;
-  const shortName = drama.id === FATIH_ID ? 'Mehmed' : drama.name;
+  const shortName = drama.id === FATIH_ID ? 'Mehmed' : drama.id === 'alparslan-buyuk-selcuklu' ? 'Alparslan' : drama.name;
   const candidates = [`${seriesName(drama)} ${identity} | ${languages}`, `${shortName} ${identity} | ${languages}`];
   const generatedTitle = candidates.find(t => t.length <= SEO_TITLE_MAX) || candidates[1];
   const viewingPhrase = edition.version === 'dubbed' ? `in ${languages.replace('Dubbed', 'dubbed audio')}` : `with ${languages.replace('Subtitles', 'subtitles')}`;
   const intro = `Watch ${seriesName(drama)} Season ${season} Episode ${episode}${broadcast == null ? '' : ` (Bolum ${broadcast})`} ${viewingPhrase}.`;
   const endings = [
     " Explore episode details, choose a rendition and browse available episodes on Great Nation.",
-    " Choose a rendition, check both numbers and browse this season's episodes.",
+    broadcast == null ? " Choose a rendition and follow this release's episode order." : " Choose a rendition, check both numbers and browse this season's episodes.",
     " Check episode details and browse the season's available episodes.",
     " Browse episode details and the available viewing choices.",
   ];

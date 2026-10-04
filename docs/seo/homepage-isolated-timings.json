@@ -1,0 +1,20 @@
+{
+  "localOnly": true,
+  "requests": [
+    {
+      "status": 200,
+      "headersMs": 588,
+      "totalMs": 3789
+    },
+    {
+      "status": 200,
+      "headersMs": 257,
+      "totalMs": 358
+    },
+    {
+      "status": 200,
+      "headersMs": 326,
+      "totalMs": 388
+    }
+  ]
+}

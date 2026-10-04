@@ -13,6 +13,7 @@ export function PageShell({ children }: { children: React.ReactNode }) {
   return (
     <main
       id="main-content"
+      tabIndex={-1}
       className={`flex-1 pb-16 md:pb-0 focus:outline-none${fullBleed ? '' : ' pt-[68px]'}`}
     >
       {children}

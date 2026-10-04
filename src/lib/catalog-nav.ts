@@ -1,17 +1,20 @@
 import 'server-only';
 import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
+import { publicCatalogCacheOptions } from '@/lib/public-catalog-cache';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { groupSeasons, CatalogCollection, Drama, EpisodeGroup, SeasonGroup, VideoRecord } from '@/types/catalog';
 import { DUBBED_SEGMENT, episodePath, episodeSlugs, seasonPath, seasonSlugOf } from '@/lib/routes';
 import { canonicalGroupId, episodeLabel, episodeNumbers } from '@/lib/seo/catalog-seo';
 
 /** Drama with its seasons (releases grouped by season number). Cached per request. */
-export const loadDrama = cache(async (dramaId: string): Promise<{ drama: Drama; seasons: SeasonGroup[] } | null> => {
+export const loadDrama = cache(unstable_cache(async (dramaId: string): Promise<{ drama: Drama; seasons: SeasonGroup[] } | null> => {
   const drama = await supabaseCatalog.getDrama(dramaId);
   if (!drama) return null;
   const seasons = groupSeasons(await supabaseCatalog.getDramaCollections(drama.id));
+  if (supabaseCatalog.isConfigured() && drama.collection_ids.length && !seasons.length) throw new Error('Public season inventory unavailable');
   return { drama, seasons };
-});
+}, ['public-drama-navigation-v1'], publicCatalogCacheOptions));
 
 export function findSeason(seasons: SeasonGroup[], slug: string): SeasonGroup | undefined {
   return seasons.find((s) => seasonSlugOf(s.editions[0]) === slug);
@@ -33,23 +36,32 @@ export interface EditionEpisodes {
 }
 
 /** Episodes of one release, with their URL slugs and videos. Cached per request. */
-export const loadEditionEpisodes = cache(async (collectionId: string): Promise<EditionEpisodes> => {
-  const rawGroups = await supabaseCatalog.getCollectionEpisodeGroups(collectionId);
-  // Compute old slugs before deduplication so existing URLs remain stable.
-  const slugs = episodeSlugs(rawGroups);
-  const edition = await supabaseCatalog.getCollection(collectionId);
-  const groups = rawGroups.filter(g => canonicalGroupId(g.id) === g.id).map(g => {
-    if (!edition) return g;
-    return { ...g, bolum: episodeNumbers(edition, g).broadcast, display_label: episodeLabel(edition, g) };
-  });
-  let videos = await supabaseCatalog.getCollectionVideos(collectionId);
-  if (videos.length === 0 && groups.length > 0) {
+const getPublicEditionInput = unstable_cache(async (collectionId: string) => {
+  const [rawGroups, edition, initialVideos] = await Promise.all([
+    supabaseCatalog.getCollectionEpisodeGroups(collectionId),
+    supabaseCatalog.getCollection(collectionId),
+    supabaseCatalog.getCollectionVideos(collectionId),
+  ]);
+  let videos = initialVideos;
+  if (videos.length === 0 && rawGroups.length > 0) {
     // Fall back to per-group lookups when the bulk collection query returns nothing
-    videos = (await Promise.all(groups.map((g) => supabaseCatalog.getVideosForGroup(g.id)))).flat();
+    videos = (await Promise.all(rawGroups.map((g) => supabaseCatalog.getVideosForGroup(g.id)))).flat();
   }
   if (supabaseCatalog.isConfigured() && edition && videos.length < edition.video_records) {
     throw new Error(`Incomplete public video inventory for ${collectionId}; refusing to publish a partial catalog`);
   }
+  // Next's persistent cache serializes JSON; rebuild Maps outside this cache.
+  return { rawGroups, edition, videos };
+}, ['public-edition-input-v1'], publicCatalogCacheOptions);
+
+export const loadEditionEpisodes = cache(async (collectionId: string): Promise<EditionEpisodes> => {
+  const { rawGroups, edition, videos } = await getPublicEditionInput(collectionId);
+  // Compute old slugs before deduplication so existing URLs remain stable.
+  const slugs = episodeSlugs(rawGroups);
+  const groups = rawGroups.filter(g => canonicalGroupId(g.id) === g.id).map(g => {
+    if (!edition) return g;
+    return { ...g, bolum: episodeNumbers(edition, g).broadcast, display_label: episodeLabel(edition, g) };
+  });
   const videosByGroup = new Map<string, VideoRecord[]>();
   const extras: VideoRecord[] = [];
   videos.forEach((v) => {

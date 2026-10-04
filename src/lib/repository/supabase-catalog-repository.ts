@@ -1,4 +1,4 @@
-import { selectEditorial } from '@/lib/seo/catalog-seo';
+import { selectEditorial, canonicalGroupId, hasReviewedIdentity } from '@/lib/seo/catalog-seo';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database.types';
 import { catalogRepository as localCatalog } from '@/lib/repository/catalog-repository';
@@ -124,6 +124,7 @@ export class SupabaseCatalogRepository {
         .from('dramas')
         .select('*, published_editorial(*), collections(source_id, status, reported_seasons, collection_type, label)')
         .or(`source_id.eq.${idOrSlug},slug.eq.${idOrSlug}`)
+        .in('status', ['published', 'preview'])
         .single();
 
       if (error || !data) {
@@ -154,6 +155,15 @@ export class SupabaseCatalogRepository {
     } catch (e) {
       return this.isConfigured() ? undefined : localCatalog.getDrama(idOrSlug);
     }
+  }
+
+  public async getHiddenDramaName(idOrSlug: string): Promise<string | undefined> {
+    const supabase = this.getClient();
+    if (!supabase) return undefined;
+    const { data, error } = await supabase.from('dramas')
+      .select('display_name').eq('status', 'hidden')
+      .or(`source_id.eq.${idOrSlug},slug.eq.${idOrSlug}`).maybeSingle();
+    return error ? undefined : (data as { display_name: string } | null)?.display_name;
   }
 
   public async getPilotDrama(): Promise<Drama | undefined> {
@@ -568,7 +578,7 @@ export class SupabaseCatalogRepository {
    * One card per drama: the last episode of its newest season (subtitled preferred when a season
    * exists in both editions). Featured drama first, then the getAllDramas order.
    */
-  public async getLatestEpisodePerDrama(customPriorityIds?: string[]): Promise<Array<{
+  public async getLatestEpisodePerDrama(customPriorityIds?: string[], limit?: number): Promise<Array<{
     group: EpisodeGroup;
     video: VideoRecord;
     collection: CatalogCollection;
@@ -600,7 +610,7 @@ export class SupabaseCatalogRepository {
       }
     }
 
-    const picks = await Promise.all(dramas.map(async (drama) => {
+    const pick = async (drama: Drama) => {
       const cols = (await this.getDramaCollections(drama.id))
         .filter(isReleasePublished);
       if (cols.length === 0) return null;
@@ -622,9 +632,42 @@ export class SupabaseCatalogRepository {
         }
       }
       return null;
-    }));
-
+    };
+    if (limit !== undefined) {
+      const requested = Math.max(0, Math.floor(limit));
+      const result: Array<NonNullable<Awaited<ReturnType<typeof pick>>>> = [];
+      for (let offset = 0; offset < dramas.length && result.length < requested; offset += requested) {
+        const batch = await Promise.all(dramas.slice(offset, offset + requested).map(pick));
+        result.push(...batch.filter((p): p is NonNullable<typeof p> => p !== null));
+      }
+      return result.slice(0, requested);
+    }
+    const picks = await Promise.all(dramas.map(pick));
     return picks.filter((p): p is NonNullable<typeof p> => p !== null);
+  }
+
+  /** Lightweight public inventory, paginated to avoid PostgREST's row limit. */
+  public async getViewingChoices(): Promise<Array<{ dramaId: string; collectionId: string; groupId: string; languages: string[]; version: string }>> {
+    const client = this.getClient();
+    if (!client) return [];
+    const rows: Array<{ dramaId: string; collectionId: string; groupId: string; languages: string[]; version: string }> = [];
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await client.from('video_variants')
+        .select('id,languages,version,collections!inner(source_id,status,dramas!inner(source_id,status)),episode_groups!inner(source_id,status),stream_sources!inner(is_active,verification_state)')
+        .eq('publication_state', 'published').eq('collections.status', 'published')
+        .eq('collections.dramas.status', 'published').eq('episode_groups.status', 'published')
+        .eq('episode_groups.content_type', 'episode')
+        .eq('stream_sources.is_active', true).in('stream_sources.verification_state', ['reachable', 'browser_tested'])
+        .order('id').range(offset, offset + 999);
+      if (error) throw new Error(`Public viewing choices unavailable: ${error.message}`);
+      for (const v of (data || []) as any[]) {
+        // Preserve the same unresolved-identity and duplicate exclusions as episode pages.
+        const groupId = v.episode_groups.source_id;
+        if (!hasReviewedIdentity({ id: groupId }) || canonicalGroupId(groupId) !== groupId) continue;
+        rows.push({ dramaId: v.collections.dramas.source_id, collectionId: v.collections.source_id, groupId, languages: v.languages || [], version: v.version });
+      }
+      if (!data || data.length < 1000) return rows;
+    }
   }
 
   public async getSiteSettings(): Promise<any> {

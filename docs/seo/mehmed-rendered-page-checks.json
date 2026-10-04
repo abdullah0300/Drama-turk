@@ -1,5 +1,15 @@
 [
   {
+    "id": "collection-72-episode-1",
+    "path": "/drama/mehmed-fetihler-sultani/season-1/urdu-dubbed/episode-1",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S1 E1 | Urdu Dubbed",
+    "title_length": 43,
+    "description_length": 137,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
     "id": "mehmed-fetihler-sultani",
     "path": "/drama/mehmed-fetihler-sultani",
     "status": 200,
@@ -10,12 +20,32 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-72-episode-1",
-    "path": "/drama/mehmed-fetihler-sultani/season-1/urdu-dubbed/episode-1",
+    "id": "collection-72-episode-2",
+    "path": "/drama/mehmed-fetihler-sultani/season-1/urdu-dubbed/episode-2",
     "status": 200,
-    "title": "Mehmed Fetihler Sultani S1 E1 | Urdu Dubbed",
+    "title": "Mehmed Fetihler Sultani S1 E2 | Urdu Dubbed",
     "title_length": 43,
-    "description_length": 144,
+    "description_length": 137,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
+    "id": "collection-72-episode-3",
+    "path": "/drama/mehmed-fetihler-sultani/season-1/urdu-dubbed/episode-3",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S1 E3 | Urdu Dubbed",
+    "title_length": 43,
+    "description_length": 137,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
+    "id": "collection-72-episode-4",
+    "path": "/drama/mehmed-fetihler-sultani/season-1/urdu-dubbed/episode-4",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S1 E4 | Urdu Dubbed",
+    "title_length": 43,
+    "description_length": 137,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -30,42 +60,12 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-72-episode-3",
-    "path": "/drama/mehmed-fetihler-sultani/season-1/urdu-dubbed/episode-3",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani S1 E3 | Urdu Dubbed",
-    "title_length": 43,
-    "description_length": 144,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
-    "id": "collection-72-episode-2",
-    "path": "/drama/mehmed-fetihler-sultani/season-1/urdu-dubbed/episode-2",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani S1 E2 | Urdu Dubbed",
-    "title_length": 43,
-    "description_length": 144,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
-    "id": "collection-72-episode-4",
-    "path": "/drama/mehmed-fetihler-sultani/season-1/urdu-dubbed/episode-4",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani S1 E4 | Urdu Dubbed",
-    "title_length": 43,
-    "description_length": 144,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
     "id": "collection-72-episode-5",
     "path": "/drama/mehmed-fetihler-sultani/season-1/urdu-dubbed/episode-5",
     "status": 200,
     "title": "Mehmed Fetihler Sultani S1 E5 | Urdu Dubbed",
     "title_length": 43,
-    "description_length": 144,
+    "description_length": 137,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -75,7 +75,7 @@
     "status": 200,
     "title": "Mehmed Fetihler Sultani S1 E6 | Urdu Dubbed",
     "title_length": 43,
-    "description_length": 144,
+    "description_length": 137,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -85,7 +85,7 @@
     "status": 200,
     "title": "Mehmed Fetihler Sultani S1 E7 | Urdu Dubbed",
     "title_length": 43,
-    "description_length": 144,
+    "description_length": 137,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -95,17 +95,7 @@
     "status": 200,
     "title": "Mehmed Fetihler Sultani S1 E8 | Urdu Dubbed",
     "title_length": 43,
-    "description_length": 144,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
-    "id": "collection-62",
-    "path": "/drama/mehmed-fetihler-sultani/season-1",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani Season 1 | Urdu & English Subtitles",
-    "title_length": 59,
-    "description_length": 149,
+    "description_length": 137,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -120,12 +110,12 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-62-episode-2",
-    "path": "/drama/mehmed-fetihler-sultani/season-1/episode-2",
+    "id": "collection-62",
+    "path": "/drama/mehmed-fetihler-sultani/season-1",
     "status": 200,
-    "title": "Mehmed Fetihler Sultani S1 E2 | Bolum 2 | Urdu/English Subs",
+    "title": "Mehmed Fetihler Sultani Season 1 | Urdu & English Subtitles",
     "title_length": 59,
-    "description_length": 124,
+    "description_length": 149,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -136,6 +126,16 @@
     "title": "Mehmed Fetihler Sultani S1 E3 | Bolum 3 | Urdu/English Subs",
     "title_length": 59,
     "description_length": 140,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
+    "id": "collection-62-episode-2",
+    "path": "/drama/mehmed-fetihler-sultani/season-1/episode-2",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S1 E2 | Bolum 2 | Urdu/English Subs",
+    "title_length": 59,
+    "description_length": 124,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -170,16 +170,6 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-62-episode-8",
-    "path": "/drama/mehmed-fetihler-sultani/season-1/episode-8",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani S1 E8 | Bolum 8 | Urdu/English Subs",
-    "title_length": 59,
-    "description_length": 139,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
     "id": "collection-62-episode-7",
     "path": "/drama/mehmed-fetihler-sultani/season-1/episode-7",
     "status": 200,
@@ -196,6 +186,16 @@
     "title": "Mehmed Fetihler Sultani S1 E9 | Bolum 9 | Urdu/English Subs",
     "title_length": 59,
     "description_length": 146,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
+    "id": "collection-62-episode-8",
+    "path": "/drama/mehmed-fetihler-sultani/season-1/episode-8",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S1 E8 | Bolum 8 | Urdu/English Subs",
+    "title_length": 59,
+    "description_length": 139,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -290,22 +290,22 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-68-episode-18",
-    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-18",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani S2E18 | Bolum 18 | Urdu/English Subs",
-    "title_length": 60,
-    "description_length": 135,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
     "id": "collection-68-episode-17",
     "path": "/drama/mehmed-fetihler-sultani/season-2/episode-17",
     "status": 200,
     "title": "Mehmed Fetihler Sultani S2E17 | Bolum 17 | Urdu/English Subs",
     "title_length": 60,
     "description_length": 126,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
+    "id": "collection-68-episode-18",
+    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-18",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S2E18 | Bolum 18 | Urdu/English Subs",
+    "title_length": 60,
+    "description_length": 135,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -380,22 +380,22 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-68-episode-27",
-    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-27",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani S2E27 | Bolum 27 | Urdu/English Subs",
-    "title_length": 60,
-    "description_length": 138,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
     "id": "collection-68-episode-26",
     "path": "/drama/mehmed-fetihler-sultani/season-2/episode-26",
     "status": 200,
     "title": "Mehmed Fetihler Sultani S2E26 | Bolum 26 | Urdu/English Subs",
     "title_length": 60,
     "description_length": 130,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
+    "id": "collection-68-episode-27",
+    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-27",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S2E27 | Bolum 27 | Urdu/English Subs",
+    "title_length": 60,
+    "description_length": 138,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -520,16 +520,6 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-68-episode-40",
-    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-40",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani S2E40 | Bolum 40 | Urdu/English Subs",
-    "title_length": 60,
-    "description_length": 132,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
     "id": "collection-68-episode-41",
     "path": "/drama/mehmed-fetihler-sultani/season-2/episode-41",
     "status": 200,
@@ -540,12 +530,12 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-68-episode-43",
-    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-43",
+    "id": "collection-68-episode-40",
+    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-40",
     "status": 200,
-    "title": "Mehmed Fetihler Sultani S2E43 | Bolum 43 | Urdu/English Subs",
+    "title": "Mehmed Fetihler Sultani S2E40 | Bolum 40 | Urdu/English Subs",
     "title_length": 60,
-    "description_length": 127,
+    "description_length": 132,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -560,22 +550,22 @@
     "jsonld_blocks": 1
   },
   {
+    "id": "collection-68-episode-43",
+    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-43",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S2E43 | Bolum 43 | Urdu/English Subs",
+    "title_length": 60,
+    "description_length": 127,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
     "id": "collection-68-episode-44",
     "path": "/drama/mehmed-fetihler-sultani/season-2/episode-44",
     "status": 200,
     "title": "Mehmed Fetihler Sultani S2E44 | Bolum 44 | Urdu/English Subs",
     "title_length": 60,
     "description_length": 128,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
-    "id": "collection-68-episode-46",
-    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-46",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani S2E46 | Bolum 46 | Urdu/English Subs",
-    "title_length": 60,
-    "description_length": 132,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -590,6 +580,26 @@
     "jsonld_blocks": 1
   },
   {
+    "id": "collection-68-episode-48",
+    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-48",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S2E48 | Bolum 48 | Urdu/English Subs",
+    "title_length": 60,
+    "description_length": 122,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
+    "id": "collection-68-episode-46",
+    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-46",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S2E46 | Bolum 46 | Urdu/English Subs",
+    "title_length": 60,
+    "description_length": 132,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
     "id": "collection-68-episode-47",
     "path": "/drama/mehmed-fetihler-sultani/season-2/episode-47",
     "status": 200,
@@ -600,22 +610,18 @@
     "jsonld_blocks": 1
   },
   {
+    "id": "collection-68-bolum-49",
+    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-49-b",
+    "status": 308,
+    "redirect": "/drama/mehmed-fetihler-sultani/season-2/episode-49"
+  },
+  {
     "id": "collection-68-bolum-149",
     "path": "/drama/mehmed-fetihler-sultani/season-2/episode-49",
     "status": 200,
     "title": "Mehmed Fetihler Sultani S2E49 | Bolum 49 | Urdu/English Subs",
     "title_length": 60,
     "description_length": 145,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
-    "id": "collection-68-episode-48",
-    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-48",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani S2E48 | Bolum 48 | Urdu/English Subs",
-    "title_length": 60,
-    "description_length": 122,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -630,12 +636,6 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-68-bolum-49",
-    "path": "/drama/mehmed-fetihler-sultani/season-2/episode-49-b",
-    "status": 308,
-    "redirect": "/drama/mehmed-fetihler-sultani/season-2/episode-49"
-  },
-  {
     "id": "collection-76",
     "path": "/drama/mehmed-fetihler-sultani/season-3",
     "status": 200,
@@ -644,6 +644,12 @@
     "description_length": 150,
     "robots": "index, follow",
     "jsonld_blocks": 1
+  },
+  {
+    "id": "collection-76-episode-52",
+    "path": "/drama/mehmed-fetihler-sultani/season-3/episode-52-b",
+    "status": 308,
+    "redirect": "/drama/mehmed-fetihler-sultani/season-3/episode-52"
   },
   {
     "id": "collection-76-episode-51",
@@ -664,12 +670,6 @@
     "description_length": 132,
     "robots": "index, follow",
     "jsonld_blocks": 1
-  },
-  {
-    "id": "collection-76-episode-52",
-    "path": "/drama/mehmed-fetihler-sultani/season-3/episode-52-b",
-    "status": 308,
-    "redirect": "/drama/mehmed-fetihler-sultani/season-3/episode-52"
   },
   {
     "id": "collection-76-episode-53",
@@ -702,22 +702,22 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-76-episode-57",
-    "path": "/drama/mehmed-fetihler-sultani/season-3/episode-57",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani S3E57 | Bolum 57 | Urdu/English Subs",
-    "title_length": 60,
-    "description_length": 126,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
     "id": "collection-76-episode-56",
     "path": "/drama/mehmed-fetihler-sultani/season-3/episode-56",
     "status": 200,
     "title": "Mehmed Fetihler Sultani S3E56 | Bolum 56 | Urdu/English Subs",
     "title_length": 60,
     "description_length": 116,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
+    "id": "collection-76-episode-57",
+    "path": "/drama/mehmed-fetihler-sultani/season-3/episode-57",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S3E57 | Bolum 57 | Urdu/English Subs",
+    "title_length": 60,
+    "description_length": 126,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -740,6 +740,12 @@
     "description_length": 131,
     "robots": "index, follow",
     "jsonld_blocks": 1
+  },
+  {
+    "id": "collection-76-episode-61",
+    "path": "/drama/mehmed-fetihler-sultani/season-3/episode-61-b",
+    "status": 308,
+    "redirect": "/drama/mehmed-fetihler-sultani/season-3/episode-61"
   },
   {
     "id": "collection-76-episode-60",
@@ -770,12 +776,6 @@
     "description_length": 116,
     "robots": "index, follow",
     "jsonld_blocks": 1
-  },
-  {
-    "id": "collection-76-episode-61",
-    "path": "/drama/mehmed-fetihler-sultani/season-3/episode-61-b",
-    "status": 308,
-    "redirect": "/drama/mehmed-fetihler-sultani/season-3/episode-61"
   },
   {
     "id": "collection-76-bolum-63",
@@ -828,6 +828,16 @@
     "jsonld_blocks": 1
   },
   {
+    "id": "collection-76-bolum-70",
+    "path": "/drama/mehmed-fetihler-sultani/season-3/episode-70",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani S3 E70 | Bolum 70 | Urdu Subtitles",
+    "title_length": 58,
+    "description_length": 111,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
     "id": "collection-76-bolum-68",
     "path": "/drama/mehmed-fetihler-sultani/season-3/episode-68",
     "status": 200,
@@ -848,12 +858,12 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-76-bolum-70",
-    "path": "/drama/mehmed-fetihler-sultani/season-3/episode-70",
+    "id": "collection-76-bolum-72",
+    "path": "/drama/mehmed-fetihler-sultani/season-3/episode-72",
     "status": 200,
-    "title": "Mehmed Fetihler Sultani S3 E70 | Bolum 70 | Urdu Subtitles",
-    "title_length": 58,
-    "description_length": 111,
+    "title": "Mehmed Fetihler Sultani S3E72 | Bolum 72 | Urdu/English Subs",
+    "title_length": 60,
+    "description_length": 134,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -864,16 +874,6 @@
     "title": "Mehmed Fetihler Sultani S3E71 | Bolum 71 | Urdu/English Subs",
     "title_length": 60,
     "description_length": 133,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
-    "id": "collection-76-bolum-72",
-    "path": "/drama/mehmed-fetihler-sultani/season-3/episode-72",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani S3E72 | Bolum 72 | Urdu/English Subs",
-    "title_length": 60,
-    "description_length": 134,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },
@@ -998,22 +998,22 @@
     "jsonld_blocks": 1
   },
   {
-    "id": "collection-88",
-    "path": "/drama/mehmed-fetihler-sultani/season-4/urdu-dubbed",
-    "status": 200,
-    "title": "Mehmed Fetihler Sultani Season 4 | Urdu Dubbed",
-    "title_length": 46,
-    "description_length": 146,
-    "robots": "index, follow",
-    "jsonld_blocks": 1
-  },
-  {
     "id": "collection-88-bolum-85",
     "path": "/drama/mehmed-fetihler-sultani/season-4/urdu-dubbed/episode-2",
     "status": 200,
     "title": "Mehmed Fetihler Sultani S4 E2 | Bolum 85 | Urdu Dubbed",
     "title_length": 54,
     "description_length": 133,
+    "robots": "index, follow",
+    "jsonld_blocks": 1
+  },
+  {
+    "id": "collection-88",
+    "path": "/drama/mehmed-fetihler-sultani/season-4/urdu-dubbed",
+    "status": 200,
+    "title": "Mehmed Fetihler Sultani Season 4 | Urdu Dubbed",
+    "title_length": 46,
+    "description_length": 146,
     "robots": "index, follow",
     "jsonld_blocks": 1
   },

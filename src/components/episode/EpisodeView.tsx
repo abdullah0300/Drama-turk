@@ -1,4 +1,5 @@
 import React from 'react';
+import { ComingSoon, getComingSoonDrama, comingSoonMetadata } from '@/components/dramas/ComingSoon';
 import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { WatchClient } from './WatchClient';
@@ -6,7 +7,7 @@ import { siteConfig } from '@/config/site';
 import { findEdition, findSeason, loadDrama, loadEditionEpisodes, episodeHref } from '@/lib/catalog-nav';
 import { isDefaultEdition, seasonPath } from '@/lib/routes';
 import { canonicalGroupId, episodeLabel, episodeSeo, episodeNumbers, languageLabel, isEligibleEpisode, isPlayableVideo,
-  pageMetadata, serializeJsonLd, videoSchema, breadcrumbSchema } from '@/lib/seo/catalog-seo';
+  pageMetadata, serializeJsonLd, selectVideoMetadata, videoSchema, breadcrumbSchema } from '@/lib/seo/catalog-seo';
 
 export interface EpisodeRouteParams { dramaId: string; season: string; episode: string }
 async function resolve(params: EpisodeRouteParams, segment?: string) {
@@ -25,7 +26,7 @@ async function resolve(params: EpisodeRouteParams, segment?: string) {
 }
 export async function episodeMetadata(params: EpisodeRouteParams, segment?: string): Promise<Metadata> {
   const r = await resolve(params, segment);
-  if (!r) return { title: 'Episode Not Found', robots: { index: false, follow: false } };
+  if (!r) return await getComingSoonDrama(params.dramaId) ? comingSoonMetadata : { title: 'Episode Not Found', robots: { index: false, follow: false } };
   const seo = episodeSeo(r.drama, r.edition, r.group, r.videos);
   const path = episodeHref(r.drama.id, r.season, r.edition, r.episodes.slugs.get(r.group.id)!);
   return { ...pageMetadata(path, seo.title, seo.description,
@@ -33,7 +34,11 @@ export async function episodeMetadata(params: EpisodeRouteParams, segment?: stri
 }
 export async function EpisodeView({ params, segment }: { params: EpisodeRouteParams; segment?: string }) {
   const r = await resolve(params, segment);
-  if (!r) notFound();
+  if (!r) {
+    const name = await getComingSoonDrama(params.dramaId);
+    if (name) return <ComingSoon name={name} />;
+    notFound();
+  }
   const { drama, season, edition, episodes, group, requestedId, videos } = r;
   const path = episodeHref(drama.id, season, edition, episodes.slugs.get(group.id)!);
   if (requestedId !== group.id || (segment && isDefaultEdition(season, edition))) permanentRedirect(path);
@@ -65,7 +70,8 @@ export async function EpisodeView({ params, segment }: { params: EpisodeRoutePar
   }));
   // Any visible, selectable rendition can provide the verified video facts.
   // Keep the preferred playback rendition instead of switching its language.
-  const video = videos.map(v => videoSchema(drama, edition, group, v, path, seo.description)).find(Boolean);
+  const metadataVideo = selectVideoMetadata(videos);
+  const video = metadataVideo ? videoSchema(drama, edition, group, metadataVideo, path, seo.description) : undefined;
   const breadcrumbs = breadcrumbSchema([{ name: 'Home', path: '/' }, { name: drama.name, path: `/drama/${drama.id}` },
     { name: season.label, path: seasonUrl }, { name: group.display_label, path }]);
   const jsonLd = { '@context': 'https://schema.org', '@graph': [breadcrumbs, ...(video ? [video] : []), {

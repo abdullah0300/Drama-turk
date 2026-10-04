@@ -1,0 +1,31 @@
+{
+  "route": "/drama/mehmed-fetihler-sultani/season-4/episode-2",
+  "localOnly": true,
+  "requests": [
+    {
+      "headersMs": 221,
+      "totalMs": 2672,
+      "status": 200
+    },
+    {
+      "headersMs": 57,
+      "totalMs": 73,
+      "status": 200
+    },
+    {
+      "headersMs": 48,
+      "totalMs": 53,
+      "status": 200
+    },
+    {
+      "headersMs": 63,
+      "totalMs": 107,
+      "status": 200
+    },
+    {
+      "headersMs": 33,
+      "totalMs": 39,
+      "status": 200
+    }
+  ]
+}

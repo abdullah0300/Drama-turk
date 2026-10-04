@@ -1,0 +1,82 @@
+{
+  "checked_at": "2026-10-04T07:51:58.970Z",
+  "checks": [
+    {
+      "path": "/robots.txt",
+      "ua": "default",
+      "status": 200,
+      "xRobots": null,
+      "ms": 488,
+      "robots": null,
+      "canonical": null,
+      "body": "User-Agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nDisallow: /preview\n\nSitemap: https://greatnation.webcraftio.com/sitemap.xml\nSitemap: https://greatnation.webcraftio.com/video-sitemap.xml\n"
+    },
+    {
+      "path": "/sitemap.xml",
+      "ua": "default",
+      "status": 200,
+      "xRobots": null,
+      "ms": 2344,
+      "robots": null,
+      "canonical": null,
+      "total": 3011,
+      "fatih": 102
+    },
+    {
+      "path": "/video-sitemap.xml",
+      "ua": "default",
+      "status": 200,
+      "xRobots": null,
+      "ms": 423,
+      "robots": null,
+      "canonical": null,
+      "total": 2916,
+      "fatih": 95
+    },
+    {
+      "path": "/about",
+      "ua": "default",
+      "status": 200,
+      "xRobots": null,
+      "ms": 750,
+      "robots": "index, follow",
+      "canonical": "https://greatnation.webcraftio.com/about",
+      "claims36VerifiedEpisodes": true,
+      "claims23OtherDramas": true
+    },
+    {
+      "path": "/drama/mehmed-fetihler-sultani/season-4/episode-2",
+      "ua": "Googlebot",
+      "status": 200,
+      "xRobots": null,
+      "ms": 18487,
+      "robots": "index, follow",
+      "canonical": "https://greatnation.webcraftio.com/drama/mehmed-fetihler-sultani/season-4/episode-2"
+    },
+    {
+      "path": "/drama/mehmed-fetihler-sultani/season-4/episode-2",
+      "ua": "bingbot",
+      "status": 200,
+      "xRobots": null,
+      "ms": 18527,
+      "robots": "index, follow",
+      "canonical": "https://greatnation.webcraftio.com/drama/mehmed-fetihler-sultani/season-4/episode-2"
+    },
+    {
+      "path": "/drama/mehmed-fetihler-sultani/season-4/episode-2",
+      "ua": "OAI-SearchBot",
+      "status": 200,
+      "xRobots": null,
+      "ms": 18528,
+      "robots": "index, follow",
+      "canonical": "https://greatnation.webcraftio.com/drama/mehmed-fetihler-sultani/season-4/episode-2"
+    }
+  ],
+  "performance": {
+    "status": 429,
+    "error": "Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'pagespeedonline.googleapis.com' for consumer 'project_number:583797351490'.",
+    "fieldMetrics": null,
+    "scores": null
+  },
+  "caveat": "Simulated User-Agent access does not verify genuine crawler IP access, Search Console indexing or field Core Web Vitals."
+}

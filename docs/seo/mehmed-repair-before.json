@@ -1,0 +1,84 @@
+{
+  "groups": [
+    {
+      "id": "8e5c83c4-cf00-5a83-a39a-6c2448ee732e",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 4",
+      "status": "published",
+      "order_key": 4,
+      "source_id": "collection-62-episode-4",
+      "still_url": "https://play.niazitv.pk/images/episode_1710898518.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "reported_episode_number": 4
+    },
+    {
+      "id": "9c5a8358-9dcc-597c-a651-ef90f710ae17",
+      "part": null,
+      "bolum": null,
+      "label": "Episode 3",
+      "status": "published",
+      "order_key": 3,
+      "source_id": "collection-62-episode-3",
+      "still_url": "https://play.niazitv.pk/images/episode_1710295171.webp",
+      "created_at": "2026-10-02T05:18:23.101141+00:00",
+      "updated_at": "2026-10-02T05:18:23.101141+00:00",
+      "content_type": "episode",
+      "still_source": null,
+      "collection_id": "6b39c0b7-b343-5158-8a34-92cda3e19511",
+      "reported_episode_number": 3
+    }
+  ],
+  "editorial": {
+    "id": "7341882f-f2c1-4ccb-a105-a0fbc9a0e554",
+    "locale": "en",
+    "drama_id": "1c5a90f7-cced-5b88-af7e-b8ad27e7e691",
+    "group_id": null,
+    "seo_title": "Sultan Muhammad Fateh | Mehmed Fetihler Sultani",
+    "updated_at": "2026-10-04T07:36:34.445+00:00",
+    "variant_id": null,
+    "published_at": "2026-10-04T05:13:48.34+00:00",
+    "collection_id": null,
+    "seo_description": "Explore Sultan Muhammad Fateh (Mehmed Fetihler Sultani), season guides, Urdu and English subtitles, Urdu dubbed editions and episode-to-Bolum numbers.",
+    "short_description": "Mehmed: Fetihler Sultani follows Sultan Mehmed II in a Turkish historical drama. Find available seasons, choose subtitles or Urdu dubbed audio, and match local episode numbers to the original broadcasts.",
+    "structured_article": [
+      {
+        "content": "Mehmed: Fetihler Sultani is TRT 1’s drama about Sultan Mehmed II. Sultan Muhammad Fateh and Sultan Muhammad Fatih are alternate names viewers use for this series. This page brings its subtitled and Urdu dubbed releases together.",
+        "heading": "Which Sultan Muhammad Fatih drama is this?",
+        "sources": [
+          {
+            "url": "https://www.trt1.com.tr/diziler/mehmed-fetihler-sultani",
+            "name": "TRT 1: official series"
+          }
+        ]
+      },
+      {
+        "content": "Serkan Çayoğlu plays Fatih Sultan Mehmed. TRT’s cast list also identifies Hilmi Cem İntepe as Has Murad Paşa and Rüzgar Aksoy as Uzun Hasan.",
+        "heading": "Who plays Sultan Mehmed?",
+        "sources": [
+          {
+            "url": "https://www.trt1.com.tr/diziler/mehmed-fetihler-sultani/oyuncular",
+            "name": "TRT 1: cast"
+          }
+        ]
+      },
+      {
+        "content": "Subtitled editions retain Turkish audio and offer the subtitle renditions listed on each episode page. Urdu dubbed editions offer Urdu audio and have separate season lists. Use the viewing-edition table to choose your preferred release; a language is listed only when a usable rendition is available.",
+        "heading": "Choose subtitles or Urdu dubbed audio"
+      },
+      {
+        "content": "Subtitled Seasons 1–3 keep continuous broadcast numbers in their episode labels. Season 4 starts with local Episode 1, corresponding to Bolum 84, followed by Episodes 2 and 3 for Bolum 85 and 86. Season 1 dubbed numbering has not been independently matched to broadcast numbers, so its pages retain their source labels.",
+        "heading": "Why do episode numbers sometimes differ?"
+      },
+      {
+        "content": "Open a season, choose an episode and select a rendition beside the player. Episode pages link to the previous and next available episodes. Where another viewing edition of the same broadcast exists, a direct link lets you switch between subtitled and dubbed releases without searching again.",
+        "heading": "How to continue watching"
+      }
+    ],
+    "approved_display_title": "Mehmed: Fetihler Sultani"
+  }
+}

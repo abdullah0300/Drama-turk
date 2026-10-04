@@ -1,0 +1,32 @@
+{
+  "/": {
+    "status": 200,
+    "gap_note": false,
+    "preview_in_initial_html": true
+  },
+  "/about": {
+    "status": 200,
+    "gap_note": false,
+    "preview_in_initial_html": false
+  },
+  "/drama/alparslan-buyuk-selcuklu/season-1": {
+    "status": 200,
+    "gap_note": false,
+    "preview_in_initial_html": false
+  },
+  "/drama/alparslan-buyuk-selcuklu/season-1/urdu-dubbed": {
+    "status": 200,
+    "gap_note": true,
+    "preview_in_initial_html": false
+  },
+  "/drama/mehmed-fetihler-sultani/season-3": {
+    "status": 200,
+    "gap_note": true,
+    "preview_in_initial_html": false
+  },
+  "legacy_redirect": "http://localhost:3180/drama/alparslan-buyuk-selcuklu/season-2/episode-34",
+  "live_database_metadata": {
+    "VideoObject": true,
+    "exact_TRT_reference": true
+  }
+}

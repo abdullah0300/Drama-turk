@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { verifyAdminAccess, createAdminClient } from '@/lib/auth/admin-auth';
 
 export const dynamic = 'force-dynamic';
@@ -51,6 +51,7 @@ export async function POST(request: Request) {
 
     // 3. Revalidate homepage and admin routes
     try {
+      revalidateTag('public-catalog');
       revalidatePath('/');
       revalidatePath('/admin');
     } catch (e) {
