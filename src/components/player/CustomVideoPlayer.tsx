@@ -72,6 +72,7 @@ export function CustomVideoPlayer({
 
   // Rendition & Quality
   const [qualityLevels, setQualityLevels] = useState<QualityLevel[]>([]);
+  const [currentVideoHeight, setCurrentVideoHeight] = useState(0);
   const [currentQualityIndex, setCurrentQualityIndex] = useState<number>(-1); // -1 = Auto
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
 
@@ -123,6 +124,7 @@ export function CustomVideoPlayer({
       countdownIntervalRef.current = null;
     }
     setQualityLevels([]);
+    setCurrentVideoHeight(0);
     setCurrentQualityIndex(-1);
     setIsPlaying(false);
     setCurrentTime(0);
@@ -171,13 +173,13 @@ export function CustomVideoPlayer({
 
         hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
           setIsLoading(false);
-          // Only show actual distinct quality renditions
-          if (data.levels && data.levels.length > 1) {
+          // Keep single-quality streams visible too.
+          if (data.levels && data.levels.length > 0) {
             const formatted: QualityLevel[] = data.levels.map((lvl, index) => ({
               id: index,
               height: lvl.height,
               bitrate: lvl.bitrate,
-              label: lvl.height > 0 ? `${lvl.height}p` : `${Math.round(lvl.bitrate / 1000)} kbps`,
+              label: lvl.height > 0 ? `${lvl.height}p` : lvl.bitrate > 0 ? `${Math.round(lvl.bitrate / 1000)} kbps` : 'Original',
             }));
             setQualityLevels(formatted);
           } else {
@@ -275,6 +277,7 @@ export function CustomVideoPlayer({
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
       setDuration(videoRef.current.duration);
+      setCurrentVideoHeight(videoRef.current.videoHeight);
       setIsLoading(false);
       videoRef.current.volume = isMuted ? 0 : volume;
       videoRef.current.playbackRate = playbackSpeed;
@@ -664,6 +667,7 @@ export function CustomVideoPlayer({
         onTimeUpdate={handleTimeUpdate}
         onProgress={handleProgress}
         onLoadedMetadata={handleLoadedMetadata}
+        onResize={() => setCurrentVideoHeight(videoRef.current?.videoHeight || 0)}
         onEnded={handleEnded}
         onWaiting={() => setIsLoading(true)}
         onPlaying={() => { setIsLoading(false); setIsPlaying(true); }}
@@ -868,19 +872,27 @@ export function CustomVideoPlayer({
 
       {/* Settings menu */}
       <div className={`wp-menu gn-menu${showSettingsMenu ? ' open' : ''}`} role="dialog" aria-label="Player settings">
-        {qualityLevels.length > 0 && (
-          <>
-            <h6>Quality</h6>
-            <div className="seg2">
+        <h6>Quality</h6>
+        <div className="seg2">
+          {qualityLevels.length > 1 ? (
+            <>
               <button className={currentQualityIndex === -1 ? 'on' : ''} onClick={() => handleQualitySelect(-1)}>Auto</button>
               {qualityLevels.map((ql) => (
                 <button key={ql.id} className={currentQualityIndex === ql.id ? 'on' : ''} onClick={() => handleQualitySelect(ql.id)}>
                   {ql.label}
                 </button>
               ))}
-            </div>
-          </>
-        )}
+            </>
+          ) : (
+            <span style={{ fontSize: 12, color: 'var(--muted)' }}>
+              {qualityLevels.length === 1
+                ? `${qualityLevels[0].label} · Only available quality`
+                : currentVideoHeight > 0
+                  ? `${currentVideoHeight}p · Current quality`
+                  : isLoading ? 'Detecting quality…' : 'Quality unavailable'}
+            </span>
+          )}
+        </div>
         <h6>Speed</h6>
         <div className="seg2">
           {[0.75, 1, 1.25, 1.5, 2].map((speed) => (
