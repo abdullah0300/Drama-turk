@@ -180,11 +180,26 @@ def finding(db, target, flag, severity, evidence):
 
 # --------------------------------------------------------------------------- catalog state
 
+def clean_episode_title(rec):
+    n = rec.get('episode')
+    b = rec.get('bolum')
+    p_ = rec.get('part')
+    if n:
+        label = f'Episode {n}' + (f' · Bolum {b}' if b else '') + (f' · Part {p_}' if p_ else '')
+    else:
+        raw = rec.get('display_label') or rec.get('heading') or rec.get('title') or ''
+        label = re.sub(r'\s*[-–—:]?\s*\b(trailer|teaser|promo|fragman|ön\s*izleme)\b\s*', ' ', raw, flags=re.I).strip()
+    return label
+
+
+MIN_EPISODE_SECONDS = 600  # 10 minutes: anything under 10m is treated as a short trailer/preview cut
+
+
 def load_catalog(db):
     dramas = {d['id']: d for d in db.select('dramas', 'select=id,source_id,display_name,video_records_count')}
     collections = db.select('collections', 'select=id,source_id,drama_id,collection_type,reported_seasons,status,label')
     groups = db.select('episode_groups', 'select=id,source_id,collection_id,reported_episode_number,bolum,part,order_key')
-    variants = db.select('video_variants', 'select=id,source_id,collection_id,group_id')
+    variants = db.select('video_variants', 'select=id,source_id,collection_id,group_id,duration_seconds,display_label,thumbnail_url')
     return dramas, collections, groups, variants
 
 
@@ -201,6 +216,74 @@ def reviewed_source_date(value):
         return parsed.isoformat()
     except ValueError:
         return None
+
+
+def upgrade_episode(db, rep, coll, drama, rec, variant_row, new_duration, ok, status, detail):
+    """Upgrade an existing trailer/short video with the newly released full episode."""
+    vid = variant_row['id']
+    rid = rec['id']
+    clean_label = clean_episode_title(rec)
+
+    # 1. Update variant with full duration and clean display label
+    db.update('video_variants', f"id=eq.{vid}", {
+        'duration_seconds': new_duration,
+        'display_label': clean_label,
+        'thumbnail_url': (rec.get('thumbnail_urls') or [None])[0] or variant_row.get('thumbnail_url'),
+        'updated_at': now(),
+    })
+
+    # 2. Update or insert new stream source
+    streams = db.select('stream_sources', f"select=id,delivery_url,priority&variant_id=eq.{vid}")
+    new_url = rec['stream_urls'][0]
+    matched_stream = next((s for s in streams if s['delivery_url'] == new_url), None)
+
+    if matched_stream:
+        db.update('stream_sources', f"id=eq.{matched_stream['id']}", {
+            'verification_state': 'reachable' if ok else 'unavailable',
+            'last_verified_at': now(),
+        })
+        stream_id = matched_stream['id']
+    else:
+        for s in streams:
+            db.update('stream_sources', f"id=eq.{s['id']}", {'priority': (s.get('priority') or 1) + 1})
+        created_stream = db.insert('stream_sources', {
+            'variant_id': vid,
+            'delivery_url': new_url,
+            'format': 'hls',
+            'is_active': True,
+            'priority': 1,
+            'verification_state': 'reachable' if ok else 'unavailable',
+            'last_verified_at': now(),
+        })
+        stream_id = created_stream[0]['id'] if created_stream else None
+
+    if stream_id:
+        db.insert('stream_checks', {
+            'stream_source_id': stream_id,
+            'variant_source_id': rid,
+            'stream_url': new_url,
+            'check_method': 'reachability_head',
+            'status': 'passed' if ok else 'failed',
+            'http_status': status,
+            'content_type': 'application/x-mpegURL',
+            'error_message': detail,
+            'origin_device': 'catalog-sync-upgrade',
+        }, returning=False)
+
+    db.update('source_records', f"source_id=eq.{rid}", {
+        'raw_json': rec,
+        'content_hash': content_hash(rec),
+    })
+
+    if variant_row.get('group_id'):
+        db.update('episode_groups', f"id=eq.{variant_row['group_id']}", {
+            'label': clean_label,
+            'updated_at': now(),
+        })
+
+    old_dur = variant_row.get('duration_seconds') or 0
+    rep.add(f"Upgraded {coll['source_id']} {clean_label} ({rid}): replaced trailer ({old_dur}s) with full episode ({new_duration}s).")
+    return True
 
 
 def import_episode(db, rep, coll, drama, rec, groups_by_coll):
@@ -225,9 +308,10 @@ def import_episode(db, rep, coll, drama, rec, groups_by_coll):
         rep.problem(f"{rid}: version {rec['version']} does not match {coll['source_id']}; sent to review")
         return False
 
+    clean_label = clean_episode_title(rec)
     ok, status, detail, measured = check_stream(rec['stream_urls'][0])
     # Publisher durations can be placeholders. Only advertise a measured complete playlist.
-    duration = measured or None
+    duration = measured or iso_seconds(rec.get('duration')) or None
 
     # Reuse an existing group with the same numbering (a dubbed and a subtitled cut of the same
     # episode share one group); otherwise create one using the scraper's stable id.
@@ -237,7 +321,7 @@ def import_episode(db, rep, coll, drama, rec, groups_by_coll):
         group = next((g for g in existing if g['reported_episode_number'] == rec['episode']
                       and (g['bolum'] or None) == (rec['bolum'] or None) and (g['part'] or None) == (rec['part'] or None)), None)
     if not group:
-        row = {'source_id': rec['episode_group_id'], 'collection_id': coll['id'], 'label': rec['display_label'],
+        row = {'source_id': rec['episode_group_id'], 'collection_id': coll['id'], 'label': clean_label,
                'reported_episode_number': rec['episode'], 'bolum': rec['bolum'], 'part': rec['part'],
                'order_key': rec['episode'], 'content_type': 'episode', 'status': 'published'}
         created = db.insert('episode_groups', row, on_conflict='source_id')
@@ -247,7 +331,7 @@ def import_episode(db, rep, coll, drama, rec, groups_by_coll):
         groups_by_coll[coll['id']] = existing
 
     variant = db.insert('video_variants', {
-        'source_id': rid, 'collection_id': coll['id'], 'group_id': group['id'], 'display_label': rec['display_label'],
+        'source_id': rid, 'collection_id': coll['id'], 'group_id': group['id'], 'display_label': clean_label,
         'reported_season': rec['season'], 'languages': rec['languages'], 'version': rec['version'],
         'publication_state': 'published', 'duration_seconds': duration,
         'thumbnail_url': (rec['thumbnail_urls'] or [None])[0],
@@ -288,7 +372,11 @@ def run_episodes(db, rep, only=None):
     groups_by_coll = {}
     for g in groups:
         groups_by_coll.setdefault(g['collection_id'], []).append(g)
-    added = checked = 0
+
+    # Track any variant under 10 minutes so we can check if full episode has dropped
+    short_variants = {v['source_id']: v for v in variants if (v.get('duration_seconds') or 0) < MIN_EPISODE_SECONDS}
+
+    added = upgraded = checked = 0
     for coll in sorted(collections, key=lambda c: int(c['source_id'].split('-')[1])):
         if coll['status'] in ('archived', 'hidden'):
             continue
@@ -305,8 +393,29 @@ def run_episodes(db, rep, only=None):
         if not page['listed_record_ids'] and per_coll.get(coll['id'], 0) > 0:
             rep.problem(f"{coll['source_id']}: Niazi page lists 0 episodes but we have {per_coll[coll['id']]} - page layout may have changed")
             continue
-        new_ids = [i for i in page['listed_record_ids'] if f'video-{i}' not in have]
+
         drama = dramas.get(coll['drama_id'])
+
+        # 1. Upgrade any pending trailer / short videos if Niazi now has the full episode (10+ min)
+        upgrade_ids = [i for i in page['listed_record_ids'] if f'video-{i}' in short_variants]
+        for rid in upgrade_ids:
+            try:
+                rec = niazi.scrape_episode(cat_id, rid, drama['display_name'] if drama else '', drama['source_id'] if drama else '', page)
+            except Exception as e:
+                continue
+            time.sleep(POLITE_DELAY)
+            if not rec.get('stream_urls'):
+                continue
+            ok, status, detail, measured = check_stream(rec['stream_urls'][0])
+            new_dur = measured or iso_seconds(rec.get('duration')) or 0
+            if ok and new_dur >= MIN_EPISODE_SECONDS:
+                v_row = short_variants[f'video-{rid}']
+                if upgrade_episode(db, rep, coll, drama, rec, v_row, new_dur, ok, status, detail):
+                    upgraded += 1
+                    del short_variants[f'video-{rid}']
+
+        # 2. Ingest completely new episodes
+        new_ids = [i for i in page['listed_record_ids'] if f'video-{i}' not in have]
         for rid in new_ids:
             try:
                 rec = niazi.scrape_episode(cat_id, rid, drama['display_name'] if drama else '', drama['source_id'] if drama else '', page)
@@ -317,7 +426,13 @@ def run_episodes(db, rep, only=None):
             if import_episode(db, rep, coll, drama, rec, groups_by_coll):
                 added += 1
                 have.add(rec['id'])
-    rep.add(f'Checked {checked} Niazi collections; added {added} new episode videos.')
+                dur = iso_seconds(rec.get('duration')) or 0
+                if dur < MIN_EPISODE_SECONDS:
+                    short_variants[rec['id']] = {'source_id': rec['id'], 'duration_seconds': dur, 'collection_id': coll['id'], 'id': f'dry-video-{rid}'}
+    msg = f'Checked {checked} Niazi collections; added {added} new episode videos.'
+    if upgraded > 0:
+        msg += f' Upgraded {upgraded} trailers to full episodes.'
+    rep.add(msg)
 
 
 def run_links(db, rep, limit):
