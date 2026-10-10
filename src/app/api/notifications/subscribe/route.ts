@@ -81,3 +81,42 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const email = searchParams.get('email');
+    const dramaId = searchParams.get('dramaId');
+
+    if (!email || !dramaId) {
+      return NextResponse.json({ error: 'Missing email or dramaId parameter' }, { status: 400 });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabase = createClient(url, key);
+
+    const { data, error } = await supabase
+      .from('drama_subscriptions')
+      .select('id, status')
+      .eq('email', normalizedEmail)
+      .eq('drama_id', dramaId)
+      .eq('status', 'active')
+      .maybeSingle();
+
+    if (error) {
+      console.warn('[Check Subscription Error]:', error.message);
+      return NextResponse.json({ subscribed: false }, { status: 200 });
+    }
+
+    return NextResponse.json({
+      subscribed: Boolean(data),
+      email: normalizedEmail,
+      dramaId,
+    });
+  } catch (err: any) {
+    return NextResponse.json({ subscribed: false }, { status: 200 });
+  }
+}
+

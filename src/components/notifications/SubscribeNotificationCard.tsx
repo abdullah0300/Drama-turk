@@ -10,7 +10,8 @@ interface SubscribeNotificationCardProps {
   variant?: 'card' | 'inline' | 'compact';
 }
 
-const STORAGE_KEY = 'gn_subscriber_email';
+const STORAGE_EMAIL_KEY = 'gn_subscriber_email';
+const STORAGE_DRAMAS_KEY = 'gn_subscribed_dramas';
 
 export function SubscribeNotificationCard({
   dramaId,
@@ -20,22 +21,58 @@ export function SubscribeNotificationCard({
 }: SubscribeNotificationCardProps) {
   const [email, setEmail] = useState('');
   const [savedEmail, setSavedEmail] = useState<string | null>(null);
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const [isChangingEmail, setIsChangingEmail] = useState(false);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
+    let localEmail: string | null = null;
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setSavedEmail(stored);
-        setEmail(stored);
+      localEmail = localStorage.getItem(STORAGE_EMAIL_KEY);
+      if (localEmail) {
+        setSavedEmail(localEmail);
+        setEmail(localEmail);
+      }
+      const storedDramas = localStorage.getItem(STORAGE_DRAMAS_KEY);
+      if (storedDramas) {
+        const parsed = JSON.parse(storedDramas);
+        if (Array.isArray(parsed) && parsed.includes(dramaId)) {
+          setIsSubscribed(true);
+        }
       }
     } catch {
       // Ignore localStorage access restrictions
     }
-  }, []);
+
+    // Check with backend to keep subscription in sync across devices or fresh reloads
+    if (localEmail && localEmail.includes('@')) {
+      fetch(`/api/notifications/subscribe?email=${encodeURIComponent(localEmail)}&dramaId=${encodeURIComponent(dramaId)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data && typeof data.subscribed === 'boolean') {
+            setIsSubscribed(data.subscribed);
+            try {
+              const existing = localStorage.getItem(STORAGE_DRAMAS_KEY);
+              let dramas: string[] = [];
+              if (existing) {
+                const parsed = JSON.parse(existing);
+                if (Array.isArray(parsed)) dramas = parsed;
+              }
+              if (data.subscribed && !dramas.includes(dramaId)) {
+                dramas.push(dramaId);
+                localStorage.setItem(STORAGE_DRAMAS_KEY, JSON.stringify(dramas));
+              } else if (!data.subscribed && dramas.includes(dramaId)) {
+                dramas = dramas.filter((id) => id !== dramaId);
+                localStorage.setItem(STORAGE_DRAMAS_KEY, JSON.stringify(dramas));
+              }
+            } catch {}
+          }
+        })
+        .catch(() => {});
+    }
+  }, [dramaId]);
 
   const handleSubscribe = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -65,10 +102,22 @@ export function SubscribeNotificationCard({
       }
 
       try {
-        localStorage.setItem(STORAGE_KEY, targetEmail);
+        localStorage.setItem(STORAGE_EMAIL_KEY, targetEmail);
         setSavedEmail(targetEmail);
+
+        const existing = localStorage.getItem(STORAGE_DRAMAS_KEY);
+        let dramas: string[] = [];
+        if (existing) {
+          const parsed = JSON.parse(existing);
+          if (Array.isArray(parsed)) dramas = parsed;
+        }
+        if (!dramas.includes(dramaId)) {
+          dramas.push(dramaId);
+          localStorage.setItem(STORAGE_DRAMAS_KEY, JSON.stringify(dramas));
+        }
       } catch {}
 
+      setIsSubscribed(true);
       setStatus('success');
       setMessage(data.message || `Subscribed! We'll alert you when new episodes of ${dramaName} drop.`);
       setIsChangingEmail(false);
@@ -83,7 +132,7 @@ export function SubscribeNotificationCard({
   if (variant === 'compact') {
     return (
       <div className="flex items-center gap-2">
-        {status === 'success' ? (
+        {status === 'success' || (isSubscribed && !isChangingEmail) ? (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
             <Check className="w-3.5 h-3.5" /> Subscribed
           </span>
@@ -119,10 +168,26 @@ export function SubscribeNotificationCard({
             We’ll email you the second Urdu &amp; English subtitles are playable on Great Nation.
           </p>
 
-          {status === 'success' ? (
-            <div className="mt-3.5 flex items-center gap-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-2.5 text-xs sm:text-sm text-emerald-300">
-              <Check className="h-4 w-4 shrink-0 text-emerald-400" />
-              <span>{message}</span>
+          {status === 'success' || (isSubscribed && !isChangingEmail) ? (
+            <div className="mt-3.5 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-2.5 text-xs sm:text-sm text-emerald-300">
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 shrink-0 text-emerald-400" />
+                <span>
+                  {status === 'success' && message
+                    ? message
+                    : <>You’re subscribed for alerts at <strong className="text-white font-medium">{savedEmail}</strong></>}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsChangingEmail(true);
+                  setStatus('idle');
+                }}
+                className="text-xs text-amber-400/90 hover:text-amber-300 underline underline-offset-2 transition-colors shrink-0 ml-auto"
+              >
+                Use different email
+              </button>
             </div>
           ) : (
             <form onSubmit={handleSubscribe} className="mt-3.5">
@@ -170,6 +235,15 @@ export function SubscribeNotificationCard({
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
                     Notify Me
                   </button>
+                  {isChangingEmail && isSubscribed && (
+                    <button
+                      type="button"
+                      onClick={() => setIsChangingEmail(false)}
+                      className="text-xs text-text-muted hover:text-white px-2 py-2"
+                    >
+                      Cancel
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -183,3 +257,5 @@ export function SubscribeNotificationCard({
     </div>
   );
 }
+
+
