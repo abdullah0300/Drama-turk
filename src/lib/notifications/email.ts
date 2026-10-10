@@ -87,11 +87,18 @@ export async function sendSubscriptionConfirmation({
     </html>
   `;
 
+  const text = `Great Nation - Subscribed to ${dramaName} Alerts\n\nYou're all set! We'll email you the moment the newest episode drops with verified Urdu and English subtitles.\n\nBrowse available episodes: ${dramaUrl}\n\nTo unsubscribe from ${dramaName} alerts, visit: ${unsubscribeUrl}`;
+
   return await resend.emails.send({
     from: EMAIL_FROM,
     to: email,
-    subject: `🔔 You're subscribed to ${dramaName} episode alerts`,
+    subject: `Subscribed: ${dramaName} episode alerts on Great Nation`,
     html,
+    text,
+    headers: {
+      'List-Unsubscribe': `<${unsubscribeUrl}>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    },
   });
 }
 
@@ -169,10 +176,17 @@ export async function sendEpisodeReleaseAlert({
     </html>
   `;
 
+  const text = `Great Nation - New Episode Live\n\n${dramaName} - ${episodeHeading}\n\nThe latest episode is now live on Great Nation with full HD streaming and verified Urdu & English subtitles.\n\nWatch Episode Now: ${watchUrl}\n\nTo unsubscribe from ${dramaName} alerts, visit: ${unsubscribeUrl}`;
+
   return await resend.emails.send({
     from: EMAIL_FROM,
     to: email,
-    subject: `🎬 Now Streaming: ${dramaName} ${episodeHeading}`,
+    subject: `New Episode: ${dramaName} ${episodeHeading} is now streaming`,
     html,
+    text,
+    headers: {
+      'List-Unsubscribe': `<${unsubscribeUrl}>`,
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    },
   });
 }
