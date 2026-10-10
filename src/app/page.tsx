@@ -163,19 +163,6 @@ export default async function HomePage() {
     )
   ).filter((x): x is LatestSeasonItem => x !== null);
 
-  // Opening episodes of the featured drama, shown in Continue Watching before anything has been watched
-  const starters =
-    featured && firstEdition
-      ? firstGroups.slice(0, 5).map((g) => ({
-          dramaId: featured.id,
-          dramaTitle: featured.name,
-          groupId: g.id,
-          href: firstEpisodeUrl(g.id),
-          label: g.display_label,
-          thumb: thumbByGroup.get(g.id) || featured.backdrop_url || featured.poster_url,
-          seasonHref: firstSeasonUrl,
-        }))
-      : [];
 
   const myListTotals: Record<string, number> = featured
     ? { [featured.id]: featuredSeasons.reduce((total, s) => total + countEpisodes(s.editions[0]), 0) }
@@ -211,7 +198,7 @@ export default async function HomePage() {
 
       <div className="rows">
         {/* Continue Watching Section (Private local storage) */}
-        <ContinueWatchingRow starters={starters} />
+        <ContinueWatchingRow />
 
         {/* Latest Playable Episodes in Pilot Release */}
         <LatestEpisodesRow episodes={latestEpisodes} />
