@@ -5,6 +5,7 @@ import { siteConfig, publicIndexingEnabled } from '@/config/site';
 export const SEO_TITLE_MAX = 60;
 export const SEO_DESCRIPTION_MAX = 160;
 export const FATIH_ID = 'mehmed-fetihler-sultani';
+export const OSMAN_ID = 'kurulus-osman';
 
 // Preserve imported IDs and URLs while combining language renditions of one broadcast.
 // Evidence and unresolved records are documented in docs/seo/mehmed-implementation.md.
@@ -97,7 +98,9 @@ export function languageLabel(edition: CatalogCollection, videos: VideoRecord[])
 }
 
 export function seriesName(drama: Pick<Drama, 'id' | 'name'>): string {
-  return drama.id === FATIH_ID ? 'Mehmed Fetihler Sultani' : drama.name;
+  if (drama.id === FATIH_ID) return 'Mehmed Fetihler Sultani';
+  if (drama.id === OSMAN_ID) return 'Kuruluş Osman';
+  return drama.name;
 }
 
 export function episodeSeo(drama: Drama, edition: CatalogCollection, group: EpisodeGroup, videos: VideoRecord[]) {
@@ -142,7 +145,8 @@ export function seasonSeo(drama: Drama, edition: CatalogCollection, videos: Vide
 export function dramaSeo(drama: Drama) {
   return {
     title: fitText(drama.editorial?.seo_title || (drama.id === FATIH_ID ? 'Mehmed Fetihler Sultani | Sultan Muhammad Fateh' :
-      drama.id === 'teskilat' ? 'Teşkilat (The Shadow Team) | Eng & Urdu Subs' : drama.name), SEO_TITLE_MAX),
+      drama.id === 'teskilat' ? 'Teşkilat (The Shadow Team) | Eng & Urdu Subs' :
+      drama.id === OSMAN_ID ? 'Kuruluş Osman | Urdu Dubbed & English Subtitles' : drama.name), SEO_TITLE_MAX),
     description: fitText(drama.editorial?.seo_description || drama.synopsis || `Explore ${drama.name}, its available seasons, episode numbers and viewing editions.`, SEO_DESCRIPTION_MAX),
   };
 }
