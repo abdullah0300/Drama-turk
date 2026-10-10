@@ -4,9 +4,8 @@ import { siteConfig } from '@/config/site';
 const resendApiKey = process.env.RESEND_API_KEY || '';
 export const resend = new Resend(resendApiKey);
 
-// Resend allows 'onboarding@resend.dev' for sandbox/testing without a custom domain.
-// Once a custom domain (e.g. notifications@greatnation.webcraftio.com) is verified, set EMAIL_FROM in env.
-export const EMAIL_FROM = process.env.EMAIL_FROM || 'Great Nation <onboarding@resend.dev>';
+// Verified domain on Resend: greatnation.webcraftio.com
+export const EMAIL_FROM = process.env.EMAIL_FROM || 'Great Nation <notifications@greatnation.webcraftio.com>';
 
 interface ConfirmationParams {
   email: string;
