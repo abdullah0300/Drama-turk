@@ -6,6 +6,7 @@ import { Play, Bookmark, Check } from 'lucide-react';
 import { Drama } from '@/types/catalog';
 import { legacyEpisodePath } from '@/lib/routes';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
+import { SubscribeNotificationCard } from '@/components/notifications/SubscribeNotificationCard';
 
 interface DramaActionsProps {
   drama: Drama;
@@ -61,6 +62,8 @@ export function DramaActions({ drama, startHref, isPlayable, seasonName }: Drama
       >
         {saved ? <Check className="i" /> : <Bookmark className="i" />}
       </button>
+
+      <SubscribeNotificationCard dramaId={drama.id} dramaName={drama.name} variant="compact" />
     </div>
   );
 }

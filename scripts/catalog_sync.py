@@ -357,7 +357,35 @@ def import_episode(db, rep, coll, drama, rec, groups_by_coll):
             + ('' if ok else f' - stream check failed: {detail}'))
     if not ok:
         rep.problem(f"{rid}: imported but its stream does not load yet ({detail})")
+    elif not db.dry_run:
+        dispatch_notifications(drama, coll, rec)
     return True
+
+
+def dispatch_notifications(drama, coll, rec):
+    if not drama or not drama.get('source_id') or not rec.get('episode'):
+        return
+    try:
+        req_data = json.dumps({
+            "dramaId": drama['source_id'],
+            "dramaName": drama.get('display_name'),
+            "season": rec.get('season') or 1,
+            "episode": rec.get('episode'),
+            "bolum": rec.get('bolum'),
+            "thumbnailUrl": (rec.get('thumbnail_urls') or [None])[0],
+        }).encode('utf-8')
+        req = urllib.request.Request(
+            f"{SITE_ORIGIN}/api/notifications/broadcast",
+            data=req_data,
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            print(f"Notification broadcast dispatched: {data.get('dispatchedCount', 0)} emails sent")
+    except Exception as e:
+        print(f"Notification broadcast note: {e}")
+
 
 
 # --------------------------------------------------------------------------- modes
