@@ -97,7 +97,8 @@ export class SupabaseCatalogRepository {
         status: d.status, updated_at: d.updated_at,
         name: selectEditorial(d.published_editorial)?.title || d.display_name,
         editorial: selectEditorial(d.published_editorial),
-        source_names: d.source_id === 'mehmed-fetihler-sultani' ? [d.display_name, 'Sultan Muhammad Fateh', 'Sultan Muhammad Fatih'] : [d.display_name],
+        source_names: d.source_id === 'mehmed-fetihler-sultani' ? [d.display_name, 'Sultan Muhammad Fateh', 'Sultan Muhammad Fatih'] :
+          d.source_id === 'teskilat' ? [d.display_name, 'The Shadow Team', 'The Organization', 'Teskilat'] : [d.display_name],
         collection_ids: publishedCollectionIds(d.collections),
         playable: publishedCollectionIds(d.collections).length > 0,
         season_count: publishedSeasonCount(d.collections),
@@ -140,7 +141,8 @@ export class SupabaseCatalogRepository {
         id: row.source_id,
         name: displayName,
         status: row.status, editorial, updated_at: editorial?.updated_at || row.updated_at,
-        source_names: row.source_id === 'mehmed-fetihler-sultani' ? [row.display_name, 'Sultan Muhammad Fateh', 'Sultan Muhammad Fatih'] : [row.display_name],
+        source_names: row.source_id === 'mehmed-fetihler-sultani' ? [row.display_name, 'Sultan Muhammad Fateh', 'Sultan Muhammad Fatih'] :
+          row.source_id === 'teskilat' ? [row.display_name, 'The Shadow Team', 'The Organization', 'Teskilat'] : [row.display_name],
         collection_ids: publishedCollectionIds(row.collections),
         playable: publishedCollectionIds(row.collections).length > 0,
         season_count: publishedSeasonCount(row.collections),

@@ -152,7 +152,7 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
       {drama.id === 'mehmed-fetihler-sultani' && season.number === 3 && <p>Bölüm 64 has no usable media source in the current catalog. It will appear here when a suitable source is available.</p>}
       <p>Dubbed chapters can divide the original broadcast differently. A missing chapter label does not establish a missing original Turkish broadcast.</p>
     </section>}
-    {['mehmed-fetihler-sultani', 'alparslan-buyuk-selcuklu', 'ask-ve-taht'].includes(drama.id) && <ViewingTable heading={`Season ${season.number} episode and Bolum guide`}
+    {['mehmed-fetihler-sultani', 'alparslan-buyuk-selcuklu', 'ask-ve-taht', 'teskilat'].includes(drama.id) && <ViewingTable heading={`Season ${season.number} episode and Bolum guide`}
       rows={episodes.map(e => ({ label: e.label, href: e.href, detail: e.bolum == null ? 'Broadcast mapping unverified' : `Bolum ${e.bolum}`, availability: e.languages }))} />}
     <EditorialSections sections={edition.editorial?.sections || []} /></>
   );

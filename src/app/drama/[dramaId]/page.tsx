@@ -84,6 +84,7 @@ export default async function DramaPage({ params }: DramaPageProps) {
       numberOfEpisodes: seasons.reduce((total, season) => total + (eligibleCounts.get(season.editions[0]?.id) ?? 0), 0),
     } : {}),
     ...(drama.id === 'ask-ve-taht' ? { alternateName: 'Ishq Aur Takht' } : {}),
+    ...(drama.id === 'teskilat' ? { alternateName: ['The Shadow Team', 'The Organization'] } : {}),
     genre: drama.genres,
     image: drama.poster_url,
   };
@@ -155,11 +156,13 @@ export default async function DramaPage({ params }: DramaPageProps) {
         </div>
       </section>
 
-      {['mehmed-fetihler-sultani', 'alparslan-buyuk-selcuklu', 'ask-ve-taht'].includes(drama.id) && <ViewingTable heading="Choose a season and viewing edition"
+      {['mehmed-fetihler-sultani', 'alparslan-buyuk-selcuklu', 'ask-ve-taht', 'teskilat'].includes(drama.id) && <ViewingTable heading="Choose a season and viewing edition"
         rows={seasons.flatMap(s => s.editions.map(e => ({ label: `${s.label} — ${editionName(e)}`,
           href: seasonPath(drama.id, s, e), detail: `${eligibleCounts.get(e.id) ?? 0} available episode pages`,
           availability: ['alparslan-buyuk-selcuklu', 'ask-ve-taht'].includes(drama.id)
             ? e.version === 'dubbed' ? 'Catalogued Urdu dubbed edition; separate episode numbering' : 'Subtitle choices vary by episode'
+            : drama.id === 'teskilat'
+            ? 'Original Turkish audio with Urdu & English subtitles; dual episode & broadcast numbering'
             : e.version === 'dubbed' ? 'Urdu audio' : 'Original audio; subtitle choices vary by episode' })))} />}
       {/* Details */}
       <section className="dw-sec" id="details">

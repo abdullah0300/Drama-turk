@@ -141,7 +141,8 @@ export function seasonSeo(drama: Drama, edition: CatalogCollection, videos: Vide
 
 export function dramaSeo(drama: Drama) {
   return {
-    title: fitText(drama.editorial?.seo_title || (drama.id === FATIH_ID ? 'Mehmed Fetihler Sultani | Sultan Muhammad Fateh' : drama.name), SEO_TITLE_MAX),
+    title: fitText(drama.editorial?.seo_title || (drama.id === FATIH_ID ? 'Mehmed Fetihler Sultani | Sultan Muhammad Fateh' :
+      drama.id === 'teskilat' ? 'Teşkilat (The Shadow Team) | Eng & Urdu Subs' : drama.name), SEO_TITLE_MAX),
     description: fitText(drama.editorial?.seo_description || drama.synopsis || `Explore ${drama.name}, its available seasons, episode numbers and viewing editions.`, SEO_DESCRIPTION_MAX),
   };
 }
