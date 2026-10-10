@@ -18,8 +18,17 @@ on:
       mode:
         description: 'Job to run'
         type: choice
-        options: [episodes, links, discover]
+        options: [episodes, links, discover, approve]
         default: episodes
+      catalog_id:
+        description: 'Catalog ID to approve (if mode is approve)'
+        default: '83'
+      drama_id:
+        description: 'Drama ID slug (if mode is approve)'
+        default: 'teskilat'
+      drama_name:
+        description: 'Drama Name (if mode is approve)'
+        default: 'Teşkilat'
       dry_run:
         description: 'Preview only (no database writes)'
         type: boolean
@@ -59,4 +68,8 @@ jobs:
             echo "::error::Add the SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY repository secrets to enable catalog sync."
             exit 1
           fi
-          python3 scripts/catalog_sync.py "${{ steps.mode.outputs.mode }}" ${{ inputs.dry_run && '--dry-run' || '' }}
+          if [ "${{ steps.mode.outputs.mode }}" = "approve" ]; then
+            python3 scripts/catalog_sync.py approve "${{ inputs.catalog_id }}" --drama-id "${{ inputs.drama_id }}" --drama "${{ inputs.drama_name }}" ${{ inputs.dry_run && '--dry-run' || '' }}
+          else
+            python3 scripts/catalog_sync.py "${{ steps.mode.outputs.mode }}" ${{ inputs.dry_run && '--dry-run' || '' }}
+          fi

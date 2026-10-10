@@ -1,7 +1,13 @@
 import schedules from '../../config/release-schedules.json';
 
 export const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-export type ReleaseSchedule = (typeof schedules)[number];
+export interface ReleaseSchedule {
+  dramaId: string; collectionId: string; season: number;
+  anchorEpisode: number; anchorBolum: number; anchorBroadcastAt: string;
+  anchorConfirmed: boolean; weekly: boolean; maxEpisode: number | null;
+  verifiedAt: string; channel: string; scheduleSource: string;
+  previewSource?: string; preview?: string;
+}
 export interface ScheduledEpisode {
   dramaId: string; collectionId: string; season: number; episode: number; bolum: number;
   broadcastAt: string; confirmed: boolean; channel: string; scheduleSource: string;
