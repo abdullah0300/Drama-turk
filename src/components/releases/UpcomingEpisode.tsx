@@ -23,6 +23,7 @@ export function UpcomingReleaseCard({episode,full=false}:{episode:UpcomingEpisod
       <p><time dateTime={episode.broadcastAt}>{dateLabel(episode.broadcastAt,'Asia/Karachi')}</time> · Pakistan time</p></div>
       <a className="release-source" href={episode.scheduleSource} target="_blank" rel="noopener noreferrer">Official schedule ↗</a>
     </div>
+    <SubscribeNotificationCard dramaId={episode.dramaId} dramaName={episode.dramaName} episodeLabel={`Episode ${episode.episode}`} />
     <div className="release-timers">
       <div className="release-panel release-panel-broadcast"><ReleaseCountdown at={episode.broadcastAt} label="Turkish broadcast" finished="Scheduled broadcast time reached" />
         <p>{episode.channel} · 20:00 Türkiye / 22:00 Pakistan</p></div>
@@ -34,7 +35,6 @@ export function UpcomingReleaseCard({episode,full=false}:{episode:UpcomingEpisod
     <div className="release-footer"><p>Subtitle times are estimates. We’ll show “Watch now” when a checked video is available.</p>
     {!full&&<Link href={episode.href} className="pill">Episode {episode.episode} release details</Link>}
     </div>
-    <SubscribeNotificationCard dramaId={episode.dramaId} dramaName={episode.dramaName} episodeLabel={`Episode ${episode.episode}`} />
     <details className="release-notes"><summary>Release timing details</summary>
       <p>{episode.confirmed?'The broadcaster lists this date and time.':'The broadcast date follows the weekly slot; breaks or schedule changes can delay it.'} <time dateTime={episode.broadcastAt}>{dateLabel(episode.broadcastAt,'Europe/Istanbul')}</time> Türkiye (UTC+3).</p>
     </details>
