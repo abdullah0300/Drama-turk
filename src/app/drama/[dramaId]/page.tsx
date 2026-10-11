@@ -86,6 +86,7 @@ export default async function DramaPage({ params }: DramaPageProps) {
     ...(drama.id === 'ask-ve-taht' ? { alternateName: 'Ishq Aur Takht' } : {}),
     ...(drama.id === 'teskilat' ? { alternateName: ['The Shadow Team', 'The Organization'] } : {}),
     ...(drama.id === 'kurulus-osman' ? { alternateName: ['Establishment: Osman', 'Osman Ghazi', 'Kurulus: Osman', 'قیامت عثمان'] } : {}),
+    ...(drama.id === 'kurulus-orhan' ? { alternateName: ['Kurulus Orhan', 'Establishment: Orhan', 'Orhan Gazi', 'کورولوش اورخان'] } : {}),
     genre: drama.genres,
     image: drama.poster_url,
   };
@@ -157,7 +158,7 @@ export default async function DramaPage({ params }: DramaPageProps) {
         </div>
       </section>
 
-      {['mehmed-fetihler-sultani', 'alparslan-buyuk-selcuklu', 'ask-ve-taht', 'teskilat', 'kurulus-osman'].includes(drama.id) && <ViewingTable heading="Choose a season and viewing edition"
+      {['mehmed-fetihler-sultani', 'alparslan-buyuk-selcuklu', 'ask-ve-taht', 'teskilat', 'kurulus-osman', 'kurulus-orhan'].includes(drama.id) && <ViewingTable heading="Choose a season and viewing edition"
         rows={seasons.flatMap(s => s.editions.map(e => ({ label: `${s.label} — ${editionName(e)}`,
           href: seasonPath(drama.id, s, e), detail: `${eligibleCounts.get(e.id) ?? 0} available episode pages`,
           availability: ['alparslan-buyuk-selcuklu', 'ask-ve-taht'].includes(drama.id)
@@ -166,6 +167,8 @@ export default async function DramaPage({ params }: DramaPageProps) {
             ? 'Original Turkish audio with Urdu & English subtitles; dual episode & broadcast numbering'
             : drama.id === 'kurulus-osman'
             ? e.version === 'dubbed' ? 'Urdu dubbed audio; broadcast-segmented episodes' : 'Original Turkish audio with Urdu & English subtitles; continuous Bölüm numbering'
+            : drama.id === 'kurulus-orhan'
+            ? 'Original Turkish audio with Urdu & English subtitles; 26 episodes in Full HD'
             : e.version === 'dubbed' ? 'Urdu audio' : 'Original audio; subtitle choices vary by episode' })))} />}
       {/* Details */}
       <section className="dw-sec" id="details">
