@@ -15,31 +15,9 @@ export function upcomingMetadata(episode:UpcomingEpisode):Metadata {
   return pageMetadata(episode.href,`${name} S${episode.season} E${episode.episode} | Release Date & Subtitles`,
     `Check ${name} Episode ${episode.episode}${episode.bolum!==episode.episode?` (Bolum ${episode.bolum})`:''} broadcast time, estimated Urdu/English subtitle availability and release updates.`,true,episode.image);
 }
-export function UpcomingReleaseCard({episode,full=false}:{episode:UpcomingEpisode;full?:boolean}) {
-  return <section className="release-card" aria-label="Next episode release">
-    <ReleaseAvailabilityRefresh broadcastAt={episode.broadcastAt} />
-    <div className="release-intro"><div><span className="release-eyebrow">{episode.confirmed?'Next broadcast':'Expected next broadcast'} · {episode.channel}</span>
-      <h2>{full?'The next episode is on its way':`Episode ${episode.episode}${episode.bolum!==episode.episode?` · Bölüm ${episode.bolum}`:''}`}</h2>
-      <p><time dateTime={episode.broadcastAt}>{dateLabel(episode.broadcastAt,'Asia/Karachi')}</time> · Pakistan time</p></div>
-      <a className="release-source" href={episode.scheduleSource} target="_blank" rel="noopener noreferrer">Official schedule ↗</a>
-    </div>
-    <SubscribeNotificationCard dramaId={episode.dramaId} dramaName={episode.dramaName} episodeLabel={`Episode ${episode.episode}`} />
-    <div className="release-timers">
-      <div className="release-panel release-panel-broadcast"><ReleaseCountdown at={episode.broadcastAt} label="Turkish broadcast" finished="Scheduled broadcast time reached" />
-        <p>{episode.channel} · 20:00 Türkiye / 22:00 Pakistan</p></div>
-      {episode.estimates.map(({language,at})=><div key={language} className="release-panel release-estimate">
-        {at?<><ReleaseCountdown at={at} label={`${language} subtitles · estimated`} finished="Checking subtitle availability" />
-          <p><time dateTime={at}>{new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Karachi',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(at))}</time> · Pakistan time</p></>:<p>{language} subtitles: release time not confirmed.</p>}
-      </div>)}
-    </div>
-    <div className="release-footer"><p>Subtitle times are estimates. We’ll show “Watch now” when a checked video is available.</p>
-    {!full&&<Link href={episode.href} className="pill">Episode {episode.episode} release details</Link>}
-    </div>
-    <details className="release-notes"><summary>Release timing details</summary>
-      <p>{episode.confirmed?'The broadcaster lists this date and time.':'The broadcast date follows the weekly slot; breaks or schedule changes can delay it.'} <time dateTime={episode.broadcastAt}>{dateLabel(episode.broadcastAt,'Europe/Istanbul')}</time> Türkiye (UTC+3).</p>
-    </details>
-  </section>;
-}
+import { UpcomingReleaseCard } from './UpcomingReleaseCard';
+
+export { UpcomingReleaseCard };
 export function UpcomingEpisodePage({episode}:{episode:UpcomingEpisode}) {
   const url=siteConfig.domain+episode.href;
   const graph={'@context':'https://schema.org','@graph':[breadcrumbSchema([{name:'Home',path:'/'},{name:episode.dramaName,path:`/drama/${episode.dramaId}`},{name:`Season ${episode.season}`,path:episode.seasonHref},{name:`Episode ${episode.episode}`,path:episode.href}]),{

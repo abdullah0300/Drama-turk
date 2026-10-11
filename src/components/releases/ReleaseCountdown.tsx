@@ -1,23 +1,57 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-export function ReleaseCountdown({at,label,finished}:{at:string;label:string;finished:string}) {
-  const [now,setNow] = useState<number>();
-  useEffect(()=>{setNow(Date.now());const id=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(id);},[at]);
-  const remaining = now == null ? undefined : Math.max(0,Math.floor((Date.parse(at)-now)/1000));
-  const values = remaining == null ? undefined : [Math.floor(remaining/86400),Math.floor(remaining/3600)%24,Math.floor(remaining/60)%60,remaining%60];
-  // Remaining arc shrinks anticlockwise over the final week. Text stays readable without JS.
-  const fraction = remaining == null ? 1 : Math.min(1,remaining/(7*86400));
-  return <div className="release-clock" aria-label={label}>
-    <div className="release-clock-heading"><span>{label}</span>
-    <svg className="release-ring" viewBox="0 0 48 48" aria-hidden="true">
-      <circle className="release-ring-track" cx="24" cy="24" r="20" />
-      <circle className="release-ring-progress" cx="24" cy="24" r="20" pathLength="100" strokeDasharray={`${fraction*100} 100`} transform="rotate(-90 24 24)" />
-    </svg>
+export function ReleaseCountdown({
+  at,
+  label,
+  finished,
+}: {
+  at?: string | null;
+  label?: string;
+  finished?: string;
+}) {
+  const [now, setNow] = useState<number>();
+
+  useEffect(() => {
+    setNow(Date.now());
+    if (!at) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [at]);
+
+  if (!at) {
+    return (
+      <div className="timer" aria-label={label || 'Release time not confirmed'}>
+        <div><strong>—</strong><small>DAYS</small></div>
+        <div><strong>—</strong><small>HOURS</small></div>
+        <div><strong>—</strong><small>MINS</small></div>
+        <div><strong>—</strong><small>SECS</small></div>
+      </div>
+    );
+  }
+
+  const remaining = now == null ? undefined : Math.max(0, Math.floor((Date.parse(at) - now) / 1000));
+  const values = remaining == null ? undefined : [
+    Math.floor(remaining / 86400),
+    Math.floor(remaining / 3600) % 24,
+    Math.floor(remaining / 60) % 60,
+    remaining % 60,
+  ];
+
+  if (remaining === 0 && finished) {
+    return (
+      <div className="timer-finished" role="status">
+        <strong className="release-finished">{finished}</strong>
+      </div>
+    );
+  }
+
+  return (
+    <div className="timer" aria-label={label || 'Release countdown'}>
+      <div><strong>{values ? String(values[0]).padStart(2, '0') : '00'}</strong><small>DAYS</small></div>
+      <div><strong>{values ? String(values[1]).padStart(2, '0') : '00'}</strong><small>HOURS</small></div>
+      <div><strong>{values ? String(values[2]).padStart(2, '0') : '00'}</strong><small>MINS</small></div>
+      <div><strong>{values ? String(values[3]).padStart(2, '0') : '00'}</strong><small>SECS</small></div>
     </div>
-    {remaining===0 ? <strong className="release-finished" role="status">{finished}</strong> :
-      <div className="release-digits" aria-label={values?.map((n,i)=>`${n} ${['days','hours','minutes','seconds'][i]}`).join(', ')}>
-        {['Days','Hours','Mins','Secs'].map((unit,i)=><div className="release-digit" key={unit}><strong>{values?String(values[i]).padStart(2,'0'):'—'}</strong><small>{unit}</small></div>)}
-      </div>}
-  </div>;
+  );
 }

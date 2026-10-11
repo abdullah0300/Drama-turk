@@ -7,7 +7,7 @@ interface SubscribeNotificationCardProps {
   dramaId: string;
   dramaName: string;
   episodeLabel?: string;
-  variant?: 'card' | 'inline' | 'compact';
+  variant?: 'card' | 'inline' | 'compact' | 'release';
 }
 
 const STORAGE_EMAIL_KEY = 'gn_subscriber_email';
@@ -128,6 +128,78 @@ export function SubscribeNotificationCard({
       setLoading(false);
     }
   };
+
+  if (variant === 'release') {
+    return (
+      <section className="notify" aria-labelledby="notify-title">
+        <div className="notify-heading">
+          <span className="bell" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M6 16v-6a6 6 0 0 1 12 0v6l2 2H4zm4 5h4M12 2v2" /></svg>
+          </span>
+          <div>
+            <h3 id="notify-title">Email me when {episodeLabel ? `${episodeLabel} is ready` : 'new episodes arrive'}</h3>
+            <p>We’ll email you the second Urdu &amp; English subtitles are playable on Great Nation.</p>
+          </div>
+          <span className="free-label">FREE</span>
+        </div>
+
+        {status === 'success' || (isSubscribed && !isChangingEmail) ? (
+          <div className="mt-3.5 pt-3 border-t border-[#343b2f] flex flex-wrap items-center justify-between gap-3 text-xs text-[#d5c6a8]">
+            <div className="flex items-center gap-2">
+              <Check className="h-4 w-4 shrink-0 text-emerald-400" />
+              <span>
+                {status === 'success' && message
+                  ? message
+                  : <>You’re subscribed for alerts at <strong className="text-white font-medium">{savedEmail}</strong></>}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setIsChangingEmail(true);
+                setStatus('idle');
+              }}
+              className="change-email ml-auto"
+            >
+              Use a different email ↗
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubscribe} className="mt-2.5">
+            <label className="input-label" htmlFor="release-email">Email address</label>
+            <div className="email-row">
+              <input
+                id="release-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={savedEmail && !isChangingEmail ? savedEmail : "Enter your email address…"}
+                required
+                autoComplete="email"
+              />
+              <button className="primary" type="submit" disabled={loading}>
+                {loading ? 'Saving…' : 'Notify me'} <span>↗</span>
+              </button>
+            </div>
+            {isChangingEmail && isSubscribed && (
+              <div className="mt-2 text-right">
+                <button
+                  type="button"
+                  onClick={() => setIsChangingEmail(false)}
+                  className="change-email"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+            {status === 'error' && (
+              <p id="formError" role="alert">{message}</p>
+            )}
+          </form>
+        )}
+      </section>
+    );
+  }
 
   if (variant === 'compact') {
     return (
