@@ -283,6 +283,8 @@ def upgrade_episode(db, rep, coll, drama, rec, variant_row, new_duration, ok, st
 
     old_dur = variant_row.get('duration_seconds') or 0
     rep.add(f"Upgraded {coll['source_id']} {clean_label} ({rid}): replaced trailer ({old_dur}s) with full episode ({new_duration}s).")
+    if not db.dry_run and new_duration >= MIN_EPISODE_SECONDS:
+        dispatch_notifications(drama, coll, rec, duration_seconds=new_duration)
     return True
 
 
@@ -355,15 +357,23 @@ def import_episode(db, rep, coll, drama, rec, groups_by_coll):
         drama['video_records_count'] = (drama.get('video_records_count') or 0) + 1
     rep.add(f"Added {coll['source_id']} {rec['display_label']} ({'/'.join(rec['languages'])} {rec['version']}) as {rid}"
             + ('' if ok else f' - stream check failed: {detail}'))
+    dur_sec = duration or 0
     if not ok:
         rep.problem(f"{rid}: imported but its stream does not load yet ({detail})")
     elif not db.dry_run:
-        dispatch_notifications(drama, coll, rec)
+        if dur_sec >= MIN_EPISODE_SECONDS:
+            dispatch_notifications(drama, coll, rec, duration_seconds=dur_sec)
+        else:
+            rep.add(f"Deferred notification for {rid}: duration ({dur_sec}s) is under 10 minutes (trailer/preview).")
     return True
 
 
-def dispatch_notifications(drama, coll, rec):
+def dispatch_notifications(drama, coll, rec, duration_seconds=None):
     if not drama or not drama.get('source_id') or not rec.get('episode'):
+        return
+    dur = duration_seconds if duration_seconds is not None else (iso_seconds(rec.get('duration')) or 0)
+    if dur < MIN_EPISODE_SECONDS:
+        print(f"Skipping notification broadcast: duration ({dur}s) is under 10 minutes (trailer/preview).")
         return
     try:
         req_data = json.dumps({
@@ -373,6 +383,7 @@ def dispatch_notifications(drama, coll, rec):
             "episode": rec.get('episode'),
             "bolum": rec.get('bolum'),
             "thumbnailUrl": (rec.get('thumbnail_urls') or [None])[0],
+            "durationSeconds": dur,
         }).encode('utf-8')
         req = urllib.request.Request(
             f"{SITE_ORIGIN}/api/notifications/broadcast",

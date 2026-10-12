@@ -13,6 +13,7 @@ const broadcastSchema = z.object({
   watchUrl: z.string().optional(),
   thumbnailUrl: z.string().url().optional(),
   adminSecret: z.string().optional(),
+  durationSeconds: z.number().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -24,7 +25,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message || 'Invalid payload' }, { status: 400 });
     }
 
-    const { dramaId, dramaName, season, episode, bolum, watchUrl, thumbnailUrl, adminSecret } = parsed.data;
+    const { dramaId, dramaName, season, episode, bolum, watchUrl, thumbnailUrl, adminSecret, durationSeconds } = parsed.data;
+
+    // Reject notifications for short trailers / previews (< 10 minutes)
+    if (durationSeconds !== undefined && durationSeconds < 600) {
+      return NextResponse.json({
+        success: true,
+        dispatchedCount: 0,
+        message: `Skipped broadcast: video duration (${durationSeconds}s) is under 10 minutes (trailer/preview). Only actual full episodes trigger emails.`,
+      });
+    }
 
     // Optional admin security check
     const expectedSecret = process.env.ADMIN_SECRET_KEY || 'local_dev_secret_key_12345';
