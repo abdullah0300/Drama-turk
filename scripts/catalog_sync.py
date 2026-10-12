@@ -415,9 +415,15 @@ def run_episodes(db, rep, only=None):
     # Track any variant under 10 minutes so we can check if full episode has dropped
     short_variants = {v['source_id']: v for v in variants if (v.get('duration_seconds') or 0) < MIN_EPISODE_SECONDS}
 
+    # Concluded series where no further episodes will air; do not scan Niazi
+    ENDED_DRAMAS = {'ask-ve-taht'}
+
     added = upgraded = checked = 0
     for coll in sorted(collections, key=lambda c: int(c['source_id'].split('-')[1])):
         if coll['status'] in ('archived', 'hidden'):
+            continue
+        drama = dramas.get(coll['drama_id'])
+        if drama and drama.get('source_id') in ENDED_DRAMAS:
             continue
         cat_id = coll['source_id'].split('-')[1]
         if only and cat_id not in only:

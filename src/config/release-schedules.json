@@ -15,21 +15,6 @@
     "previewSource": "https://www.trt1.com.tr/diziler/mehmed-fetihler-sultani/fragman/88-bolum-fragmani"
   },
   {
-    "dramaId": "ask-ve-taht",
-    "collectionId": "collection-81",
-    "season": 1,
-    "anchorEpisode": 5,
-    "anchorBolum": 5,
-    "anchorBroadcastAt": "2026-10-07T20:00:00+03:00",
-    "anchorConfirmed": false,
-    "weekly": true,
-    "maxEpisode": null,
-    "verifiedAt": "2026-10-10",
-    "channel": "ATV",
-    "scheduleSource": "https://www.atv.com.tr/ask-ve-taht",
-    "previewSource": "https://www.atv.com.tr/ask-ve-taht/fragman"
-  },
-  {
     "dramaId": "teskilat",
     "collectionId": "collection-83",
     "season": 7,
