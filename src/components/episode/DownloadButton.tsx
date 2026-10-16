@@ -105,15 +105,15 @@ export function DownloadButton({
   // 1. Queued State
   if (status === 'queued') {
     return (
-      <div className="relative inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/90 border border-amber-500/30 text-zinc-300 text-xs font-medium shadow-sm">
-        <Clock3 className="w-3.5 h-3.5 text-amber-400" />
+      <div className="pill">
+        <Clock3 className="i text-amber-400 animate-pulse" />
         <span>Queued</span>
         <button
           onClick={() => cancelDownload(episodeGroup.id)}
           title="Remove from queue"
-          className="ml-1 p-0.5 rounded-full hover:bg-zinc-700 text-zinc-400 hover:text-white"
+          className="ml-1 p-0.5 hover:text-rose-400 text-zinc-400 transition-colors"
         >
-          <X className="w-3.5 h-3.5" />
+          <X size={14} />
         </button>
       </div>
     );
@@ -122,29 +122,29 @@ export function DownloadButton({
   // 2. Downloading State
   if (status === 'downloading') {
     return (
-      <div className="relative inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium">
-        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+      <div className="pill on">
+        <Loader2 className="i animate-spin" />
         <span>Downloading {progress !== undefined ? `${progress}%` : '...'}</span>
         <button
           onClick={() => cancelDownload(episodeGroup.id)}
           title="Cancel download"
-          className="ml-1 p-0.5 rounded-full hover:bg-amber-500/20 text-amber-400/80 hover:text-amber-200"
+          className="ml-1 p-0.5 opacity-70 hover:opacity-100 transition-opacity"
         >
-          <X className="w-3.5 h-3.5" />
+          <X size={14} />
         </button>
       </div>
     );
   }
 
-  // 2. Completed State
+  // 3. Completed State
   if (isDownloaded) {
     return (
       <div className="relative inline-block" ref={menuRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium hover:bg-emerald-500/20 transition-colors"
+          className="pill on"
         >
-          <Check className="w-3.5 h-3.5" />
+          <Check className="i" />
           <span>Downloaded</span>
         </button>
 
@@ -176,20 +176,20 @@ export function DownloadButton({
     );
   }
 
-  // 3. Ready to Download (Quality Picker)
+  // 4. Ready to Download (Quality Picker)
   return (
     <div className="relative inline-block" ref={menuRef}>
       <button
         onClick={handleOpenQualityPicker}
         disabled={!streamUrl}
-        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/80 border border-zinc-700/60 text-zinc-200 text-xs font-medium hover:bg-zinc-700/80 hover:text-white transition-colors disabled:opacity-40"
+        className="pill"
       >
-        <Download className="w-3.5 h-3.5 text-amber-400" />
+        <Download className="i" />
         <span>Download</span>
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 bottom-full mb-2 w-64 rounded-xl bg-zinc-900 border border-zinc-800 shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+        <div className="absolute right-0 bottom-full mb-2 w-64 rounded-xl bg-zinc-900 border border-zinc-800 shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-100">
           <div className="px-2.5 py-1.5 border-b border-zinc-800/80 mb-1">
             <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
               Choose Download Quality

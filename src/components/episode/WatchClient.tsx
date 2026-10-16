@@ -187,14 +187,6 @@ export function WatchClient({
               <button className={`pill${inList ? ' on' : ''}`} onClick={toggleList}>
                 {inList ? <Check className="i" /> : <Plus className="i" />}My List
               </button>
-              <DownloadButton
-                drama={drama}
-                collection={collection}
-                episodeGroup={episodeGroup}
-                currentVideo={currentVideo}
-                seasonName={seasonName}
-                routePath={typeof window !== 'undefined' ? window.location.pathname : seasonHref}
-              />
               <button className="pill" onClick={handleCopyLink}>
                 {copiedLink ? <Check className="i" /> : <Share2 className="i" />}
                 {copiedLink ? 'Link copied' : 'Share'}
@@ -205,6 +197,14 @@ export function WatchClient({
               <button className="pill" onClick={() => setShowDiagnosticsModal(true)}>
                 <AlertTriangle className="i" />Report problem
               </button>
+              <DownloadButton
+                drama={drama}
+                collection={collection}
+                episodeGroup={episodeGroup}
+                currentVideo={currentVideo}
+                seasonName={seasonName}
+                routePath={typeof window !== 'undefined' ? window.location.pathname : seasonHref}
+              />
             </div>
           </div>
 
