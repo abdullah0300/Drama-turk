@@ -1592,7 +1592,6 @@ a.sn{display:block}
 .gn-player .wp-top{flex-wrap:wrap;row-gap:4px;text-shadow:0 1px 8px rgba(0,0,0,.6)}
 .gn-player .wp-top b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
 .gn-ver{padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.14);color:var(--text)!important;font-size:12px}
-.gn-tip{display:flex}
 .gn-player .knob{display:block}
 .gn-skip{position:relative}
 .gn-skip small,.gn-c-skip small{position:absolute;left:50%;top:50%;transform:translate(-50%,-42%);font-size:8px;font-weight:800;line-height:1;pointer-events:none}

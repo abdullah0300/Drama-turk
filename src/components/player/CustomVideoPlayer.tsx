@@ -653,49 +653,61 @@ export function CustomVideoPlayer({
     };
   }, [streamUrl]);
 
-  // Throttled seeking for hover / scrub preview
-  const seekPreviewTo = useCallback((targetTime: number) => {
+  const isSeekingPreviewRef = useRef(false);
+  const seekDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Seek video preview sub-player safely without thrashing network requests
+  const executeSeek = useCallback((targetTime: number) => {
     const previewEl = previewVideoRef.current;
     if (!previewEl) return;
 
     initPreviewPlayer();
 
-    const now = Date.now();
-    if (now - lastPreviewSeekTimeRef.current < 65) {
+    // If already seeking, queue the requested timestamp for when seeked event fires
+    if (previewEl.seeking || isSeekingPreviewRef.current) {
       pendingPreviewTimeRef.current = targetTime;
       return;
     }
 
-    lastPreviewSeekTimeRef.current = now;
-    pendingPreviewTimeRef.current = null;
-
     try {
+      isSeekingPreviewRef.current = true;
       if ('fastSeek' in previewEl && typeof (previewEl as any).fastSeek === 'function') {
         (previewEl as any).fastSeek(targetTime);
       } else {
         previewEl.currentTime = targetTime;
       }
     } catch {
-      // Ignored if media isn't ready
+      isSeekingPreviewRef.current = false;
     }
   }, [initPreviewPlayer]);
 
   const handlePreviewSeeked = () => {
+    isSeekingPreviewRef.current = false;
     setPreviewLoaded(true);
     if (pendingPreviewTimeRef.current !== null) {
       const nextTime = pendingPreviewTimeRef.current;
       pendingPreviewTimeRef.current = null;
-      seekPreviewTo(nextTime);
+      executeSeek(nextTime);
     }
   };
 
   // Sync preview seek when hover, barDrag, or swipe scrub updates
+  // Debounced by 140ms so dragging/moving cursor smoothly updates the UI timestamp
+  // while allowing the video sub-player to download and decode the chunk without being aborted.
   const activeScrubTime = barDrag ?? barHover ?? (scrub ? scrub.target : null);
   useEffect(() => {
     if (activeScrubTime !== null && activeScrubTime >= 0) {
-      seekPreviewTo(activeScrubTime);
+      if (seekDebounceRef.current) clearTimeout(seekDebounceRef.current);
+      seekDebounceRef.current = setTimeout(() => {
+        executeSeek(activeScrubTime);
+      }, 140);
+    } else {
+      if (seekDebounceRef.current) clearTimeout(seekDebounceRef.current);
     }
-  }, [activeScrubTime, seekPreviewTo]);
+    return () => {
+      if (seekDebounceRef.current) clearTimeout(seekDebounceRef.current);
+    };
+  }, [activeScrubTime, executeSeek]);
 
   // Calculate boundary clamped position so the preview card never clips off screen edges
   const getClampedPreviewStyle = (targetTime: number) => {
@@ -963,9 +975,13 @@ export function CustomVideoPlayer({
               <i className="pl" style={{ width: `${pct(shownTime)}%` }} />
               <span className="knob" style={{ left: `${pct(shownTime)}%` }} />
             </div>
+            {/* Timeline Hover / Drag Preview Card */}
             <div
-              className={`wp-tip gn-tip gn-preview-card ${(barDrag ?? barHover) !== null ? 'active' : ''}`}
-              style={getClampedPreviewStyle((barDrag ?? barHover ?? shownTime) as number)}
+              className={`wp-tip gn-preview-card ${(barDrag ?? barHover) !== null ? 'active' : ''}`}
+              style={{
+                ...getClampedPreviewStyle((barDrag ?? barHover ?? shownTime) as number),
+                display: (barDrag ?? barHover) !== null ? 'flex' : 'none',
+              }}
             >
               <div className="gn-preview-thumb">
                 {currentVideo.thumbnail_urls?.[0] && (
