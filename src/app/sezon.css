@@ -402,6 +402,11 @@ body.watching .nav{background:rgba(9,9,11,.92);backdrop-filter:blur(16px);-webki
 .wp-bar:hover .knob,.wp-bar.drag .knob{transform:scale(1)}
 .wp-tip{position:absolute;bottom:24px;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
 .wp-bar:hover .wp-tip,.wp-bar.drag .wp-tip{display:flex}
+.gn-preview-thumb{position:relative;width:clamp(120px,24vw,168px);aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:#09090b;border:2px solid rgba(255,255,255,.9);box-shadow:0 10px 30px rgba(0,0,0,.65),0 0 16px rgba(242,179,61,.25)}
+.gn-preview-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .2s ease}
+.gn-preview-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .15s ease}
+.gn-preview-video.loaded{opacity:1}
+.gn-preview-time{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;padding:2px 7px;border-radius:4px;background:rgba(0,0,0,.85);color:#fff;border:1px solid rgba(255,255,255,.2);white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .wp-tip img{width:168px;height:94px;border-radius:8px;border:2px solid rgba(255,255,255,.9);object-fit:cover;box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .wp-tip span{font-size:12px;font-weight:800;padding:3px 8px;border-radius:4px;background:rgba(0,0,0,.75)}
 .wp-ctrl{display:flex;align-items:center;gap:2px}
@@ -1619,6 +1624,8 @@ a.sn{display:block}
 .gn-scrub{position:absolute;left:50%;top:18%;z-index:4;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 16px;border-radius:12px;background:rgba(0,0,0,.72);pointer-events:none;font-variant-numeric:tabular-nums}
 .gn-scrub b{font-size:20px;font-weight:800;color:var(--gold)}
 .gn-scrub span{font-size:12px;font-weight:700;color:var(--muted)}
+.gn-scrub.gn-scrub-enhanced{top:10%;padding:8px 12px;gap:6px;background:rgba(0,0,0,.85);border:1px solid rgba(255,255,255,.2);box-shadow:0 12px 36px rgba(0,0,0,.75)}
+.gn-scrub-thumb{width:clamp(110px,28vw,150px);margin-bottom:2px}
 /* loading */
 .gn-loading{position:absolute;inset:0;z-index:2;display:grid;place-items:center;pointer-events:none}
 .gn-loading span{width:46px;height:46px;border-radius:50%;border:3px solid rgba(242,179,61,.2);border-top-color:var(--gold);animation:gnSpin .8s linear infinite}

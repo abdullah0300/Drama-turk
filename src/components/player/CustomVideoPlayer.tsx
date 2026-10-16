@@ -572,6 +572,122 @@ export function CustomVideoPlayer({
     showControls();
   };
 
+  // ---- Timeline Preview Thumbnail Engine ----
+  const previewVideoRef = useRef<HTMLVideoElement | null>(null);
+  const previewHlsRef = useRef<Hls | null>(null);
+  const [previewLoaded, setPreviewLoaded] = useState(false);
+  const lastPreviewSeekTimeRef = useRef(0);
+  const pendingPreviewTimeRef = useRef<number | null>(null);
+
+  // Lazy-initialize low-bitrate preview HLS instance only on user hover/drag
+  const initPreviewPlayer = useCallback(() => {
+    if (previewHlsRef.current || !streamUrl) return;
+    const previewEl = previewVideoRef.current;
+    if (!previewEl) return;
+
+    if (streamUrl.includes('.m3u8') && Hls.isSupported()) {
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: false,
+        backBufferLength: 20,
+        maxBufferLength: 6,
+        maxMaxBufferLength: 12,
+        maxBufferSize: 3 * 1024 * 1024,
+        autoStartLoad: true,
+      });
+
+      hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+        if (data.levels && data.levels.length > 0) {
+          let lowestIdx = 0;
+          let lowestBitrate = Infinity;
+          data.levels.forEach((lvl, idx) => {
+            if (lvl.bitrate < lowestBitrate) {
+              lowestBitrate = lvl.bitrate;
+              lowestIdx = idx;
+            }
+          });
+          hls.currentLevel = lowestIdx;
+          hls.loadLevel = lowestIdx;
+        }
+      });
+
+      hls.loadSource(streamUrl);
+      hls.attachMedia(previewEl);
+      previewHlsRef.current = hls;
+    } else if (previewEl.canPlayType('application/vnd.apple.mpegurl')) {
+      previewEl.src = streamUrl;
+    }
+  }, [streamUrl]);
+
+  // Clean up preview player on stream change
+  useEffect(() => {
+    return () => {
+      if (previewHlsRef.current) {
+        previewHlsRef.current.destroy();
+        previewHlsRef.current = null;
+      }
+      setPreviewLoaded(false);
+    };
+  }, [streamUrl]);
+
+  // Throttled seeking for hover / scrub preview
+  const seekPreviewTo = useCallback((targetTime: number) => {
+    const previewEl = previewVideoRef.current;
+    if (!previewEl) return;
+
+    initPreviewPlayer();
+
+    const now = Date.now();
+    if (now - lastPreviewSeekTimeRef.current < 65) {
+      pendingPreviewTimeRef.current = targetTime;
+      return;
+    }
+
+    lastPreviewSeekTimeRef.current = now;
+    pendingPreviewTimeRef.current = null;
+
+    try {
+      if ('fastSeek' in previewEl && typeof (previewEl as any).fastSeek === 'function') {
+        (previewEl as any).fastSeek(targetTime);
+      } else {
+        previewEl.currentTime = targetTime;
+      }
+    } catch {
+      // Ignored if media isn't ready
+    }
+  }, [initPreviewPlayer]);
+
+  const handlePreviewSeeked = () => {
+    setPreviewLoaded(true);
+    if (pendingPreviewTimeRef.current !== null) {
+      const nextTime = pendingPreviewTimeRef.current;
+      pendingPreviewTimeRef.current = null;
+      seekPreviewTo(nextTime);
+    }
+  };
+
+  // Sync preview seek when hover, barDrag, or swipe scrub updates
+  const activeScrubTime = barDrag ?? barHover ?? (scrub ? scrub.target : null);
+  useEffect(() => {
+    if (activeScrubTime !== null && activeScrubTime >= 0) {
+      seekPreviewTo(activeScrubTime);
+    }
+  }, [activeScrubTime, seekPreviewTo]);
+
+  // Calculate boundary clamped position so the preview card never clips off screen edges
+  const getClampedPreviewStyle = (targetTime: number) => {
+    const r = barRef.current?.getBoundingClientRect();
+    if (!r || !duration) return { left: '50%' };
+    const rawX = (targetTime / duration) * r.width;
+    const halfWidth = Math.max(60, Math.min(84, r.width * 0.16));
+    const minX = halfWidth + 6;
+    const maxX = r.width - halfWidth - 6;
+    const clampedX = Math.max(minX, Math.min(maxX, rawX));
+    return {
+      left: `${clampedX}px`,
+    };
+  };
+
   // Keyboard accessibility
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (['input', 'textarea', 'select'].includes((e.target as HTMLElement).tagName.toLowerCase())) return;
@@ -700,7 +816,19 @@ export function CustomVideoPlayer({
 
       {/* Swipe scrub preview */}
       {scrub && (
-        <div className="gn-scrub" aria-live="polite">
+        <div className="gn-scrub gn-scrub-enhanced" aria-live="polite">
+          <div className="gn-preview-thumb gn-scrub-thumb">
+            {currentVideo.thumbnail_urls?.[0] && (
+              <img
+                src={currentVideo.thumbnail_urls[0]}
+                alt=""
+                className="gn-preview-poster"
+              />
+            )}
+            <span className="gn-preview-time">
+              {formatTime(scrub.target)}
+            </span>
+          </div>
           <b>{scrub.delta >= 0 ? '+' : '−'}{formatTime(Math.abs(scrub.delta))}</b>
           <span>{formatTime(scrub.target)} / {formatTime(duration)}</span>
         </div>
@@ -813,8 +941,30 @@ export function CustomVideoPlayer({
               <span className="knob" style={{ left: `${pct(shownTime)}%` }} />
             </div>
             {(barDrag ?? barHover) !== null && (
-              <div className="wp-tip gn-tip" style={{ left: `${pct((barDrag ?? barHover) as number)}%` }}>
-                <span>{formatTime((barDrag ?? barHover) as number)}</span>
+              <div
+                className="wp-tip gn-tip gn-preview-card"
+                style={getClampedPreviewStyle((barDrag ?? barHover) as number)}
+              >
+                <div className="gn-preview-thumb">
+                  {currentVideo.thumbnail_urls?.[0] && (
+                    <img
+                      src={currentVideo.thumbnail_urls[0]}
+                      alt=""
+                      className="gn-preview-poster"
+                    />
+                  )}
+                  <video
+                    ref={previewVideoRef}
+                    muted
+                    playsInline
+                    preload="metadata"
+                    onSeeked={handlePreviewSeeked}
+                    className={`gn-preview-video ${previewLoaded ? 'loaded' : ''}`}
+                  />
+                  <span className="gn-preview-time">
+                    {formatTime((barDrag ?? barHover) as number)}
+                  </span>
+                </div>
               </div>
             )}
           </div>
