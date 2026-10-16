@@ -572,151 +572,14 @@ export function CustomVideoPlayer({
     showControls();
   };
 
-  // ---- Timeline Preview Thumbnail Engine ----
-  const previewVideoRef = useRef<HTMLVideoElement | null>(null);
-  const previewHlsRef = useRef<Hls | null>(null);
-  const [previewLoaded, setPreviewLoaded] = useState(false);
-  const lastPreviewSeekTimeRef = useRef(0);
-  const pendingPreviewTimeRef = useRef<number | null>(null);
-
-  // Lazy-initialize low-bitrate preview HLS instance only on user hover/drag
-  const initPreviewPlayer = useCallback(() => {
-    if (previewHlsRef.current || !streamUrl) return;
-    const previewEl = previewVideoRef.current;
-    if (!previewEl) return;
-
-    previewEl.muted = true;
-    previewEl.defaultMuted = true;
-    previewEl.volume = 0;
-
-    if (streamUrl.includes('.m3u8')) {
-      if (Hls.isSupported()) {
-        const hls = new Hls({
-          enableWorker: true,
-          lowLatencyMode: false,
-          backBufferLength: 20,
-          maxBufferLength: 6,
-          maxMaxBufferLength: 12,
-          maxBufferSize: 3 * 1024 * 1024,
-          autoStartLoad: true,
-          // Some hosts (video.twimg.com) answer 403 to any request carrying a third-party
-          // Referer, so media requests go out without one.
-          ...(typeof fetch === 'function' && typeof ReadableStream === 'function'
-            ? {
-                loader: FetchLoader,
-                fetchSetup: (context: { url: string }, initParams: RequestInit) =>
-                  new Request(context.url, { ...initParams, referrerPolicy: 'no-referrer' }),
-              }
-            : {}),
-        });
-
-        hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-          if (data.levels && data.levels.length > 0) {
-            let lowestIdx = 0;
-            let lowestBitrate = Infinity;
-            data.levels.forEach((lvl, idx) => {
-              if (lvl.bitrate < lowestBitrate) {
-                lowestBitrate = lvl.bitrate;
-                lowestIdx = idx;
-              }
-            });
-            hls.currentLevel = lowestIdx;
-            hls.loadLevel = lowestIdx;
-          }
-        });
-
-        hls.on(Hls.Events.ERROR, (event, data) => {
-          if (data.fatal) {
-            console.warn('[PreviewPlayer] HLS error in preview sub-player:', data.details);
-          }
-        });
-
-        hls.loadSource(streamUrl);
-        hls.attachMedia(previewEl);
-        previewHlsRef.current = hls;
-      } else if (previewEl.canPlayType('application/vnd.apple.mpegurl')) {
-        previewEl.src = streamUrl;
-      }
-    } else {
-      previewEl.src = streamUrl;
-    }
-  }, [streamUrl]);
-
-  // Clean up preview player on stream change
-  useEffect(() => {
-    return () => {
-      if (previewHlsRef.current) {
-        previewHlsRef.current.destroy();
-        previewHlsRef.current = null;
-      }
-      setPreviewLoaded(false);
-    };
-  }, [streamUrl]);
-
-  const isSeekingPreviewRef = useRef(false);
-  const seekDebounceRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Seek video preview sub-player safely without thrashing network requests
-  const executeSeek = useCallback((targetTime: number) => {
-    const previewEl = previewVideoRef.current;
-    if (!previewEl) return;
-
-    initPreviewPlayer();
-
-    // If already seeking, queue the requested timestamp for when seeked event fires
-    if (previewEl.seeking || isSeekingPreviewRef.current) {
-      pendingPreviewTimeRef.current = targetTime;
-      return;
-    }
-
-    try {
-      isSeekingPreviewRef.current = true;
-      if ('fastSeek' in previewEl && typeof (previewEl as any).fastSeek === 'function') {
-        (previewEl as any).fastSeek(targetTime);
-      } else {
-        previewEl.currentTime = targetTime;
-      }
-    } catch {
-      isSeekingPreviewRef.current = false;
-    }
-  }, [initPreviewPlayer]);
-
-  const handlePreviewSeeked = () => {
-    isSeekingPreviewRef.current = false;
-    setPreviewLoaded(true);
-    if (pendingPreviewTimeRef.current !== null) {
-      const nextTime = pendingPreviewTimeRef.current;
-      pendingPreviewTimeRef.current = null;
-      executeSeek(nextTime);
-    }
-  };
-
-  // Sync preview seek when hover, barDrag, or swipe scrub updates
-  // Debounced by 140ms so dragging/moving cursor smoothly updates the UI timestamp
-  // while allowing the video sub-player to download and decode the chunk without being aborted.
-  const activeScrubTime = barDrag ?? barHover ?? (scrub ? scrub.target : null);
-  useEffect(() => {
-    if (activeScrubTime !== null && activeScrubTime >= 0) {
-      if (seekDebounceRef.current) clearTimeout(seekDebounceRef.current);
-      seekDebounceRef.current = setTimeout(() => {
-        executeSeek(activeScrubTime);
-      }, 140);
-    } else {
-      if (seekDebounceRef.current) clearTimeout(seekDebounceRef.current);
-    }
-    return () => {
-      if (seekDebounceRef.current) clearTimeout(seekDebounceRef.current);
-    };
-  }, [activeScrubTime, executeSeek]);
-
-  // Calculate boundary clamped position so the preview card never clips off screen edges
-  const getClampedPreviewStyle = (targetTime: number) => {
+  // Calculate boundary clamped position so the time tooltip pill never clips off screen edges
+  const getClampedTimePillStyle = (targetTime: number) => {
     const r = barRef.current?.getBoundingClientRect();
     if (!r || !duration) return { left: '50%' };
     const rawX = (targetTime / duration) * r.width;
-    const halfWidth = Math.max(60, Math.min(84, r.width * 0.16));
-    const minX = halfWidth + 6;
-    const maxX = r.width - halfWidth - 6;
+    const halfWidth = 32;
+    const minX = halfWidth + 4;
+    const maxX = r.width - halfWidth - 4;
     const clampedX = Math.max(minX, Math.min(maxX, rawX));
     return {
       left: `${clampedX}px`,
@@ -975,37 +838,15 @@ export function CustomVideoPlayer({
               <i className="pl" style={{ width: `${pct(shownTime)}%` }} />
               <span className="knob" style={{ left: `${pct(shownTime)}%` }} />
             </div>
-            {/* Timeline Hover / Drag Preview Card */}
-            <div
-              className={`wp-tip gn-preview-card ${(barDrag ?? barHover) !== null ? 'active' : ''}`}
-              style={{
-                ...getClampedPreviewStyle((barDrag ?? barHover ?? shownTime) as number),
-                display: (barDrag ?? barHover) !== null ? 'flex' : 'none',
-              }}
-            >
-              <div className="gn-preview-thumb">
-                {currentVideo.thumbnail_urls?.[0] && (
-                  <img
-                    src={currentVideo.thumbnail_urls[0]}
-                    alt=""
-                    className="gn-preview-poster"
-                  />
-                )}
-                <video
-                  ref={previewVideoRef}
-                  muted
-                  playsInline
-                  preload="metadata"
-                  onSeeked={handlePreviewSeeked}
-                  onLoadedData={() => setPreviewLoaded(true)}
-                  onTimeUpdate={() => setPreviewLoaded(true)}
-                  className={`gn-preview-video ${previewLoaded ? 'loaded' : ''}`}
-                />
-                <span className="gn-preview-time">
-                  {formatTime((barDrag ?? barHover ?? shownTime) as number)}
-                </span>
+            {/* YouTube-Style Floating Time Tooltip Pill */}
+            {(barDrag ?? barHover) !== null && (
+              <div
+                className="wp-tip gn-time-pill"
+                style={getClampedTimePillStyle((barDrag ?? barHover) as number)}
+              >
+                <span>{formatTime((barDrag ?? barHover) as number)}</span>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="wp-ctrl">
