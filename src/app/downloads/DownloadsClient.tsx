@@ -28,6 +28,7 @@ export function DownloadsClient() {
   const { 
     downloads, 
     activeDownloads, 
+    queuedItems,
     storageInfo, 
     deleteDownload, 
     cancelDownload, 
@@ -392,10 +393,13 @@ export function DownloadsClient() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {downloads.map((item) => {
             const active = activeDownloads[item.episodeGroupId];
-            const isDownloading = (item.status === 'downloading' || !!active) && item.status !== 'queued';
-            const isQueued = item.status === 'queued';
+            const isQueued = item.status === 'queued' || item.status === 'pending' || queuedItems.some((q) => q.episodeGroupId === item.episodeGroupId);
+            const isDownloading = (item.status === 'downloading' || !!active) && !isQueued;
             const progress = active?.percent ?? (item.totalChunks > 0 ? Math.round((item.downloadedChunks / item.totalChunks) * 100) : 0);
             const isCurrentlyPlaying = playingEpisode?.episodeGroupId === item.episodeGroupId;
+
+            const queueIndex = queuedItems.findIndex((q) => q.episodeGroupId === item.episodeGroupId);
+            const queueLabel = queueIndex >= 0 ? `Queued (#${queueIndex + 1})` : 'Queued in line...';
 
             return (
               <div
@@ -453,12 +457,12 @@ export function DownloadsClient() {
                   {/* Queued Badge Overlay */}
                   {isQueued && (
                     <div className="absolute inset-x-0 bottom-0 bg-black/85 backdrop-blur-xs p-2.5 flex items-center justify-between text-xs text-amber-300 font-medium border-t border-amber-500/20">
-                      <span className="flex items-center gap-1.5">
+                      <span className="flex items-center gap-1.5 font-semibold">
                         <Clock3 size={13} className="text-amber-400 animate-pulse" />
-                        Queued for download...
+                        {queueLabel}
                       </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
-                        Waiting
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold uppercase tracking-wider">
+                        Pending
                       </span>
                     </div>
                   )}
@@ -504,19 +508,25 @@ export function DownloadsClient() {
                     {isDownloading ? (
                       <button
                         onClick={() => cancelDownload(item.episodeGroupId)}
-                        className="flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 py-1 transition-colors"
+                        className="flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 py-1 transition-colors font-medium"
                       >
                         <X size={14} />
-                        <span>Cancel</span>
+                        <span>Cancel Download</span>
                       </button>
                     ) : isQueued ? (
-                      <button
-                        onClick={() => cancelDownload(item.episodeGroupId)}
-                        className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-rose-400 py-1 transition-colors"
-                      >
-                        <X size={13} />
-                        <span>Remove from Queue</span>
-                      </button>
+                      <div className="flex items-center justify-between w-full">
+                        <span className="text-xs text-amber-400 font-semibold flex items-center gap-1.5">
+                          <Clock3 size={13} className="animate-pulse" />
+                          <span>{queueLabel}</span>
+                        </span>
+                        <button
+                          onClick={() => cancelDownload(item.episodeGroupId)}
+                          className="flex items-center gap-1 text-xs text-zinc-400 hover:text-rose-400 py-1 transition-colors font-medium"
+                        >
+                          <X size={13} />
+                          <span>Remove</span>
+                        </button>
+                      </div>
                     ) : (
                       <button
                         onClick={() => {
@@ -530,18 +540,20 @@ export function DownloadsClient() {
                       </button>
                     )}
 
-                    <button
-                      onClick={() => {
-                        deleteDownload(item.episodeGroupId);
-                        if (playingEpisode?.episodeGroupId === item.episodeGroupId) {
-                          setPlayingEpisode(null);
-                        }
-                      }}
-                      title="Delete from device"
-                      className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                    {!isQueued && (
+                      <button
+                        onClick={() => {
+                          deleteDownload(item.episodeGroupId);
+                          if (playingEpisode?.episodeGroupId === item.episodeGroupId) {
+                            setPlayingEpisode(null);
+                          }
+                        }}
+                        title="Delete from device"
+                        className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -49,21 +49,33 @@ export function OfflineDownloadsProvider({ children }: { children: React.ReactNo
   const [downloads, setDownloads] = useState<OfflineEpisodeMetadata[]>([]);
   const [activeDownloads, setActiveDownloads] = useState<Record<string, ActiveDownloadState>>({});
   const [currentDownloadingId, setCurrentDownloadingId] = useState<string | null>(null);
+  const [queuedItems, setQueuedItems] = useState<OfflineEpisodeMetadata[]>([]);
   const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
 
   // Queue references
   const queueRef = useRef<QueuedDownloadItem[]>([]);
   const isProcessingRef = useRef(false);
   const currentControllerRef = useRef<AbortController | null>(null);
+  const hasCleanedUpRef = useRef(false);
+
+  const syncQueuedState = useCallback((activeId: string | null) => {
+    const queued = queueRef.current
+      .filter((q) => q.meta.episodeGroupId !== activeId)
+      .map((q) => q.meta);
+    setQueuedItems(queued);
+  }, []);
 
   const refreshDownloads = useCallback(async () => {
     try {
       const all = await getAllOfflineEpisodes();
-      for (const ep of all) {
-        if (ep.status === 'downloading' || ep.status === 'queued') {
-          if (!queueRef.current.some((q) => q.meta.episodeGroupId === ep.episodeGroupId)) {
-            ep.status = 'paused';
-            await saveOfflineEpisode(ep);
+      if (!hasCleanedUpRef.current) {
+        hasCleanedUpRef.current = true;
+        for (const ep of all) {
+          if (ep.status === 'downloading' || ep.status === 'queued') {
+            if (!queueRef.current.some((q) => q.meta.episodeGroupId === ep.episodeGroupId)) {
+              ep.status = 'paused';
+              await saveOfflineEpisode(ep);
+            }
           }
         }
       }
@@ -120,6 +132,7 @@ export function OfflineDownloadsProvider({ children }: { children: React.ReactNo
     const episodeGroupId = item.meta.episodeGroupId;
 
     setCurrentDownloadingId(episodeGroupId);
+    syncQueuedState(episodeGroupId);
 
     // Update status to downloading
     item.meta.status = 'downloading';
@@ -149,6 +162,7 @@ export function OfflineDownloadsProvider({ children }: { children: React.ReactNo
       queueRef.current = queueRef.current.filter(
         (q) => q.meta.episodeGroupId !== episodeGroupId
       );
+      syncQueuedState(currentDownloadingId);
       await refreshDownloads();
       await refreshStorage();
     } catch (err: any) {
@@ -164,6 +178,7 @@ export function OfflineDownloadsProvider({ children }: { children: React.ReactNo
       queueRef.current = queueRef.current.filter(
         (q) => q.meta.episodeGroupId !== episodeGroupId
       );
+      syncQueuedState(currentDownloadingId);
     } finally {
       currentControllerRef.current = null;
       isProcessingRef.current = false;
@@ -176,7 +191,7 @@ export function OfflineDownloadsProvider({ children }: { children: React.ReactNo
       // Automatically advance to the next queued episode!
       processNextInQueue();
     }
-  }, [refreshDownloads, refreshStorage]);
+  }, [refreshDownloads, refreshStorage, syncQueuedState, currentDownloadingId]);
 
   const startDownload = async (
     meta: Omit<OfflineEpisodeMetadata, 'downloadedChunks' | 'totalChunks' | 'totalSizeBytes' | 'status' | 'downloadedAt'>,
@@ -192,23 +207,25 @@ export function OfflineDownloadsProvider({ children }: { children: React.ReactNo
       return;
     }
 
+    const isFirst = queueRef.current.length === 0 && !isProcessingRef.current;
     const fullMetadata: OfflineEpisodeMetadata = {
       ...meta,
       manifestUrl: targetQualityUrl,
       downloadedChunks: 0,
       totalChunks: 0,
       totalSizeBytes: 0,
-      status: queueRef.current.length === 0 && !isProcessingRef.current ? 'downloading' : 'queued',
+      status: isFirst ? 'downloading' : 'queued',
       downloadedAt: new Date().toISOString(),
     };
-
-    await saveOfflineEpisode(fullMetadata);
-    await refreshDownloads();
 
     queueRef.current.push({
       meta: fullMetadata,
       targetQualityUrl,
     });
+    syncQueuedState(currentDownloadingId);
+
+    await saveOfflineEpisode(fullMetadata);
+    await refreshDownloads();
 
     processNextInQueue();
   };
@@ -222,6 +239,7 @@ export function OfflineDownloadsProvider({ children }: { children: React.ReactNo
       queueRef.current = queueRef.current.filter(
         (q) => q.meta.episodeGroupId !== episodeGroupId
       );
+      syncQueuedState(currentDownloadingId);
     }
 
     deleteOfflineEpisode(episodeGroupId).then(() => {
@@ -242,6 +260,7 @@ export function OfflineDownloadsProvider({ children }: { children: React.ReactNo
       currentControllerRef.current.abort();
     }
     queueRef.current = [];
+    syncQueuedState(null);
     isProcessingRef.current = false;
     setCurrentDownloadingId(null);
     setActiveDownloads({});
@@ -273,10 +292,6 @@ export function OfflineDownloadsProvider({ children }: { children: React.ReactNo
       queueRef.current[0]?.meta ||
       null
     : null;
-
-  const queuedItems = queueRef.current
-    .filter((q) => q.meta.episodeGroupId !== currentDownloadingId)
-    .map((q) => q.meta);
 
   return (
     <OfflineDownloadsContext.Provider
