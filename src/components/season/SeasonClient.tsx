@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowDown, Captions, Check, Clock3, Film, Info, Mic, Play, Plus } from 'lucide-react';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
+import { EpisodeCardDownloadButton } from '@/components/episode/EpisodeCardDownloadButton';
 
 export interface SeasonEpisode {
   id: string;
@@ -16,6 +17,8 @@ export interface SeasonEpisode {
   playable: boolean;
   renditions: number;
   languages: string;
+  streamUrl?: string;
+  videoRecordId?: string;
 }
 
 export interface OtherSeason {
@@ -315,6 +318,23 @@ export function SeasonClient(props: SeasonClientProps) {
                       {up && <span className="badge dark">Preview record</span>}
                       {st === 'w' && <span className="se-ok"><Check className="i" /></span>}
                       <span className="se-num">{e.number}</span>
+                      {!up && (
+                        <div className="absolute top-2 right-2 z-20">
+                          <EpisodeCardDownloadButton
+                            episodeGroupId={e.id}
+                            dramaId={dramaId}
+                            dramaTitle={dramaName}
+                            seasonLabel={seasonName}
+                            displayLabel={e.label}
+                            bolum={e.bolum}
+                            episodeNumber={e.number}
+                            stillUrl={e.thumb}
+                            videoRecordId={e.videoRecordId}
+                            streamUrl={e.streamUrl}
+                            routePath={e.href}
+                          />
+                        </div>
+                      )}
                       {!up && <span className="c-play"><Play className="i f" /></span>}
                       {!up && prog && prog.pct > 0 && <span className="c-bar"><i style={{ width: `${Math.min(100, prog.pct * 100)}%` }} /></span>}
                     </div>

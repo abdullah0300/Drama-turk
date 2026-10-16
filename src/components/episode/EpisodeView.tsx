@@ -68,8 +68,19 @@ export async function EpisodeView({ params, segment }: { params: EpisodeRoutePar
   const prevGroup = eligible[index - 1];
   const nextGroup = eligible[index + 1];
   const hrefOf = (id: string) => episodeHref(drama.id, season, edition, episodes.slugs.get(id)!);
-  const sidebarEpisodes = eligible.map(g => ({ id: g.id, href: hrefOf(g.id), display_label: g.display_label,
-    bolum: g.bolum, thumbnailUrl: episodes.videosByGroup.get(g.id)?.find(isPlayableVideo)?.thumbnail_urls[0] }));
+  const sidebarEpisodes = eligible.map(g => {
+    const playable = episodes.videosByGroup.get(g.id)?.find(isPlayableVideo);
+    return {
+      id: g.id,
+      href: hrefOf(g.id),
+      display_label: g.display_label,
+      bolum: g.bolum,
+      thumbnailUrl: playable?.thumbnail_urls[0],
+      streamUrl: playable?.stream_urls[0],
+      videoRecordId: playable?.id,
+      episodeNumber: g.episode_number,
+    };
+  });
   const seo = episodeSeo(drama, edition, group, videos);
   const matchingEditions = await Promise.all(season.editions.filter(e => drama.id === 'mehmed-fetihler-sultani' &&
     e.id !== edition.id).map(async e => {

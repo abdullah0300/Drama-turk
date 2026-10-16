@@ -3,12 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Compass, Search, Bookmark } from 'lucide-react';
+import { Home, Compass, Search, Bookmark, Download } from 'lucide-react';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
+import { useOfflineDownloads } from '@/context/OfflineDownloadsContext';
 
 export function MobileNav() {
   const pathname = usePathname();
   const { myList } = useUserPreferences();
+  const { downloads } = useOfflineDownloads();
 
   // Hide mobile nav in fullscreen or watch pages if preferred
   const isWatchPage = pathname.includes('/watch');
@@ -20,7 +22,7 @@ export function MobileNav() {
         isWatchPage ? 'hidden' : 'block'
       }`}
     >
-      <div className="grid grid-cols-4 h-16 items-center">
+      <div className="grid grid-cols-5 h-16 items-center">
         {/* Home */}
         <Link
           href="/"
@@ -52,6 +54,24 @@ export function MobileNav() {
         >
           <Search size={20} />
           <span className="text-[11px] mt-1">Search</span>
+        </Link>
+
+        {/* Downloads */}
+        <Link
+          href="/downloads"
+          className={`flex flex-col items-center justify-center py-2 transition-colors relative ${
+            pathname.startsWith('/downloads') ? 'text-amber-400 font-medium' : 'text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          <div className="relative">
+            <Download size={20} />
+            {downloads.length > 0 && (
+              <span className="absolute -top-1 -right-2 px-1 text-[9px] font-bold rounded-full bg-amber-500 text-stone-950">
+                {downloads.length}
+              </span>
+            )}
+          </div>
+          <span className="text-[11px] mt-1">Downloads</span>
         </Link>
 
         {/* My List */}

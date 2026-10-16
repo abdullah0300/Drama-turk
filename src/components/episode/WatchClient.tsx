@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { 
   CustomVideoPlayer 
 } from '@/components/player/CustomVideoPlayer';
+import { DownloadButton } from '@/components/episode/DownloadButton';
+import { EpisodeCardDownloadButton } from '@/components/episode/EpisodeCardDownloadButton';
 import { 
   EpisodeGroup, 
   VideoRecord, 
@@ -35,6 +37,9 @@ export interface EpisodeSidebarItem {
   display_label: string;
   bolum: number | null;
   thumbnailUrl?: string;
+  streamUrl?: string;
+  videoRecordId?: string;
+  episodeNumber?: number | null;
 }
 
 interface WatchClientProps {
@@ -182,6 +187,14 @@ export function WatchClient({
               <button className={`pill${inList ? ' on' : ''}`} onClick={toggleList}>
                 {inList ? <Check className="i" /> : <Plus className="i" />}My List
               </button>
+              <DownloadButton
+                drama={drama}
+                collection={collection}
+                episodeGroup={episodeGroup}
+                currentVideo={currentVideo}
+                seasonName={seasonName}
+                routePath={typeof window !== 'undefined' ? window.location.pathname : seasonHref}
+              />
               <button className="pill" onClick={handleCopyLink}>
                 {copiedLink ? <Check className="i" /> : <Share2 className="i" />}
                 {copiedLink ? 'Link copied' : 'Share'}
@@ -256,16 +269,45 @@ export function WatchClient({
         <aside className="w-side">
           <div className="w-up">
             {nextGroup ? (
-              <Link href={nextHref ?? seasonHref} className="w-up-m">
-                {nextThumb ? <img src={nextThumb} alt="" /> : <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
-                <span className="shade" />
-                <span className="c-play"><Play className="i f" /></span>
-                <span className="w-up-t">
-                  <small>Up next</small>
-                  <b>{nextGroup.display_label}</b>
-                  <span>{nextGroup.bolum ? `Bolum ${nextGroup.bolum}` : seasonLabel}</span>
-                </span>
-              </Link>
+              <div className="w-up-m relative group">
+                <Link href={nextHref ?? seasonHref} className="block w-full h-full">
+                  {nextThumb ? <img src={nextThumb} alt="" /> : <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />}
+                  <span className="shade" />
+                  <span className="c-play"><Play className="i f" /></span>
+                  <span className="w-up-t">
+                    <small>Up next</small>
+                    <b>{nextGroup.display_label}</b>
+                    <span>{nextGroup.bolum ? `Bolum ${nextGroup.bolum}` : seasonLabel}</span>
+                  </span>
+                </Link>
+                {(() => {
+                  const nextItem = sidebarEpisodes.find((e) => e.id === nextGroup.id);
+                  if (!nextItem) return null;
+                  return (
+                    <div
+                      className="absolute top-3 right-3 z-20"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      <EpisodeCardDownloadButton
+                        episodeGroupId={nextItem.id}
+                        dramaId={drama.id}
+                        dramaTitle={drama.name}
+                        seasonLabel={seasonName}
+                        displayLabel={nextItem.display_label}
+                        bolum={nextItem.bolum}
+                        episodeNumber={nextItem.episodeNumber ?? null}
+                        stillUrl={nextItem.thumbnailUrl}
+                        videoRecordId={nextItem.videoRecordId}
+                        streamUrl={nextItem.streamUrl}
+                        routePath={nextItem.href}
+                      />
+                    </div>
+                  );
+                })()}
+              </div>
             ) : (
               <div className="w-up-m" style={{ cursor: 'default' }}>
                 <div className="thumb-fallback" style={{ position: 'absolute', inset: 0 }} />
@@ -297,28 +339,54 @@ export function WatchClient({
               {sidebarEpisodes.map((group, gi) => {
                 const isCurrent = group.id === episodeGroup.id;
                 return (
-                  <Link
+                  <div
                     key={group.id}
-                    href={group.href}
                     className={`w-ep${isCurrent ? ' now' : ''}`}
                     aria-current={isCurrent ? 'true' : undefined}
                   >
-                    <em>{gi + 1}</em>
-                    <span className="ep-t">
-                      {group.thumbnailUrl ? (
-                        <img src={group.thumbnailUrl} alt="" />
-                      ) : (
-                        <span className="thumb-fallback" />
-                      )}
-                    </span>
-                    <span>
-                      <b>
-                        {group.display_label}
-                        {isCurrent && <span className="eq"><i /><i /><i /></span>}
-                      </b>
-                      <span>{isCurrent ? 'Now playing' : group.bolum ? `Bolum ${group.bolum}` : 'Episode'}</span>
-                    </span>
-                  </Link>
+                    <Link
+                      href={group.href}
+                      className="w-ep-main"
+                    >
+                      <em>{gi + 1}</em>
+                      <span className="ep-t">
+                        {group.thumbnailUrl ? (
+                          <img src={group.thumbnailUrl} alt="" />
+                        ) : (
+                          <span className="thumb-fallback" />
+                        )}
+                      </span>
+                      <span>
+                        <b>
+                          {group.display_label}
+                          {isCurrent && <span className="eq"><i /><i /><i /></span>}
+                        </b>
+                        <span>{isCurrent ? 'Now playing' : group.bolum ? `Bolum ${group.bolum}` : 'Episode'}</span>
+                      </span>
+                    </Link>
+
+                    <div
+                      className="w-ep-dl"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      <EpisodeCardDownloadButton
+                        episodeGroupId={group.id}
+                        dramaId={drama.id}
+                        dramaTitle={drama.name}
+                        seasonLabel={seasonName}
+                        displayLabel={group.display_label}
+                        bolum={group.bolum}
+                        episodeNumber={group.episodeNumber ?? null}
+                        stillUrl={group.thumbnailUrl}
+                        videoRecordId={group.videoRecordId}
+                        streamUrl={group.streamUrl}
+                        routePath={group.href}
+                      />
+                    </div>
+                  </div>
                 );
               })}
             </div>

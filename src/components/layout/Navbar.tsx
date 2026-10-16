@@ -3,9 +3,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Bookmark, Bell } from 'lucide-react';
+import { Search, Bookmark, Bell, Download } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
+import { useOfflineDownloads } from '@/context/OfflineDownloadsContext';
 
 export interface NavDrama { id: string; name: string; genre: string; poster?: string; isPilot: boolean }
 export interface NavNotification { id: string; title: string; label: string; thumb?: string; href: string }
@@ -15,6 +16,7 @@ export function Navbar({ dramas = [], notifications = [] }: { dramas?: NavDrama[
   const pathname = usePathname();
   const router = useRouter();
   const { myList } = useUserPreferences();
+  const { downloads } = useOfflineDownloads();
   const [solid, setSolid] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -77,6 +79,9 @@ export function Navbar({ dramas = [], notifications = [] }: { dramas?: NavDrama[
           <Link href="/my-list" className={isActive('/my-list') ? 'on' : ''}>
             My List{myList.length > 0 ? ` (${myList.length})` : ''}
           </Link>
+          <Link href="/downloads" className={isActive('/downloads') ? 'on' : ''}>
+            Downloads{downloads.length > 0 ? ` (${downloads.length})` : ''}
+          </Link>
         </nav>
 
         <div className="nav-end">
@@ -132,6 +137,15 @@ export function Navbar({ dramas = [], notifications = [] }: { dramas?: NavDrama[
           >
             <Bookmark className="i" />
             {myList.length > 0 && <span className="dot-n" />}
+          </Link>
+          <Link
+            href="/downloads"
+            className="icon-btn"
+            aria-label={`Offline Downloads (${downloads.length} items)`}
+            style={{ position: 'relative' }}
+          >
+            <Download className="i" />
+            {downloads.length > 0 && <span className="dot-n" />}
           </Link>
         </div>
       </header>

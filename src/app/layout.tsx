@@ -3,6 +3,9 @@ import Script from 'next/script';
 import './globals.css';
 import './sezon.css';
 import { UserPreferencesProvider } from '@/context/UserPreferencesContext';
+import { OfflineDownloadsProvider } from '@/context/OfflineDownloadsContext';
+import { OfflineRedirector } from '@/components/layout/OfflineRedirector';
+import { DownloadStatusBar } from '@/components/layout/DownloadStatusBar';
 import { Navbar } from '@/components/layout/Navbar';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { PageShell } from '@/components/layout/PageShell';
@@ -115,10 +118,14 @@ export default async function RootLayout({
         </Script>
 
         <UserPreferencesProvider>
-          <Navbar dramas={searchDramas} notifications={notifications} />
-          <PageShell>{children}</PageShell>
-          <Footer dramas={footerDramas} />
-          <MobileNav />
+          <OfflineDownloadsProvider>
+            <OfflineRedirector />
+            <Navbar dramas={searchDramas} notifications={notifications} />
+            <PageShell>{children}</PageShell>
+            <Footer dramas={footerDramas} />
+            <MobileNav />
+            <DownloadStatusBar />
+          </OfflineDownloadsProvider>
         </UserPreferencesProvider>
       </body>
     </html>

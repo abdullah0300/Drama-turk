@@ -68,6 +68,8 @@ export async function SeasonView({ params, segment }: { params: SeasonRouteParam
       playable: videos.some((v) => v.stream_present),
       renditions: videos.length,
       languages: videos.map((v) => v.languages?.join(', ')).filter(Boolean).join(' / '),
+      streamUrl: firstVideo?.stream_urls?.[0],
+      videoRecordId: firstVideo?.id,
     };
   });
   const missingNumbers = episodeNumberGaps(episodes.map(e => ({ episode_number: e.number })));

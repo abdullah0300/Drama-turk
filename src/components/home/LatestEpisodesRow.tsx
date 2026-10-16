@@ -6,6 +6,7 @@ import { Check, Play, Plus } from 'lucide-react';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
 import { EpisodeGroup, VideoRecord, CatalogCollection, Drama } from '@/types/catalog';
 import { Rail } from '@/components/sezon/Rail';
+import { EpisodeCardDownloadButton } from '@/components/episode/EpisodeCardDownloadButton';
 
 interface PlayableEpisodeItem {
   group: EpisodeGroup;
@@ -66,6 +67,21 @@ export function LatestEpisodesRow({ episodes }: { episodes: PlayableEpisodeItem[
                 <Link href={watchUrl} className="btn btn-play" style={{ position: 'relative', zIndex: 2 }}>
                   <Play className="i f" />Watch
                 </Link>
+                <div style={{ position: 'relative', zIndex: 2 }}>
+                  <EpisodeCardDownloadButton
+                    episodeGroupId={group.id}
+                    dramaId={drama.id}
+                    dramaTitle={drama.name}
+                    seasonLabel={`Season ${collection.reported_seasons?.[0] ?? 1}`}
+                    displayLabel={group.display_label}
+                    bolum={group.bolum}
+                    episodeNumber={group.episode_number}
+                    stillUrl={thumb}
+                    videoRecordId={video.id}
+                    streamUrl={video.stream_urls?.[0]}
+                    routePath={watchUrl}
+                  />
+                </div>
                 <button
                   className="btn btn-round btn-ghost"
                   style={{ position: 'relative', zIndex: 2 }}
