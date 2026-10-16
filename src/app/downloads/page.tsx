@@ -23,7 +23,7 @@ export default function DownloadsPage() {
           Offline Downloads
         </h1>
         <p className="text-sm text-text-secondary max-w-xl">
-          Watch saved episodes anytime without an internet connection. Stored locally and privately inside your browser.
+          Watch saved episodes anytime without an internet connection.
         </p>
       </div>
 
