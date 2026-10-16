@@ -358,8 +358,8 @@ export function DownloadsClient() {
       {storageInfo && storageInfo.quotaBytes > 0 && (
         <div className="bg-surface/30 border border-surface-border rounded-lg p-3">
           <div className="flex justify-between text-[11px] text-text-secondary mb-1.5">
-            <span>Browser Media Cache</span>
-            <span>{storageInfo.percentUsed.toFixed(1)}% of browser storage quota used</span>
+            <span>Storage</span>
+            <span>{storageInfo.percentUsed.toFixed(1)}% of storage quota used</span>
           </div>
           <div className="w-full h-1.5 rounded-full bg-zinc-800 overflow-hidden">
             <div
