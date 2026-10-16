@@ -10,6 +10,7 @@ import {
   Check, 
   Loader2, 
   AlertCircle,
+  AlertTriangle,
   WifiOff,
   X,
   ArrowLeft,
@@ -30,6 +31,7 @@ export function DownloadsClient() {
     activeDownloads, 
     queuedItems,
     storageInfo, 
+    startDownload,
     deleteDownload, 
     cancelDownload, 
     clearAll 
@@ -37,6 +39,28 @@ export function DownloadsClient() {
 
   const [confirmClearAll, setConfirmClearAll] = useState(false);
   const [playingEpisode, setPlayingEpisode] = useState<OfflineEpisodeMetadata | null>(null);
+  const [isOnline, setIsOnline] = useState(true);
+  const [incompleteWarning, setIncompleteWarning] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    setIsOnline(typeof navigator !== 'undefined' ? navigator.onLine : true);
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (incompleteWarning) {
+      const timer = setTimeout(() => setIncompleteWarning(null), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [incompleteWarning]);
 
   const totalDownloadsSize = downloads.reduce((acc, d) => acc + (d.totalSizeBytes || 0), 0);
 
@@ -117,6 +141,39 @@ export function DownloadsClient() {
 
   return (
     <div className="space-y-8">
+      {/* Offline Network Status Notice */}
+      {!isOnline && (
+        <div className="bg-amber-950/40 border border-amber-500/40 rounded-xl p-3.5 flex items-center justify-between gap-3 text-xs text-amber-300 shadow-md animate-in fade-in duration-200">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-lg bg-amber-500/20 text-amber-400 shrink-0">
+              <WifiOff size={16} />
+            </div>
+            <div>
+              <b className="font-semibold text-amber-200 block text-sm">Offline Mode Active</b>
+              <span className="text-zinc-300 text-xs">
+                You can watch your fully downloaded episodes without internet. Incomplete downloads require an active internet connection to finish.
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Incomplete Download Warning Notice */}
+      {incompleteWarning && (
+        <div className="bg-amber-500/15 border border-amber-500/40 rounded-xl p-3.5 flex items-center justify-between gap-3 text-xs text-amber-300 animate-in fade-in duration-200 shadow-lg">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle size={18} className="text-amber-400 shrink-0" />
+            <span className="text-xs sm:text-sm font-medium">{incompleteWarning}</span>
+          </div>
+          <button
+            onClick={() => setIncompleteWarning(null)}
+            className="p-1 hover:bg-amber-500/20 rounded text-amber-300 hover:text-white transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       {/* Active Offline Video Player (Cinema View matching actual watch page) */}
       {playingEpisode && activeVideoRecord && activeEpisodeGroup && (
         <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl p-4 sm:p-6 mb-8 animate-in fade-in zoom-in-95 duration-200">
@@ -393,8 +450,10 @@ export function DownloadsClient() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {downloads.map((item) => {
             const active = activeDownloads[item.episodeGroupId];
+            const isCompleted = item.status === 'completed';
             const isQueued = item.status === 'queued' || item.status === 'pending' || queuedItems.some((q) => q.episodeGroupId === item.episodeGroupId);
             const isDownloading = (item.status === 'downloading' || !!active) && !isQueued;
+            const isIncomplete = !isCompleted && !isDownloading && !isQueued;
             const progress = active?.percent ?? (item.totalChunks > 0 ? Math.round((item.downloadedChunks / item.totalChunks) * 100) : 0);
             const isCurrentlyPlaying = playingEpisode?.episodeGroupId === item.episodeGroupId;
 
@@ -405,16 +464,28 @@ export function DownloadsClient() {
               <div
                 key={item.episodeGroupId}
                 className={`group relative bg-surface border rounded-xl overflow-hidden shadow-lg transition-all flex flex-col ${
-                  isCurrentlyPlaying ? 'border-amber-500 shadow-amber-500/10' : 'border-surface-border hover:border-surface-border-strong'
+                  isCurrentlyPlaying 
+                    ? 'border-amber-500 shadow-amber-500/10' 
+                    : isIncomplete 
+                    ? 'border-amber-500/30 hover:border-amber-500/50' 
+                    : 'border-surface-border hover:border-surface-border-strong'
                 }`}
               >
                 {/* Thumbnail Header */}
                 <div 
                   className="relative aspect-video bg-zinc-900 overflow-hidden cursor-pointer"
                   onClick={() => {
-                    if (!isDownloading && !isQueued && item.status === 'completed') {
+                    if (isCompleted) {
                       setPlayingEpisode(item);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else if (isIncomplete) {
+                      setIncompleteWarning(
+                        `"${item.displayLabel}" is not fully installed (${progress}%). ${
+                          !isOnline 
+                            ? 'You are offline. Connect to the internet to finish installing this episode.' 
+                            : 'Click "Resume Download" below to finish installing this episode.'
+                        }`
+                      );
                     }
                   }}
                 >
@@ -433,7 +504,7 @@ export function DownloadsClient() {
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-transparent to-black/30" />
 
-                  {/* Badges */}
+                  {/* Quality & Episode Badges (Top-Left) */}
                   <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
                     <span className="px-2 py-0.5 rounded bg-zinc-900/80 backdrop-blur-md text-[10px] font-semibold text-amber-300 border border-amber-500/30">
                       {item.selectedQuality || 'HD'}
@@ -445,8 +516,25 @@ export function DownloadsClient() {
                     )}
                   </div>
 
+                  {/* Status Indicator Badge (Top-Right) */}
+                  {isIncomplete && (
+                    <div className="absolute top-2.5 right-2.5 flex items-center gap-1">
+                      {!isOnline ? (
+                        <span className="px-2 py-0.5 rounded bg-amber-500 text-zinc-950 text-[10px] font-bold flex items-center gap-1 shadow-md">
+                          <WifiOff size={10} />
+                          Offline · Incomplete
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-semibold flex items-center gap-1 backdrop-blur-md">
+                          <AlertTriangle size={10} />
+                          Incomplete ({progress}%)
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   {/* Play Button Overlay (when ready) */}
-                  {!isDownloading && !isQueued && item.status === 'completed' && (
+                  {isCompleted && (
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 backdrop-blur-xs transition-opacity">
                       <div className="w-12 h-12 rounded-full bg-amber-500 text-zinc-950 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
                         <Play size={20} className="fill-current ml-0.5" />
@@ -467,7 +555,7 @@ export function DownloadsClient() {
                     </div>
                   )}
 
-                  {/* Downloading Progress Bar Overlay */}
+                  {/* Active Downloading Progress Bar Overlay */}
                   {isDownloading && (
                     <div className="absolute inset-x-0 bottom-0 bg-black/70 backdrop-blur-xs p-3">
                       <div className="flex items-center justify-between text-xs text-amber-300 mb-1.5 font-medium">
@@ -482,6 +570,29 @@ export function DownloadsClient() {
                           className="h-full bg-amber-400 rounded-full transition-all duration-200"
                           style={{ width: `${progress}%` }}
                         />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Incomplete / Interrupted Status Bar Overlay */}
+                  {isIncomplete && (
+                    <div className="absolute inset-x-0 bottom-0 bg-black/90 backdrop-blur-md p-2.5 border-t border-amber-500/40">
+                      <div className="flex items-center justify-between text-xs text-amber-300 mb-1 font-medium">
+                        <span className="flex items-center gap-1.5 font-semibold">
+                          <AlertTriangle size={12} className="text-amber-400" />
+                          <span>Not Fully Installed</span>
+                        </span>
+                        <span className="font-mono text-[11px] font-bold text-amber-400">{progress}%</span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+                        <div
+                          className="h-full bg-amber-500 rounded-full transition-all duration-200"
+                          style={{ width: `${Math.max(4, progress)}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] text-zinc-400 mt-1">
+                        <span>{item.downloadedChunks} of {item.totalChunks || '?'} chunks saved</span>
+                        <span>{isOnline ? 'Paused' : 'Offline'}</span>
                       </div>
                     </div>
                   )}
@@ -501,6 +612,31 @@ export function DownloadsClient() {
                       <span>·</span>
                       <span className="capitalize">{new Date(item.downloadedAt).toLocaleDateString()}</span>
                     </div>
+
+                    {/* Notice in Card Body for Incomplete Downloads */}
+                    {isIncomplete && (
+                      <div className={`mt-2.5 p-2 rounded-lg border flex items-start gap-2 text-xs ${
+                        !isOnline
+                          ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                          : 'bg-zinc-900 border-zinc-850 text-zinc-300'
+                      }`}>
+                        {!isOnline ? (
+                          <WifiOff size={14} className="shrink-0 mt-0.5 text-amber-400" />
+                        ) : (
+                          <AlertCircle size={14} className="shrink-0 mt-0.5 text-amber-400" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold block text-amber-300 text-[11px]">
+                            {!isOnline ? 'Offline: Video not fully installed' : 'Download incomplete'}
+                          </span>
+                          <p className="text-[11px] text-zinc-400 mt-0.5 leading-tight">
+                            {!isOnline
+                              ? `Only ${progress}% downloaded. Connect to the internet to complete installing this episode.`
+                              : `Download paused at ${progress}%. Click resume whenever you're ready.`}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Action Buttons */}
@@ -527,32 +663,80 @@ export function DownloadsClient() {
                           <span>Remove</span>
                         </button>
                       </div>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          setPlayingEpisode(item);
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 py-1 transition-colors"
-                      >
-                        <Play size={13} className="fill-current" />
-                        <span>{isCurrentlyPlaying ? 'Now Playing' : 'Watch Offline'}</span>
-                      </button>
-                    )}
+                    ) : isIncomplete ? (
+                      <div className="flex items-center justify-between w-full">
+                        {isOnline ? (
+                          <button
+                            onClick={() => {
+                              startDownload(
+                                {
+                                  episodeGroupId: item.episodeGroupId,
+                                  dramaId: item.dramaId,
+                                  dramaTitle: item.dramaTitle,
+                                  seasonLabel: item.seasonLabel,
+                                  displayLabel: item.displayLabel,
+                                  bolum: item.bolum,
+                                  episodeNumber: item.episodeNumber,
+                                  stillUrl: item.stillUrl,
+                                  videoRecordId: item.videoRecordId,
+                                  manifestUrl: item.manifestUrl,
+                                  selectedQuality: item.selectedQuality,
+                                  routePath: item.routePath,
+                                },
+                                item.manifestUrl
+                              );
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 font-semibold text-xs transition-colors shadow-sm"
+                          >
+                            <Download size={13} />
+                            <span>Resume Download ({progress}%)</span>
+                          </button>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-xs text-amber-400/90 font-medium py-1">
+                            <WifiOff size={13} />
+                            <span>Incomplete (Offline)</span>
+                          </span>
+                        )}
 
-                    {!isQueued && (
-                      <button
-                        onClick={() => {
-                          deleteDownload(item.episodeGroupId);
-                          if (playingEpisode?.episodeGroupId === item.episodeGroupId) {
-                            setPlayingEpisode(null);
-                          }
-                        }}
-                        title="Delete from device"
-                        className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                        <button
+                          onClick={() => {
+                            deleteDownload(item.episodeGroupId);
+                            if (playingEpisode?.episodeGroupId === item.episodeGroupId) {
+                              setPlayingEpisode(null);
+                            }
+                          }}
+                          title="Discard incomplete download"
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => {
+                            setPlayingEpisode(item);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-300 py-1 transition-colors"
+                        >
+                          <Play size={13} className="fill-current" />
+                          <span>{isCurrentlyPlaying ? 'Now Playing' : 'Watch Offline'}</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            deleteDownload(item.episodeGroupId);
+                            if (playingEpisode?.episodeGroupId === item.episodeGroupId) {
+                              setPlayingEpisode(null);
+                            }
+                          }}
+                          title="Delete from device"
+                          className="p-1.5 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>

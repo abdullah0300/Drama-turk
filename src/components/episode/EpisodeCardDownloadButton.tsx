@@ -59,6 +59,7 @@ export function EpisodeCardDownloadButton({
   const isQueued = status === 'queued' || queuedItems.some((q) => q.episodeGroupId === episodeGroupId);
   const isDownloading = status === 'downloading' || !!activeDownloads[episodeGroupId];
   const progress = getEpisodeProgress(episodeGroupId) ?? activeDownloads[episodeGroupId]?.percent;
+  const isIncomplete = !isDownloaded && !isDownloading && !isQueued && (status === 'paused' || status === 'failed' || (typeof progress === 'number' && progress > 0));
 
   useEffect(() => {
     setMounted(true);
@@ -223,18 +224,22 @@ export function EpisodeCardDownloadButton({
     );
   }
 
-  // 4. Ready to download (Download arrow button)
+  // 4. Incomplete or Ready to download
   return (
     <div className="relative z-20 inline-block">
       <button
         ref={buttonRef}
         onClick={handleOpenPicker}
         disabled={!streamUrl}
-        title="Download for offline viewing"
-        aria-label={`Download ${displayLabel}`}
-        className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-zinc-900/90 backdrop-blur-md border border-zinc-700/80 hover:border-amber-400/80 hover:bg-amber-500 hover:text-zinc-950 text-zinc-300 flex items-center justify-center transition-all shadow-md group disabled:opacity-30"
+        title={isIncomplete ? `Incomplete (${progress ?? 0}%). Click to resume download` : "Download for offline viewing"}
+        aria-label={isIncomplete ? `Resume download ${displayLabel}` : `Download ${displayLabel}`}
+        className={isIncomplete
+          ? "h-7 sm:h-8 px-2.5 rounded-full bg-amber-500/20 hover:bg-amber-500 hover:text-zinc-950 text-amber-300 border border-amber-500/40 backdrop-blur-md flex items-center gap-1.5 transition-all shadow-md group text-[11px] font-semibold"
+          : "w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-zinc-900/90 backdrop-blur-md border border-zinc-700/80 hover:border-amber-400/80 hover:bg-amber-500 hover:text-zinc-950 text-zinc-300 flex items-center justify-center transition-all shadow-md group disabled:opacity-30"
+        }
       >
-        <Download size={14} className="group-hover:translate-y-0.5 transition-transform" />
+        <Download size={isIncomplete ? 12 : 14} className="group-hover:translate-y-0.5 transition-transform shrink-0" />
+        {isIncomplete && <span>Resume {progress ? `(${progress}%)` : ''}</span>}
       </button>
 
       {/* Portal Dropdown (Bypasses overflow:hidden & transform clipping) */}

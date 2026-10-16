@@ -45,6 +45,7 @@ export function DownloadButton({
   const isDownloaded = isEpisodeDownloaded(episodeGroup.id);
   const status = getEpisodeStatus(episodeGroup.id);
   const progress = getEpisodeProgress(episodeGroup.id) ?? activeDownloads[episodeGroup.id]?.percent;
+  const isIncomplete = !isDownloaded && status !== 'downloading' && status !== 'queued' && (status === 'paused' || status === 'failed' || (typeof progress === 'number' && progress > 0));
 
   // Close quality menu when clicking outside
   useEffect(() => {
@@ -182,10 +183,11 @@ export function DownloadButton({
       <button
         onClick={handleOpenQualityPicker}
         disabled={!streamUrl}
-        className="pill"
+        className={`pill ${isIncomplete ? '!border-amber-500/50 !text-amber-300' : ''}`}
+        title={isIncomplete ? `Download incomplete (${progress ?? 0}%). Click to resume.` : 'Download'}
       >
         <Download className="i" />
-        <span>Download</span>
+        <span>{isIncomplete ? `Resume (${progress ?? 0}%)` : 'Download'}</span>
       </button>
 
       {isOpen && (

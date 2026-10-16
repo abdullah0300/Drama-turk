@@ -109,7 +109,7 @@ export async function EpisodeView({ params, segment }: { params: EpisodeRoutePar
   }] };
   return <div className="min-h-screen">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
-    <WatchClient drama={drama} collection={edition} episodeGroup={group} initialVideo={initialVideo}
+    <WatchClient key={group.id} drama={drama} collection={edition} episodeGroup={group} initialVideo={initialVideo}
       allRenditions={videos} sidebarEpisodes={sidebarEpisodes} seasonHref={seasonUrl} seasonName={season.label}
       prevHref={prevGroup ? hrefOf(prevGroup.id) : undefined} nextHref={nextGroup ? hrefOf(nextGroup.id) : undefined}
       prevGroup={prevGroup} nextGroup={nextGroup} pageSummary={seo.summary} />

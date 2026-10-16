@@ -78,6 +78,10 @@ export function WatchClient({
 }: WatchClientProps) {
   const router = useRouter();
   const [currentVideo, setCurrentVideo] = useState<VideoRecord>(initialVideo);
+
+  React.useEffect(() => {
+    setCurrentVideo(initialVideo);
+  }, [initialVideo]);
   const [copiedLink, setCopiedLink] = useState(false);
   const [showDiagnosticsModal, setShowDiagnosticsModal] = useState(false);
   const [copiedDiag, setCopiedDiag] = useState(false);

@@ -1,4 +1,4 @@
-// Great Nation - Offline Video Streaming Service Worker (v2.2)
+// Great Nation - Offline Video Streaming Service Worker (v2.3)
 const CACHE_NAME = 'offline-media-v1';
 
 self.addEventListener('install', (event) => {
@@ -34,46 +34,34 @@ self.addEventListener('fetch', (event) => {
   if (isMediaRequest) {
     event.respondWith(
       (async () => {
-        try {
-          const cache = await caches.open(CACHE_NAME);
+        const cache = await caches.open(CACHE_NAME);
+        const isOffline = !navigator.onLine;
+        const isFromDownloadsPage =
+          event.request.referrer && event.request.referrer.includes('/downloads');
 
-          // 1. Exact request match
+        // A) If user is OFFLINE or playing inside the /downloads library:
+        // Try CACHE FIRST to play the locally saved media.
+        if (isOffline || isFromDownloadsPage) {
+          // Exact URL match (preserves unique episode query tokens and segment paths)
           let cached = await cache.match(event.request);
           if (cached) return cached;
 
-          // 2. Loose match ignoring search params
-          cached = await cache.match(event.request, { ignoreSearch: true });
-          if (cached) return cached;
-
-          // 3. Exact URL string match
           cached = await cache.match(event.request.url);
           if (cached) return cached;
 
-          // 4. URL stripped of query string
-          const cleanUrl = event.request.url.split('?')[0];
-          cached = await cache.match(cleanUrl);
-          if (cached) return cached;
-
-          // 5. Segment filename fallback (matches .../segment123.ts regardless of prefix)
-          if (url.pathname.endsWith('.ts') || url.pathname.endsWith('.m4s')) {
-            const segName = url.pathname.substring(url.pathname.lastIndexOf('/') + 1);
-            const keys = await cache.keys();
-            for (const key of keys) {
-              if (key.url.endsWith('/' + segName) || key.url.includes(segName)) {
-                const found = await cache.match(key);
-                if (found) return found;
-              }
-            }
-          }
-
-          // If offline and not in cache: return clean offline status instead of unhandled rejection
-          if (!navigator.onLine) {
+          if (isOffline) {
             return new Response('Offline and chunk not in cache', { status: 404 });
           }
+        }
 
-          // If online, fetch from network
+        // B) If user is ONLINE browsing dramas (e.g. S2 Ep 3):
+        // Use NETWORK FIRST so new episodes stream live from the network without collision.
+        try {
           return await fetch(event.request);
-        } catch (err) {
+        } catch (fetchErr) {
+          // If network fetch fails (e.g., sudden connection drop), fallback to exact cache match
+          const cached = (await cache.match(event.request)) || (await cache.match(event.request.url));
+          if (cached) return cached;
           return new Response('Media request failed', { status: 504 });
         }
       })()
@@ -81,7 +69,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Offline Navigation Fallback: If offline and navigating anywhere, serve /downloads
+  // 2. Offline Navigation Fallback: If offline and navigating anywhere, serve cached /downloads
   if (event.request.mode === 'navigate') {
     event.respondWith(
       (async () => {
