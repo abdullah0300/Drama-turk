@@ -585,36 +585,59 @@ export function CustomVideoPlayer({
     const previewEl = previewVideoRef.current;
     if (!previewEl) return;
 
-    if (streamUrl.includes('.m3u8') && Hls.isSupported()) {
-      const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: false,
-        backBufferLength: 20,
-        maxBufferLength: 6,
-        maxMaxBufferLength: 12,
-        maxBufferSize: 3 * 1024 * 1024,
-        autoStartLoad: true,
-      });
+    previewEl.muted = true;
+    previewEl.defaultMuted = true;
+    previewEl.volume = 0;
 
-      hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-        if (data.levels && data.levels.length > 0) {
-          let lowestIdx = 0;
-          let lowestBitrate = Infinity;
-          data.levels.forEach((lvl, idx) => {
-            if (lvl.bitrate < lowestBitrate) {
-              lowestBitrate = lvl.bitrate;
-              lowestIdx = idx;
-            }
-          });
-          hls.currentLevel = lowestIdx;
-          hls.loadLevel = lowestIdx;
-        }
-      });
+    if (streamUrl.includes('.m3u8')) {
+      if (Hls.isSupported()) {
+        const hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: false,
+          backBufferLength: 20,
+          maxBufferLength: 6,
+          maxMaxBufferLength: 12,
+          maxBufferSize: 3 * 1024 * 1024,
+          autoStartLoad: true,
+          // Some hosts (video.twimg.com) answer 403 to any request carrying a third-party
+          // Referer, so media requests go out without one.
+          ...(typeof fetch === 'function' && typeof ReadableStream === 'function'
+            ? {
+                loader: FetchLoader,
+                fetchSetup: (context: { url: string }, initParams: RequestInit) =>
+                  new Request(context.url, { ...initParams, referrerPolicy: 'no-referrer' }),
+              }
+            : {}),
+        });
 
-      hls.loadSource(streamUrl);
-      hls.attachMedia(previewEl);
-      previewHlsRef.current = hls;
-    } else if (previewEl.canPlayType('application/vnd.apple.mpegurl')) {
+        hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+          if (data.levels && data.levels.length > 0) {
+            let lowestIdx = 0;
+            let lowestBitrate = Infinity;
+            data.levels.forEach((lvl, idx) => {
+              if (lvl.bitrate < lowestBitrate) {
+                lowestBitrate = lvl.bitrate;
+                lowestIdx = idx;
+              }
+            });
+            hls.currentLevel = lowestIdx;
+            hls.loadLevel = lowestIdx;
+          }
+        });
+
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          if (data.fatal) {
+            console.warn('[PreviewPlayer] HLS error in preview sub-player:', data.details);
+          }
+        });
+
+        hls.loadSource(streamUrl);
+        hls.attachMedia(previewEl);
+        previewHlsRef.current = hls;
+      } else if (previewEl.canPlayType('application/vnd.apple.mpegurl')) {
+        previewEl.src = streamUrl;
+      }
+    } else {
       previewEl.src = streamUrl;
     }
   }, [streamUrl]);
@@ -940,33 +963,33 @@ export function CustomVideoPlayer({
               <i className="pl" style={{ width: `${pct(shownTime)}%` }} />
               <span className="knob" style={{ left: `${pct(shownTime)}%` }} />
             </div>
-            {(barDrag ?? barHover) !== null && (
-              <div
-                className="wp-tip gn-tip gn-preview-card"
-                style={getClampedPreviewStyle((barDrag ?? barHover) as number)}
-              >
-                <div className="gn-preview-thumb">
-                  {currentVideo.thumbnail_urls?.[0] && (
-                    <img
-                      src={currentVideo.thumbnail_urls[0]}
-                      alt=""
-                      className="gn-preview-poster"
-                    />
-                  )}
-                  <video
-                    ref={previewVideoRef}
-                    muted
-                    playsInline
-                    preload="metadata"
-                    onSeeked={handlePreviewSeeked}
-                    className={`gn-preview-video ${previewLoaded ? 'loaded' : ''}`}
+            <div
+              className={`wp-tip gn-tip gn-preview-card ${(barDrag ?? barHover) !== null ? 'active' : ''}`}
+              style={getClampedPreviewStyle((barDrag ?? barHover ?? shownTime) as number)}
+            >
+              <div className="gn-preview-thumb">
+                {currentVideo.thumbnail_urls?.[0] && (
+                  <img
+                    src={currentVideo.thumbnail_urls[0]}
+                    alt=""
+                    className="gn-preview-poster"
                   />
-                  <span className="gn-preview-time">
-                    {formatTime((barDrag ?? barHover) as number)}
-                  </span>
-                </div>
+                )}
+                <video
+                  ref={previewVideoRef}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  onSeeked={handlePreviewSeeked}
+                  onLoadedData={() => setPreviewLoaded(true)}
+                  onTimeUpdate={() => setPreviewLoaded(true)}
+                  className={`gn-preview-video ${previewLoaded ? 'loaded' : ''}`}
+                />
+                <span className="gn-preview-time">
+                  {formatTime((barDrag ?? barHover ?? shownTime) as number)}
+                </span>
               </div>
-            )}
+            </div>
           </div>
 
           <div className="wp-ctrl">
