@@ -495,6 +495,7 @@ def run_links(db, rep, limit):
     for s in sources:
         by_variant.setdefault(s['variant_id'], []).append(s)
     ok_n = fixed = broken = 0
+    refreshed = set()
     for s in due:
         v = variants.get(s['variant_id'])
         vid = v['source_id'] if v else s['variant_id']
@@ -505,35 +506,54 @@ def run_links(db, rep, limit):
         if ok:
             ok_n += 1
             db.update('stream_sources', f"id=eq.{s['id']}", {'verification_state': 'browser_tested' if s['verification_state'] == 'browser_tested' else 'reachable', 'last_verified_at': now()})
-            continue
-        # Failed. Ask Niazi for the episode's current link before calling it broken.
-        db.update('stream_sources', f"id=eq.{s['id']}", {'verification_state': 'unavailable', 'last_verified_at': now()})
+        else:
+            db.update('stream_sources', f"id=eq.{s['id']}", {'verification_state': 'unavailable', 'last_verified_at': now()})
+        s['verification_state'] = 'reachable' if ok else 'unavailable'
+        primary = min(by_variant[s['variant_id']], key=lambda x: x['priority'] or 1)
+        # Working primary links can be stale: compare with Niazi, not just HTTP health.
+        # Backups need health checks, but only one upstream scrape per variant per run.
         new_url = None
         new_duration = None
         m = re.match(r'video-(\d+)$', vid or '')
         coll = colls.get(v['collection_id']) if v else None
-        if m and coll:
+        if m and coll and s['variant_id'] not in refreshed and (not ok or s['id'] == primary['id']):
+            refreshed.add(s['variant_id'])
             try:
                 rec = niazi.scrape_episode(coll['source_id'].split('-')[1], m.group(1), '', '')
                 time.sleep(POLITE_DELAY)
                 cand = (rec.get('stream_urls') or [None])[0]
-                known = {x['delivery_url'] for x in by_variant.get(s['variant_id'], [])}
-                if cand and cand not in known:
+                if cand and cand != primary['delivery_url']:
                     candidate_ok, _, _, candidate_duration = check_stream(cand)
                     if candidate_ok:
                         new_url = cand
                         new_duration = candidate_duration or None
+                    else:
+                        rep.problem(f'{vid}: Niazi replacement failed validation; kept existing sources')
             except Exception as e:
                 detail += f'; re-scrape failed ({e})'
+                rep.problem(f'{vid}: could not refresh current Niazi source ({e})')
         if new_url:
             db.update('video_variants', f"id=eq.{s['variant_id']}", {'duration_seconds': new_duration, 'updated_at': now()})
             # Keep every existing link (pushed down one place) and put the new one first.
-            for other in by_variant.get(s['variant_id'], []):
-                db.update('stream_sources', f"id=eq.{other['id']}", {'priority': (other['priority'] or 1) + 1})
-            db.insert('stream_sources', {'variant_id': s['variant_id'], 'delivery_url': new_url, 'format': 'hls', 'is_active': True,
-                                         'priority': 1, 'verification_state': 'reachable', 'last_verified_at': now()}, returning=False)
+            existing = next((x for x in by_variant[s['variant_id']] if x['delivery_url'] == new_url), None)
+            values = {'priority': 1, 'verification_state': 'reachable', 'last_verified_at': now()}
+            # Validate and save the replacement before lowering any existing priority.
+            if existing:
+                db.update('stream_sources', f"id=eq.{existing['id']}", values)
+            else:
+                db.insert('stream_sources', {'variant_id': s['variant_id'], 'delivery_url': new_url, 'format': 'hls', 'is_active': True,
+                                             **values}, returning=False)
+            for other in by_variant[s['variant_id']]:
+                if existing and other['id'] == existing['id']:
+                    other.update(values)
+                    continue
+                priority = (other['priority'] or 1) + 1
+                db.update('stream_sources', f"id=eq.{other['id']}", {'priority': priority})
+                other['priority'] = priority
             fixed += 1
-            rep.add(f'{vid}: link failed ({detail}); Niazi has a new link, added it as primary and kept the old one')
+            rep.add(f'{vid}: refreshed to the current validated Niazi link; kept previous sources as backups')
+            continue
+        if ok:
             continue
         others_ok = [o for o in by_variant.get(s['variant_id'], []) if o['id'] != s['id'] and o['verification_state'] in ('reachable', 'browser_tested')]
         if others_ok:
@@ -544,7 +564,7 @@ def run_links(db, rep, limit):
             broken += 1
             finding(db, vid, 'sync_broken_stream', 'critical', f"{s['delivery_url']} failed: {detail}. Niazi has no working replacement.")
             rep.problem(f'{vid}: no working link ({detail}); flagged for review')
-    rep.add(f'Checked {len(due)} links: {ok_n} working, {fixed} repaired from Niazi, {broken} broken with no replacement.')
+    rep.add(f'Checked {len(due)} links: {ok_n} working, {fixed} refreshed from Niazi, {broken} broken with no replacement.')
 
 
 def run_discover(db, rep, probe_ahead=6):

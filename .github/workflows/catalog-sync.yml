@@ -11,7 +11,7 @@ name: Catalog sync
 on:
   schedule:
     - cron: '17 */2 * * *'   # new episodes of existing seasons, every 2 hours
-    - cron: '47 */4 * * *'   # stream link health check, every 4 hours (oldest-checked first)
+    - cron: '47 */4 * * *'   # stream health and current Niazi source, every 4 hours (oldest-checked first)
     - cron: '5 3 * * *'      # look for new Niazi seasons/collections, daily 03:05 UTC
   workflow_dispatch:
     inputs:
@@ -50,6 +50,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Test stream refresh logic
+        run: |
+          python3 scripts/test-sync-source-refresh.py
+          python3 scripts/test-fatih-playlist-duration.py
       - name: Choose job
         id: mode
         run: |
