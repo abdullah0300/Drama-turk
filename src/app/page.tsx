@@ -1,7 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Script from 'next/script';
 import { getPublicDramas, getPublicHomeEpisodes, getPublicHomeSettings, getPublicViewingChoices } from '@/lib/public-catalog-cache';
 import { loadDrama, loadEditionEpisodes } from '@/lib/catalog-nav';
 import { isEligibleEpisode, serializeJsonLd } from '@/lib/seo/catalog-seo';
@@ -188,14 +187,12 @@ export default async function HomePage() {
       {heroItems.length > 0 && <FeaturedHero items={heroItems} />}
 
       {/* Ad Banner */}
-      <div className="w-full flex justify-center my-6 px-4">
-        <Script
-          async
-          data-cfasync="false"
-          src="https://bancadeltempoidea.org/21/29ad753a8a4847161f07c9e0c3c22419"
-          strategy="afterInteractive"
-        />
-        <div id="container-29ad753a8a4847161f07c9e0c3c22419"></div>
+      <div className="w-full my-6 px-4">
+        <div className="w-full rounded-xl bg-[#22222a] border border-white/10 p-4 flex flex-col items-center justify-center">
+          <span className="text-[11px] uppercase tracking-wider text-[#aaa59d] mb-2 font-medium select-none">Advertisement From Third Party</span>
+          <script async data-cfasync="false" src="https://bancadeltempoidea.org/21/29ad753a8a4847161f07c9e0c3c22419"></script>
+          <div id="container-29ad753a8a4847161f07c9e0c3c22419" className="w-full flex justify-center"></div>
+        </div>
       </div>
 
       <section className={`home-intro${heroItems.length === 0 ? ' home-intro--first' : ''}`} aria-labelledby="home-heading">

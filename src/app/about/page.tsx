@@ -39,7 +39,7 @@ export default async function AboutPage() {
             Our Brand Promise
           </h2>
           <p>
-            &ldquo;{siteConfig.brandPromise}&rdquo; We provide an ad-free player without pre-roll or mid-roll advertisements or pop-ups. Choose an available episode and a listed viewing rendition to start watching.
+            &ldquo;{siteConfig.brandPromise}&rdquo; We provide an ad-free player without pre-roll or mid-roll Advertisement From Third Partys or pop-ups. Choose an available episode and a listed viewing rendition to start watching.
           </p>
         </section>
 

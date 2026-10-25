@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Script from 'next/script';
 import { useRouter } from 'next/navigation';
 import { 
   CustomVideoPlayer 
@@ -83,13 +82,6 @@ export function WatchClient({
   React.useEffect(() => {
     setCurrentVideo(initialVideo);
   }, [initialVideo]);
-
-  React.useEffect(() => {
-    const container = document.getElementById('container-29ad753a8a4847161f07c9e0c3c22419');
-    if (container && container.childNodes.length === 0) {
-      window.dispatchEvent(new Event('popstate'));
-    }
-  }, [episodeGroup.id]);
   const [copiedLink, setCopiedLink] = useState(false);
   const [showDiagnosticsModal, setShowDiagnosticsModal] = useState(false);
   const [copiedDiag, setCopiedDiag] = useState(false);
@@ -221,14 +213,12 @@ export function WatchClient({
           </div>
 
           {/* Ad Banner */}
-          <div className="w-full flex justify-center my-6">
-            <Script
-              async
-              data-cfasync="false"
-              src="https://bancadeltempoidea.org/21/29ad753a8a4847161f07c9e0c3c22419"
-              strategy="afterInteractive"
-            />
-            <div id="container-29ad753a8a4847161f07c9e0c3c22419"></div>
+          <div className="w-full my-6">
+            <div className="w-full rounded-xl bg-[#22222a] border border-white/10 p-4 flex flex-col items-center justify-center">
+              <span className="text-[11px] uppercase tracking-wider text-[#aaa59d] mb-2 font-medium select-none">Advertisement From Third Party</span>
+              <script async data-cfasync="false" src="https://bancadeltempoidea.org/21/29ad753a8a4847161f07c9e0c3c22419"></script>
+              <div id="container-29ad753a8a4847161f07c9e0c3c22419" className="w-full flex justify-center"></div>
+            </div>
           </div>
 
           <div className="w-sum">
