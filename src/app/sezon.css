@@ -1449,7 +1449,7 @@ a.ab{display:flex}
 .series .eps{margin-top:8px}
 .series .ep{display:grid}
 .sn-ed{display:block;margin-top:2px;font-size:11px;color:var(--gold);letter-spacing:.02em}
-.series .dw-seasons{grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:18px}
+.series .dw-seasons{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
 a.sn{display:block}
 @media (max-width:800px){
   .series .dw-hero{height:auto;min-height:0;padding-top:120px}
