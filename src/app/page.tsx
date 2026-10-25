@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Script from 'next/script';
 import { getPublicDramas, getPublicHomeEpisodes, getPublicHomeSettings, getPublicViewingChoices } from '@/lib/public-catalog-cache';
 import { loadDrama, loadEditionEpisodes } from '@/lib/catalog-nav';
 import { isEligibleEpisode, serializeJsonLd } from '@/lib/seo/catalog-seo';
@@ -185,6 +186,17 @@ export default async function HomePage() {
 
       {/* Featured Hero */}
       {heroItems.length > 0 && <FeaturedHero items={heroItems} />}
+
+      {/* Ad Banner */}
+      <div className="w-full flex justify-center my-6 px-4">
+        <Script
+          async
+          data-cfasync="false"
+          src="https://bancadeltempoidea.org/21/29ad753a8a4847161f07c9e0c3c22419"
+          strategy="afterInteractive"
+        />
+        <div id="container-29ad753a8a4847161f07c9e0c3c22419"></div>
+      </div>
 
       <section className={`home-intro${heroItems.length === 0 ? ' home-intro--first' : ''}`} aria-labelledby="home-heading">
         <span className="home-eyebrow">Great Nation · Find your next series</span>

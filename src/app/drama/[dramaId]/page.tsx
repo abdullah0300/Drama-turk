@@ -5,6 +5,7 @@ import { dramaSeo, isEligibleEpisode, pageMetadata, serializeJsonLd, breadcrumbS
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Script from 'next/script';
 import { notFound } from 'next/navigation';
 import { supabaseCatalog } from '@/lib/repository/supabase-catalog-repository';
 import { DramaActions } from './DramaActions';
@@ -158,6 +159,17 @@ export default async function DramaPage({ params }: DramaPageProps) {
           })}
         </div>
       </section>
+
+      {/* Ad Banner */}
+      <div className="w-full flex justify-center my-6 px-4">
+        <Script
+          async
+          data-cfasync="false"
+          src="https://bancadeltempoidea.org/21/29ad753a8a4847161f07c9e0c3c22419"
+          strategy="afterInteractive"
+        />
+        <div id="container-29ad753a8a4847161f07c9e0c3c22419"></div>
+      </div>
 
       {['mehmed-fetihler-sultani', 'alparslan-buyuk-selcuklu', 'ask-ve-taht', 'teskilat', 'kurulus-osman', 'kurulus-orhan', 'ertugrul-ghazi'].includes(drama.id) && <ViewingTable heading="Choose a season and viewing edition"
         rows={seasons.flatMap(s => s.editions.map(e => ({ label: `${s.label} — ${editionName(e)}`,
