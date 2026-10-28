@@ -199,7 +199,7 @@ def load_catalog(db):
     dramas = {d['id']: d for d in db.select('dramas', 'select=id,source_id,display_name,video_records_count')}
     collections = db.select('collections', 'select=id,source_id,drama_id,collection_type,reported_seasons,status,label')
     groups = db.select('episode_groups', 'select=id,source_id,collection_id,reported_episode_number,bolum,part,order_key')
-    variants = db.select('video_variants', 'select=id,source_id,collection_id,group_id,duration_seconds,display_label,thumbnail_url')
+    variants = db.select('video_variants', 'select=id,source_id,collection_id,group_id,duration_seconds,display_label,thumbnail_url,created_at')
     return dramas, collections, groups, variants
 
 
@@ -239,10 +239,14 @@ def upgrade_episode(db, rep, coll, drama, rec, variant_row, new_duration, ok, st
 
     if matched_stream:
         db.update('stream_sources', f"id=eq.{matched_stream['id']}", {
+            'priority': 1,
             'verification_state': 'reachable' if ok else 'unavailable',
             'last_verified_at': now(),
         })
         stream_id = matched_stream['id']
+        for s in streams:
+            if s['id'] != matched_stream['id']:
+                db.update('stream_sources', f"id=eq.{s['id']}", {'priority': (s.get('priority') or 1) + 1})
     else:
         for s in streams:
             db.update('stream_sources', f"id=eq.{s['id']}", {'priority': (s.get('priority') or 1) + 1})
@@ -285,6 +289,69 @@ def upgrade_episode(db, rep, coll, drama, rec, variant_row, new_duration, ok, st
     rep.add(f"Upgraded {coll['source_id']} {clean_label} ({rid}): replaced trailer ({old_dur}s) with full episode ({new_duration}s).")
     if not db.dry_run and new_duration >= MIN_EPISODE_SECONDS:
         dispatch_notifications(drama, coll, rec, duration_seconds=new_duration)
+    return True
+
+
+def refresh_episode_stream(db, rep, coll, drama, rec, variant_row, new_duration, ok, status, detail):
+    """Update primary stream and metadata for an existing episode when upstream Niazi URL changes."""
+    vid = variant_row['id']
+    rid = rec['id']
+    new_url = rec['stream_urls'][0]
+
+    # 1. Update variant duration and thumbnail
+    db.update('video_variants', f"id=eq.{vid}", {
+        'duration_seconds': new_duration or variant_row.get('duration_seconds'),
+        'thumbnail_url': (rec.get('thumbnail_urls') or [None])[0] or variant_row.get('thumbnail_url'),
+        'updated_at': now(),
+    })
+
+    # 2. Promote or insert the new stream at priority 1
+    streams = db.select('stream_sources', f"select=id,delivery_url,priority&variant_id=eq.{vid}&is_active=eq.true")
+    matched = next((s for s in streams if s['delivery_url'] == new_url), None)
+    values = {'priority': 1, 'verification_state': 'reachable' if ok else 'unavailable', 'last_verified_at': now()}
+    if matched:
+        db.update('stream_sources', f"id=eq.{matched['id']}", values)
+        stream_id = matched['id']
+    else:
+        created = db.insert('stream_sources', {
+            'variant_id': vid,
+            'delivery_url': new_url,
+            'format': 'hls',
+            'is_active': True,
+            **values
+        })
+        stream_id = created[0]['id'] if created else None
+
+    # Demote all other existing streams so new stream is priority 1
+    for other in streams:
+        if matched and other['id'] == matched['id']:
+            continue
+        p = (other.get('priority') or 1) + 1
+        db.update('stream_sources', f"id=eq.{other['id']}", {'priority': p})
+
+    # 3. Insert stream check
+    if stream_id:
+        db.insert('stream_checks', {
+            'stream_source_id': stream_id,
+            'variant_source_id': rid,
+            'stream_url': new_url,
+            'check_method': 'reachability_head',
+            'status': 'passed' if ok else 'failed',
+            'http_status': status,
+            'content_type': 'application/x-mpegURL',
+            'error_message': detail,
+            'origin_device': 'catalog-sync-refresh',
+        }, returning=False)
+
+    # 4. Update source records
+    db.update('source_records', f"source_id=eq.{rid}", {
+        'raw_json': rec,
+        'content_hash': content_hash(rec),
+    })
+
+    old_dur = variant_row.get('duration_seconds') or 0
+    label = variant_row.get('display_label') or rid
+    rep.add(f"Refreshed {coll['source_id']} {label} ({rid}): Niazi updated stream URL ({old_dur}s -> {new_duration}s); previous stream kept as backup.")
     return True
 
 
@@ -412,13 +479,29 @@ def run_episodes(db, rep, only=None):
     for g in groups:
         groups_by_coll.setdefault(g['collection_id'], []).append(g)
 
+    # Track variants by source_id
+    variants_by_source = {v['source_id']: v for v in variants}
+
     # Track any variant under 10 minutes so we can check if full episode has dropped
     short_variants = {v['source_id']: v for v in variants if (v.get('duration_seconds') or 0) < MIN_EPISODE_SECONDS}
+
+    # Active collections: any collection that has had episodes added/updated in the last 30 days
+    now_utc = dt.datetime.now(dt.timezone.utc)
+    recent_coll_ids = set()
+    for v in variants:
+        ca = v.get('created_at')
+        if ca:
+            try:
+                t = dt.datetime.fromisoformat(ca.replace('Z', '+00:00'))
+                if (now_utc - t).days <= 30:
+                    recent_coll_ids.add(v['collection_id'])
+            except Exception:
+                pass
 
     # Concluded series where no further episodes will air; do not scan Niazi
     ENDED_DRAMAS = {'ask-ve-taht'}
 
-    added = upgraded = checked = 0
+    added = upgraded = refreshed = checked = 0
     for coll in sorted(collections, key=lambda c: int(c['source_id'].split('-')[1])):
         if coll['status'] in ('archived', 'hidden'):
             continue
@@ -441,23 +524,54 @@ def run_episodes(db, rep, only=None):
 
         drama = dramas.get(coll['drama_id'])
 
-        # 1. Upgrade any pending trailer / short videos if Niazi now has the full episode (10+ min)
+        # 1. Upgrade pending trailers/short variants AND inspect recent episodes for stream swaps
+        #    (e.g. Niazi swapping a raw Turkish TV broadcast for an Urdu or English subtitled stream).
         upgrade_ids = [i for i in page['listed_record_ids'] if f'video-{i}' in short_variants]
-        for rid in upgrade_ids:
+        is_active_coll = coll['id'] in recent_coll_ids or bool(upgrade_ids)
+        recent_ids = [i for i in page['listed_record_ids'][-4:] if f'video-{i}' in variants_by_source] if is_active_coll else []
+
+        recheck_ids = []
+        seen_recheck = set()
+        for i in upgrade_ids + recent_ids:
+            if i not in seen_recheck:
+                seen_recheck.add(i)
+                recheck_ids.append(i)
+
+        for rid in recheck_ids:
+            v_row = variants_by_source[f'video-{rid}']
             try:
                 rec = niazi.scrape_episode(cat_id, rid, drama['display_name'] if drama else '', drama['source_id'] if drama else '', page)
             except Exception as e:
                 continue
             time.sleep(POLITE_DELAY)
-            if not rec.get('stream_urls'):
+            cand_urls = rec.get('stream_urls') or []
+            if not cand_urls:
                 continue
-            ok, status, detail, measured = check_stream(rec['stream_urls'][0])
+            cand_url = cand_urls[0]
+
+            is_trailer = f'video-{rid}' in short_variants
+            existing_streams = db.select('stream_sources', f"select=id,delivery_url,priority,is_active&variant_id=eq.{v_row['id']}&is_active=eq.true")
+            primary_stream = min(existing_streams, key=lambda s: s.get('priority') or 1) if existing_streams else None
+            url_changed = (not primary_stream) or (primary_stream['delivery_url'] != cand_url)
+
+            if not is_trailer and not url_changed:
+                continue
+
+            ok, status, detail, measured = check_stream(cand_url)
             new_dur = measured or iso_seconds(rec.get('duration')) or 0
-            if ok and new_dur >= MIN_EPISODE_SECONDS:
-                v_row = short_variants[f'video-{rid}']
+
+            if not ok:
+                if not is_trailer:
+                    rep.problem(f'video-{rid}: Niazi updated stream failed validation ({detail}); keeping existing stream')
+                continue
+
+            if is_trailer and new_dur >= MIN_EPISODE_SECONDS:
                 if upgrade_episode(db, rep, coll, drama, rec, v_row, new_dur, ok, status, detail):
                     upgraded += 1
                     del short_variants[f'video-{rid}']
+            elif url_changed and ok:
+                if refresh_episode_stream(db, rep, coll, drama, rec, v_row, new_dur, ok, status, detail):
+                    refreshed += 1
 
         # 2. Ingest completely new episodes
         new_ids = [i for i in page['listed_record_ids'] if f'video-{i}' not in have]
@@ -477,6 +591,8 @@ def run_episodes(db, rep, only=None):
     msg = f'Checked {checked} Niazi collections; added {added} new episode videos.'
     if upgraded > 0:
         msg += f' Upgraded {upgraded} trailers to full episodes.'
+    if refreshed > 0:
+        msg += f' Refreshed {refreshed} existing episode streams.'
     rep.add(msg)
 
 
