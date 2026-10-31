@@ -1,8 +1,7 @@
 import { EpisodeView, episodeMetadata, EpisodeRouteParams } from '@/components/episode/EpisodeView';
 import { DUBBED_SEGMENT } from '@/lib/routes';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: EpisodeRouteParams }) {
   return episodeMetadata(params, DUBBED_SEGMENT);

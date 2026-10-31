@@ -28,8 +28,7 @@ export async function generateMetadata({ params }: DramaPageProps): Promise<Meta
   return pageMetadata('/drama/' + drama.id, seo.title, seo.description, drama.status === 'published', drama.poster_url);
 }
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
 
 export default async function DramaPage({ params }: DramaPageProps) {
   const loaded = await loadDrama(params.dramaId);

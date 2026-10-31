@@ -25,8 +25,7 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', title: homeTitle, description: homeDescription, images: ['/social/home.png'] },
 };
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
 
 export default async function HomePage() {
   const [latestEpisodes, directory, siteSettings, viewingChoices] = await Promise.all([

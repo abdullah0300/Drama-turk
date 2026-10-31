@@ -2,18 +2,22 @@ import { type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  // Only invoke Supabase Auth / session handling for admin routes or auth endpoints.
+  // Public routes (/drama, /browse, /search, /, etc.) do not require auth and
+  // should not trigger Supabase network roundtrips on every page hit.
+  const path = request.nextUrl.pathname;
+  if (path.startsWith('/admin') || path.startsWith('/api/admin')) {
+    return await updateSession(request);
+  }
 }
 
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - images/ (public images)
+     * Only match admin routes and admin APIs to eliminate unnecessary
+     * Supabase auth queries and bandwidth on public pages.
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/admin/:path*',
+    '/api/admin/:path*',
   ],
 };

@@ -1,8 +1,7 @@
 import { SeasonView, seasonMetadata, SeasonRouteParams } from '@/components/season/SeasonView';
 import { DUBBED_SEGMENT } from '@/lib/routes';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: SeasonRouteParams }) {
   return seasonMetadata(params, DUBBED_SEGMENT);

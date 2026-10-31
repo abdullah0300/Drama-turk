@@ -14,9 +14,9 @@ import { siteConfig, publicIndexingEnabled } from '@/config/site';
 import { isDramaPlayable } from '@/types/catalog';
 import { getPublicDramas, getPublicNotifications } from '@/lib/public-catalog-cache';
 
-// The shared navigation must follow publication changes on every route, including
-// informational pages. Its anonymous catalog queries remain cached for 60 seconds.
-export const dynamic = 'force-dynamic';
+// Navigation follows publication changes with a 60-second revalidation window,
+// allowing Next.js to serve cached HTML and avoiding per-request serverless executions.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.domain),
