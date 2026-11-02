@@ -24,8 +24,8 @@ export function nextScheduledEpisode(schedule: ReleaseSchedule, lastPlayableEpis
   const offset = episode - schedule.anchorEpisode;
   if (offset && !schedule.weekly) return;
   const timestamp = Date.parse(schedule.anchorBroadcastAt) + offset * WEEK_MS;
-  // One real next episode only; never manufacture a backlog because the clock advanced.
-  if (!Number.isFinite(timestamp) || timestamp > now + WEEK_MS) return;
+  // One real next episode only; allow up to 2 weeks for postponed/delayed broadcasts.
+  if (!Number.isFinite(timestamp) || timestamp > now + 2 * WEEK_MS) return;
   return { dramaId:schedule.dramaId, collectionId:schedule.collectionId, season:schedule.season,
     episode, bolum:schedule.anchorBolum + offset, broadcastAt:new Date(timestamp).toISOString(),
     confirmed:offset === 0 && schedule.anchorConfirmed, channel:schedule.channel,
