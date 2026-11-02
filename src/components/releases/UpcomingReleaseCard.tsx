@@ -113,6 +113,33 @@ export function UpcomingReleaseCard({
             </a>
           </div>
 
+          {episode.notice && (
+            <div
+              style={{
+                marginTop: '12px',
+                marginBottom: '16px',
+                padding: '12px 16px',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                border: '1px solid rgba(234, 179, 8, 0.3)',
+                color: '#fef08a',
+                fontSize: '13px',
+                lineHeight: '1.5',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '8px',
+              }}
+            >
+              <span style={{ fontSize: '16px', flexShrink: 0 }}>⚽</span>
+              <div>
+                <strong style={{ color: '#facc15', display: 'block', marginBottom: '2px' }}>
+                  Broadcast Schedule Notice
+                </strong>
+                {episode.notice}
+              </div>
+            </div>
+          )}
+
           {/* Timezone Toolbar */}
           <div className="tracker-toolbar">
             <span>

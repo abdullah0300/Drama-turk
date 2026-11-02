@@ -7,11 +7,13 @@ export interface ReleaseSchedule {
   anchorConfirmed: boolean; weekly: boolean; maxEpisode: number | null;
   verifiedAt: string; channel: string; scheduleSource: string;
   previewSource?: string; preview?: string;
+  notice?: string;
 }
 export interface ScheduledEpisode {
   dramaId: string; collectionId: string; season: number; episode: number; bolum: number;
   broadcastAt: string; confirmed: boolean; channel: string; scheduleSource: string;
   previewSource?: string; preview?: string; verifiedAt: string;
+  notice?: string;
 }
 export function scheduleFor(dramaId: string, collectionId?: string) {
   return schedules.find(s => s.dramaId === dramaId && (!collectionId || s.collectionId === collectionId));
@@ -28,7 +30,7 @@ export function nextScheduledEpisode(schedule: ReleaseSchedule, lastPlayableEpis
     episode, bolum:schedule.anchorBolum + offset, broadcastAt:new Date(timestamp).toISOString(),
     confirmed:offset === 0 && schedule.anchorConfirmed, channel:schedule.channel,
     scheduleSource:schedule.scheduleSource, verifiedAt:schedule.verifiedAt,
-    ...(offset === 0 ? {previewSource:schedule.previewSource,preview:schedule.preview} : {}) };
+    ...(offset === 0 ? {previewSource:schedule.previewSource,preview:schedule.preview,notice:schedule.notice} : {}) };
 }
 export function subtitleEstimate(broadcastAt: string, samples: number[]): string | undefined {
   // Source timestamps are estimates of publisher availability, not playback confirmations.
