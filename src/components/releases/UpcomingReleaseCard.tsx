@@ -116,26 +116,28 @@ export function UpcomingReleaseCard({
           {episode.notice && (
             <div
               style={{
-                marginTop: '12px',
-                marginBottom: '16px',
+                marginTop: '14px',
+                marginBottom: '18px',
                 padding: '12px 16px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(234, 179, 8, 0.1)',
-                border: '1px solid rgba(234, 179, 8, 0.3)',
-                color: '#fef08a',
-                fontSize: '13px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(180, 83, 9, 0.12)',
+                border: '1px solid rgba(217, 119, 6, 0.4)',
+                color: '#78350f',
+                fontSize: '13.5px',
                 lineHeight: '1.5',
                 display: 'flex',
                 alignItems: 'flex-start',
-                gap: '8px',
+                gap: '10px',
               }}
             >
-              <span style={{ fontSize: '16px', flexShrink: 0 }}>⚽</span>
+              <span style={{ fontSize: '18px', flexShrink: 0, marginTop: '1px' }}>⚽</span>
               <div>
-                <strong style={{ color: '#facc15', display: 'block', marginBottom: '2px' }}>
+                <strong style={{ color: '#92400e', display: 'block', fontSize: '13.5px', fontWeight: '700', marginBottom: '3px' }}>
                   Broadcast Schedule Notice
                 </strong>
-                {episode.notice}
+                <span style={{ color: '#78350f', fontWeight: '500' }}>
+                  {episode.notice}
+                </span>
               </div>
             </div>
           )}
