@@ -23,6 +23,8 @@ interface SearchPageProps {
   };
 }
 
+export const revalidate = 60;
+
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const allDramas = await supabaseCatalog.getAllDramas();
   const initialQuery = searchParams.q || '';

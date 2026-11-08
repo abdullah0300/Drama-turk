@@ -721,11 +721,19 @@ export class SupabaseCatalogRepository {
     }
 
     if (params.language && params.language !== 'all') {
-      results = results.filter(d => d.languages?.includes(params.language!));
+      const targetLang = params.language.toLowerCase();
+      results = results.filter(d => d.languages?.some(l => l.toLowerCase() === targetLang));
     }
 
     if (params.genre && params.genre !== 'all') {
-      results = results.filter(d => d.genres?.includes(params.genre!));
+      const targetGenre = params.genre.toLowerCase();
+      results = results.filter(d => d.genres?.some(g => {
+        const gl = g.toLowerCase();
+        if (targetGenre === 'historical' || targetGenre === 'history') {
+          return gl === 'historical' || gl === 'history';
+        }
+        return gl === targetGenre;
+      }));
     }
 
     if (params.sort === 'az') {

@@ -26,6 +26,8 @@ export async function generateMetadata({ searchParams }: BrowsePageProps): Promi
   };
 }
 
+export const revalidate = 60;
+
 export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const query = searchParams.q || '';
   const language = searchParams.lang || 'all';

@@ -74,6 +74,8 @@ export function BrowseClient({
               <option value="all">All Languages</option>
               <option value="Urdu">Urdu</option>
               <option value="English">English</option>
+              <option value="Turkish">Turkish</option>
+              <option value="Arabic">Arabic</option>
             </select>
           </div>
 
@@ -88,8 +90,16 @@ export function BrowseClient({
               <option value="all">All Genres</option>
               <option value="Historical">Historical</option>
               <option value="Action">Action</option>
-              <option value="Military">Military</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Biography">Biography</option>
               <option value="Crime">Crime</option>
+              <option value="Drama">Drama</option>
+              <option value="Family">Family</option>
+              <option value="Military">Military</option>
+              <option value="Mystery">Mystery</option>
+              <option value="Romance">Romance</option>
+              <option value="Thriller">Thriller</option>
+              <option value="War">War</option>
             </select>
           </div>
 

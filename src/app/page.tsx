@@ -36,7 +36,10 @@ export default async function HomePage() {
   ]);
 
   const allDramas = directory.filter(d => d.status === undefined || d.status === 'published');
-  const historical = allDramas.filter(d => d.genres?.some(g => g.toLowerCase() === 'historical'));
+  const historical = allDramas.filter(d => d.genres?.some(g => {
+    const gl = g.toLowerCase();
+    return gl === 'historical' || gl === 'history';
+  }));
   const otherDramas = allDramas.filter(d => !historical.some(h => h.id === d.id));
   const choices = [
     { id: 'urdu-subtitles', title: 'Urdu Subtitles', text: 'Turkish dramas and other series with available Urdu subtitle renditions.', matches: (v: typeof viewingChoices[number]) => v.version === 'subtitled' && v.languages.includes('Urdu') },
