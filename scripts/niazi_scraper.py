@@ -148,6 +148,15 @@ def scrape_episode(catalog_id, rid, drama, drama_id, page=None):
     n = int(ep.group(1)) if ep else None
     b = int(bolum.group(1)) if bolum else None
     p_ = int(part.group(1)) if part else None
+
+    # Continuous Bolum offset handling (e.g. Mehmed Season 4 starts at Bolum 84 = Ep 1):
+    if str(catalog_id) in ('82', '88') or (catalog_heading and 'mehmed' in catalog_heading.lower() and 'season 4' in catalog_heading.lower()):
+        if b is None and n and n >= 84:
+            b = n
+            n = b - 83
+        elif b and (n is None or n == b):
+            n = b - 83
+
     group = f'collection-{catalog_id}-' + (f'bolum-{b}' if b else f'episode-{n}') + (f'-part-{p_}' if p_ else '')
     label = (f'Episode {n}' if n else h3 or h1) + (f' · Bolum {b}' if b else '') + (f' · Part {p_}' if p_ else '')
     flags = [] if iso_seconds(vo.get('duration')) else ['duration_missing_or_zero']

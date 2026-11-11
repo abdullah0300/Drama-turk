@@ -3,17 +3,16 @@
     "dramaId": "mehmed-fetihler-sultani",
     "collectionId": "collection-82",
     "season": 4,
-    "anchorEpisode": 8,
-    "anchorBolum": 91,
-    "anchorBroadcastAt": "2026-11-10T20:00:00+03:00",
+    "anchorEpisode": 9,
+    "anchorBolum": 92,
+    "anchorBroadcastAt": "2026-11-17T20:00:00+03:00",
     "anchorConfirmed": true,
     "weekly": true,
     "maxEpisode": null,
-    "verifiedAt": "2026-11-02",
+    "verifiedAt": "2026-11-11",
     "channel": "TRT 1",
     "scheduleSource": "https://www.trt1.com.tr/diziler/mehmed-fetihler-sultani",
-    "previewSource": "https://www.youtube.com/watch?v=gZHl2KEtQck",
-    "notice": "TRT 1 postponed Episode 8 (Bölüm 91) by one week from Nov 3 to Tuesday, Nov 10 due to live UEFA Champions League football match coverage."
+    "previewSource": "https://www.trt1.com.tr/diziler/mehmed-fetihler-sultani/fragman"
   },
   {
     "dramaId": "teskilat",
