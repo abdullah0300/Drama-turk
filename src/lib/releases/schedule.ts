@@ -8,6 +8,7 @@ export interface ReleaseSchedule {
   verifiedAt: string; channel: string; scheduleSource: string;
   previewSource?: string; preview?: string;
   notice?: string;
+  subtitleDelays?: Record<string, number>;
 }
 export interface ScheduledEpisode {
   dramaId: string; collectionId: string; season: number; episode: number; bolum: number;
@@ -32,11 +33,16 @@ export function nextScheduledEpisode(schedule: ReleaseSchedule, lastPlayableEpis
     scheduleSource:schedule.scheduleSource, verifiedAt:schedule.verifiedAt,
     ...(offset === 0 ? {previewSource:schedule.previewSource,preview:schedule.preview,notice:schedule.notice} : {}) };
 }
-export function subtitleEstimate(broadcastAt: string, samples: number[]): string | undefined {
+export function subtitleEstimate(broadcastAt: string, samples: number[], fallbackHours?: number): string | undefined {
   // Source timestamps are estimates of publisher availability, not playback confirmations.
   const delays = samples.filter(n => Number.isFinite(n) && n >= 0 && n <= 48 * 3600000).sort((a,b)=>a-b);
-  if (delays.length < 2) return;
-  const middle = Math.floor(delays.length / 2);
-  const median = delays.length % 2 ? delays[middle] : (delays[middle-1] + delays[middle]) / 2;
-  return new Date(Date.parse(broadcastAt) + median).toISOString();
+  if (delays.length >= 2) {
+    const middle = Math.floor(delays.length / 2);
+    const median = delays.length % 2 ? delays[middle] : (delays[middle-1] + delays[middle]) / 2;
+    return new Date(Date.parse(broadcastAt) + median).toISOString();
+  }
+  if (fallbackHours != null && Number.isFinite(fallbackHours)) {
+    return new Date(Date.parse(broadcastAt) + fallbackHours * 3600000).toISOString();
+  }
+  return undefined;
 }

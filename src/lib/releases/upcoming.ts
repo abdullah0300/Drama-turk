@@ -23,15 +23,21 @@ export const getUpcomingEpisode = cache(async (dramaId: string): Promise<Upcomin
   if (!latest?.episode_number) return;
   const upcoming = nextScheduledEpisode(schedule,latest.episode_number);
   if (!upcoming) return;
+  const defaultDelays: Record<string, number> = {
+    Urdu: 5,
+    English: 12,
+    ...(schedule.subtitleDelays || {}),
+  };
   const estimates = ['Urdu','English'].map(language => {
     const recent = published.filter(g => g.episode_number != null && g.episode_number <= latest.episode_number! && g.episode_number > latest.episode_number! - 4);
     const samples = recent.flatMap(g => {
-      const date = (data.videosByGroup.get(g.id)||[]).find(v => v.version==='subtitled' && v.languages.includes(language) && v.upload_date)?.upload_date;
+      const date = (data.videosByGroup.get(g.id)||[]).find(v => v.version==='subtitled' && v.languages.includes(language) && (v.upload_date || (v as any).created_at))?.upload_date;
       const broadcast = Date.parse(schedule.anchorBroadcastAt) + (g.episode_number! - schedule.anchorEpisode) * WEEK_MS;
       const delay = date ? Date.parse(date) - broadcast : NaN;
       return Number.isFinite(delay) && delay >= 0 && delay <= 48 * 3600000 ? [delay] : [];
     });
-    return {language,at:subtitleEstimate(upcoming.broadcastAt,samples),sampleCount:samples.length};
+    const fallbackHours = defaultDelays[language];
+    return {language, at: subtitleEstimate(upcoming.broadcastAt, samples, fallbackHours), sampleCount: samples.length};
   });
   const seasonHref = seasonPath(dramaId,season,edition);
   return {...upcoming,dramaName:loaded.drama.name,href:`${seasonHref}/episode-${upcoming.episode}`,seasonHref,
