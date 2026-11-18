@@ -17,7 +17,8 @@ import {
   Copy, 
   Check, 
   ArrowRight,
-  PictureInPicture2
+  PictureInPicture2,
+  Subtitles
 } from 'lucide-react';
 import { VideoRecord, EpisodeGroup } from '@/types/catalog';
 import { useUserPreferences } from '@/context/UserPreferencesContext';
@@ -82,6 +83,27 @@ export function CustomVideoPlayer({
 
   // Diagnostic copy state
   const [copiedDiagnostic, setCopiedDiagnostic] = useState(false);
+
+  // Subtitles / Closed Captions state
+  const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
+
+  const toggleSubtitles = () => {
+    const next = !subtitlesEnabled;
+    setSubtitlesEnabled(next);
+    if (videoRef.current?.textTracks) {
+      for (let i = 0; i < videoRef.current.textTracks.length; i++) {
+        videoRef.current.textTracks[i].mode = next ? 'showing' : 'disabled';
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (videoRef.current?.textTracks) {
+      for (let i = 0; i < videoRef.current.textTracks.length; i++) {
+        videoRef.current.textTracks[i].mode = subtitlesEnabled ? 'showing' : 'disabled';
+      }
+    }
+  }, [currentVideo, subtitlesEnabled]);
 
   const streamUrl = currentVideo.stream_urls?.[0];
 
@@ -281,6 +303,11 @@ export function CustomVideoPlayer({
       setIsLoading(false);
       videoRef.current.volume = isMuted ? 0 : volume;
       videoRef.current.playbackRate = playbackSpeed;
+      if (videoRef.current.textTracks) {
+        for (let i = 0; i < videoRef.current.textTracks.length; i++) {
+          videoRef.current.textTracks[i].mode = subtitlesEnabled ? 'showing' : 'disabled';
+        }
+      }
     }
   };
 
@@ -678,6 +705,7 @@ export function CustomVideoPlayer({
         poster={currentVideo.thumbnail_urls?.[0]}
         playsInline
         preload="metadata"
+        crossOrigin="anonymous"
         onTimeUpdate={handleTimeUpdate}
         onProgress={handleProgress}
         onLoadedMetadata={handleLoadedMetadata}
@@ -691,7 +719,23 @@ export function CustomVideoPlayer({
           setErrorState('The media source encountered a playback error or network block.');
         }}
         className="gn-video"
-      />
+      >
+        {currentVideo.subtitle_tracks?.map((track, i) => {
+          const src = track.track_url.startsWith('http')
+            ? `/api/subtitles?url=${encodeURIComponent(track.track_url)}`
+            : track.track_url;
+          return (
+            <track
+              key={track.id || track.track_url || i}
+              src={src}
+              kind={track.kind || 'subtitles'}
+              srcLang={track.language?.toLowerCase() === 'urdu' ? 'ur' : 'en'}
+              label={track.label || track.language}
+              default={i === 0 && subtitlesEnabled}
+            />
+          );
+        })}
+      </video>
 
       {/* Gesture surface: mouse click = play/pause, double-click = fullscreen; touch gestures above */}
       <div
@@ -880,6 +924,16 @@ export function CustomVideoPlayer({
             {nextEpisodeGroup && onNavigateNext && (
               <button className="icon-btn gn-hide-sm" onClick={onNavigateNext} aria-label="Next episode">
                 <SkipForward className="i" />
+              </button>
+            )}
+            {currentVideo.subtitle_tracks && currentVideo.subtitle_tracks.length > 0 && (
+              <button
+                className={`icon-btn${subtitlesEnabled ? ' on' : ''}`}
+                onClick={toggleSubtitles}
+                aria-label={subtitlesEnabled ? 'Disable subtitles' : 'Enable subtitles'}
+                title={subtitlesEnabled ? 'Subtitles On (CC)' : 'Subtitles Off (CC)'}
+              >
+                <Subtitles className="i" />
               </button>
             )}
             <button

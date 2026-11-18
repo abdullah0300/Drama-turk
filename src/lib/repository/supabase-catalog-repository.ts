@@ -393,7 +393,7 @@ export class SupabaseCatalogRepository {
 
       const { data: variants, error } = await supabase
         .from('video_variants')
-        .select('*, stream_sources(*)')
+        .select('*, stream_sources(*), subtitle_tracks(*)')
         .eq('group_id', (group as any).id)
         .eq('publication_state', 'published');
 
@@ -438,6 +438,14 @@ export class SupabaseCatalogRepository {
           stream_present: streams.length > 0,
           thumbnail_urls: grpRow.still_url ? [grpRow.still_url] : v.thumbnail_url ? [v.thumbnail_url] : [],
           playback_verified: isVerified,
+          subtitle_tracks: (v.subtitle_tracks || []).map((t: any) => ({
+            id: t.id,
+            variant_id: t.variant_id,
+            track_url: t.track_url,
+            language: t.language,
+            label: t.label,
+            kind: t.kind || 'subtitles',
+          })),
         };
       });
     } catch (e) {
@@ -476,7 +484,7 @@ export class SupabaseCatalogRepository {
 
       const { data: variants, error } = await supabase
         .from('video_variants')
-        .select('*, stream_sources(*), episode_groups(source_id, still_url)')
+        .select('*, stream_sources(*), subtitle_tracks(*), episode_groups(source_id, still_url)')
         .eq('collection_id', col.id)
         .eq('publication_state', 'published');
 
@@ -518,6 +526,14 @@ export class SupabaseCatalogRepository {
           stream_present: streams.length > 0,
           thumbnail_urls: v.episode_groups?.still_url ? [v.episode_groups.still_url] : v.thumbnail_url ? [v.thumbnail_url] : [],
           playback_verified: isVerified,
+          subtitle_tracks: (v.subtitle_tracks || []).map((t: any) => ({
+            id: t.id,
+            variant_id: t.variant_id,
+            track_url: t.track_url,
+            language: t.language,
+            label: t.label,
+            kind: t.kind || 'subtitles',
+          })),
         };
       });
     } catch (e) {

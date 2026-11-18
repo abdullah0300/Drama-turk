@@ -136,13 +136,37 @@ def scrape_episode(catalog_id, rid, drama, drama_id, page=None):
     meta_desc = re.search(r'<meta name="description" content="([^"]*)"', h)
     players = sorted(set(re.findall(r'https://play\.niazitv\.pk/play\?(?:data|url)=[A-Za-z0-9+/=]+', h)))
     stream = vo.get('contentUrl') or ''
-    if not stream:  # fall back to the embedded player page
-        for p in players:
+    sub_tracks = []
+    for p in players:
+        try:
             _, ph = fetch(p)
-            s = re.search(r'<source src="([^"?]+\.m3u8[^"]*?)(?:\?token=[^"]*)?"', ph)
-            if s:
-                stream = s.group(1)
-                break
+            if not stream:
+                s = re.search(r'<source src="([^"?]+\.m3u8[^"]*?)(?:\?token=[^"]*)?"', ph)
+                if s:
+                    stream = s.group(1)
+            for t in re.finditer(r'<track[^>]+>', ph, re.I):
+                tag = t.group(0)
+                src_m = re.search(r'src=["\']([^"\']+)["\']', tag, re.I)
+                lang_m = re.search(r'srclang=["\']([^"\']+)["\']', tag, re.I)
+                label_m = re.search(r'label=["\']([^"\']+)["\']', tag, re.I)
+                kind_m = re.search(r'kind=["\']([^"\']+)["\']', tag, re.I)
+                if src_m:
+                    t_url = src_m.group(1)
+                    if t_url.startswith('/'):
+                        t_url = 'https://play.niazitv.pk' + t_url
+                    t_lang = lang_m.group(1) if lang_m else ('Urdu' if 'ur' in t_url else 'English')
+                    t_label = label_m.group(1) if label_m else t_lang
+                    t_kind = kind_m.group(1) if kind_m else 'subtitles'
+                    norm_lang = 'Urdu' if t_lang.lower() in ('ur', 'urdu') else 'English' if t_lang.lower() in ('en', 'english') else t_lang
+                    if not any(st['track_url'] == t_url for st in sub_tracks):
+                        sub_tracks.append({
+                            'track_url': t_url,
+                            'language': norm_lang,
+                            'label': t_label,
+                            'kind': t_kind,
+                        })
+        except Exception:
+            pass
     thumbs = vo.get('thumbnailUrl') or []
     thumbs = [thumbs] if isinstance(thumbs, str) else thumbs
     n = int(ep.group(1)) if ep else None
@@ -175,7 +199,7 @@ def scrape_episode(catalog_id, rid, drama, drama_id, page=None):
         'upload_date': vo.get('uploadDate'), 'quality_flags': flags, 'status': 'needs_review',
         'extraction_done': True, 'playback_verified': False, 'html_source': 'live_fetch',
         'collected_at': dt.datetime.now(dt.timezone.utc).isoformat(), 'runs_attempted': 1,
-        'stream_urls': [stream] if stream else [], 'stream_url_source': 'VideoObject.contentUrl' if vo.get('contentUrl') else 'player_page',
+        'stream_urls': [stream] if stream else [], 'stream_url_source': 'VideoObject.contentUrl' if vo.get('contentUrl') else 'player_page', 'subtitle_tracks': sub_tracks,
         'direct_playback_status': 'not_tested', 'id': f'video-{rid}', 'canonical_drama': drama, 'drama_id': drama_id,
         'source_quality_flags': flags, 'organization_notes': [], 'collection_id': f'collection-{catalog_id}',
         'content_type': 'episode', 'display_label': label, 'numbering_basis': 'source_episode_number',

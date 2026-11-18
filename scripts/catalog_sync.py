@@ -218,6 +218,22 @@ def reviewed_source_date(value):
         return None
 
 
+def sync_subtitle_tracks(db, variant_id, tracks):
+    if not tracks or not variant_id:
+        return
+    for t in tracks:
+        try:
+            db.insert('subtitle_tracks', {
+                'variant_id': variant_id,
+                'track_url': t['track_url'],
+                'language': t['language'],
+                'label': t.get('label') or t['language'],
+                'kind': t.get('kind') or 'subtitles',
+            }, on_conflict='variant_id,track_url')
+        except Exception:
+            pass
+
+
 def upgrade_episode(db, rep, coll, drama, rec, variant_row, new_duration, ok, status, detail):
     """Upgrade an existing trailer/short video with the newly released full episode."""
     vid = variant_row['id']
@@ -278,6 +294,8 @@ def upgrade_episode(db, rep, coll, drama, rec, variant_row, new_duration, ok, st
         'raw_json': rec,
         'content_hash': content_hash(rec),
     })
+    if rec.get('subtitle_tracks'):
+        sync_subtitle_tracks(db, vid, rec['subtitle_tracks'])
 
     if variant_row.get('group_id'):
         db.update('episode_groups', f"id=eq.{variant_row['group_id']}", {
@@ -348,6 +366,8 @@ def refresh_episode_stream(db, rep, coll, drama, rec, variant_row, new_duration,
         'raw_json': rec,
         'content_hash': content_hash(rec),
     })
+    if rec.get('subtitle_tracks'):
+        sync_subtitle_tracks(db, variant_row['id'], rec['subtitle_tracks'])
 
     old_dur = variant_row.get('duration_seconds') or 0
     label = variant_row.get('display_label') or rid
@@ -412,6 +432,8 @@ def import_episode(db, rep, coll, drama, rec, groups_by_coll):
         'variant_id': variant[0]['id'], 'delivery_url': rec['stream_urls'][0], 'format': 'hls', 'is_active': True,
         'priority': 1, 'verification_state': 'reachable' if ok else 'unavailable', 'last_verified_at': now(),
     })
+    if rec.get('subtitle_tracks'):
+        sync_subtitle_tracks(db, variant[0]['id'], rec['subtitle_tracks'])
     db.insert('stream_checks', {
         'stream_source_id': stream[0]['id'], 'variant_source_id': rid, 'stream_url': rec['stream_urls'][0],
         'check_method': 'reachability_head', 'status': 'passed' if ok else 'failed', 'http_status': status,

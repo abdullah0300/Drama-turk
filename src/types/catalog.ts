@@ -94,6 +94,16 @@ export interface VideoRecord {
   playback_verified?: boolean;
   organization_review_flags?: string[];
   quality_flags?: string[];
+  subtitle_tracks?: SubtitleTrack[];
+}
+
+export interface SubtitleTrack {
+  id?: string;
+  variant_id?: string;
+  track_url: string;
+  language: string;
+  label: string;
+  kind?: 'subtitles' | 'captions';
 }
 
 export interface PublishedEditorial {
